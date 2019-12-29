@@ -11,7 +11,10 @@ addSbtPlugin("com.vmunier" % "sbt-web-scalajs" % "1.0.10")
   *
   * You need to have npm installed on your system.
   */
-addSbtPlugin(
-  "ch.epfl.scala" % "sbt-scalajs-bundler" % "0.16.0"
-  //"ch.epfl.scala" % "sbt-web-scalajs-bundler" % "0.16.0+1-bcf16542+20191216-0115"
-)
+addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.16.0")
+
+//Note: sbt-scalajs-bundler version 0.16.0 does not work with scalajs 1.0.0-RC2
+//because is complied for scalajs version 1.0.0-RC1
+//Workaround by @sjrd is to use the scalajs-linker:
+//https://github.com/scalacenter/scalajs-bundler/pull/319#issuecomment-569463765
+libraryDependencies += "org.scala-js" %% "scalajs-linker" % "1.0.0-RC2"
