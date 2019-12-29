@@ -18,3 +18,6 @@ addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.16.0")
 //Workaround by @sjrd is to use the scalajs-linker:
 //https://github.com/scalacenter/scalajs-bundler/pull/319#issuecomment-569463765
 libraryDependencies += "org.scala-js" %% "scalajs-linker" % "1.0.0-RC2"
+
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.8.1")
+addSbtPlugin("com.jsuereth" % "sbt-pgp" % "2.0.0") //https://github.com/sbt/sbt-pgp#sbt-pgp
