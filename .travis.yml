@@ -3,3 +3,8 @@ scala:
  - 2.13.1
 script:
  - sbt clean fastOptJS::webpack
+
+# blocklist
+branches:
+  except:
+  - gh-pages

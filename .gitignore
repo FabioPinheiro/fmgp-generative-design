@@ -2,3 +2,6 @@
 .metals/
 target/
 
+
+## igone the demo (generated code)
+docs/demo-fastopt-bundle.js
