@@ -6,7 +6,7 @@ ThisBuild / organizationHomepage := Some(url("https://fmgp.app/"))
 // format: off
 ThisBuild / sonatypeProfileName := "app.fmgp"
 ThisBuild / publishMavenStyle := true
-ThisBuild / licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT")) //TODO
+ThisBuild / licenses := Seq("MIT" -> url("https://github.com/FabioPinheiro/fmgp-threejs/blob/master/LICENSE"))
 ThisBuild / homepage := Some(url("http://threejs.fmgp.app/"))
 ThisBuild / scmInfo := Some(ScmInfo(url("https://github.com/FabioPinheiro/fmgp-threejs"), "scm:git@github.com:FabioPinheiro/fmgp-threejs.git"))
 ThisBuild / developers := List(Developer(id = "FabioPinheiro", name = "Fabio Pinheiro", email = "fabiomgpinheiro@gmail.com", url = url("https://fmgp.app")))
@@ -25,7 +25,7 @@ val threeVersion = "0.108.0" // https://www.npmjs.com/package/three
 lazy val three = (project in file("three"))
   .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
   .settings(
-    name := "scala-threejs",
+    name := "fmgp-threejs",
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.8",
     npmDependencies in Compile += "three" -> threeVersion,
     webpackBundlingMode := BundlingMode.LibraryOnly()

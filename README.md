@@ -18,3 +18,18 @@ https://repo1.maven.org/maven2/app/fmgp/scala-threejs_sjs1.0-RC2_2.13/
 fastOptJS::webpack
 fastOptJS
 ```
+
+
+## Copyright and License
+
+cats-money is licensed under the MIT license, available at
+[http://opensource.org/licenses/mit-license.php](http://opensource.org/licenses/mit-license.php)
+and also in the [LICENSE](LICENSE) file.
+
+Copyright the Fabio Pinheiro, 2019.
+
+[cats-badge]: https://typelevel.org/cats/img/cats-badge-tiny.png
+[cats-infographic]: https://github.com/tpolecat/cats-infographic
+[underscore-scala-book]: https://underscore.io/books/advanced-scala
+[sbt]: http://scala-sbt.org
+[shapeless]: https://github.com/milessabin/shapeless
