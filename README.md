@@ -13,6 +13,11 @@ https://threejs.org/
 ## Use
 https://repo1.maven.org/maven2/app/fmgp/scala-threejs_sjs1.0-RC2_2.13/
 
+```
+libraryDependencies += "app.fmgp" % "fmgp-threejs_2.13" % "0.1-M1"
+```
+
+
 ## Run on sbt:
 ```
 fastOptJS::webpack

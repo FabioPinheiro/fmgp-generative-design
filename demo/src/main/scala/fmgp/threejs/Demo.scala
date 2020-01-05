@@ -1,4 +1,4 @@
-package fmgp
+package fmgp.threejs
 
 import fmgp.threejs._
 import fmgp.threejs.extras.OrbitControls
@@ -6,36 +6,7 @@ import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
-trait FooOptions extends js.Object {
-  val a: Int
-  val b: String
-  val c: js.UndefOr[Boolean]
-}
-
-@JSExportTopLevel("Fabio")
-object Fabio {
-
-  @JSExport
-  def test(): Unit = {
-    dom.console.log("test ok");
-  }
-
-  def version(): Unit = {
-    val version = fmgp.threejs.Three.REVISION
-    dom.console.log(s"The threejs version is $version")
-  }
-
-  @JSExport
-  def foo(options: FooOptions): String = {
-    val a = options.a
-    val b = options.b
-    val c = options.c.getOrElse(false)
-    // do something with a, b, c
-    s"$a $b $c"
-  }
-}
-
-object Main { //extends JSApp {
+object Demo { //extends JSApp {
 
   lazy val renderer: WebGLRenderer = {
     val aux = new WebGLRenderer(
@@ -46,7 +17,6 @@ object Main { //extends JSApp {
   }
 
   def main(args: Array[String]): Unit = {
-    fmgp.Fabio.version()
     //mount(dom.document.body, mainDiv)
     val message = dom.document.createElement("div")
     message.textContent = "Hi this is a dome of the threejs scalajs facede"

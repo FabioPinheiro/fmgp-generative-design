@@ -35,13 +35,29 @@ lazy val demo = (project in file("demo"))
   .enablePlugins(ScalaJSPlugin)
   .enablePlugins(ScalaJSBundlerPlugin) //, ScalaJSJUnitPlugin)
   .settings(
+    name := "fmgp-threejs-demo",
+    publishArtifact := false,
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.8",
+    scalaJSUseMainModuleInitializer := true,
+    npmDependencies in Compile += "three" -> threeVersion,
+    mainClass := Some("fmgp.threejs.Demo"),
+    //scalaJSMainModuleInitializer := Some(mainMethod("fmgp.Main", "main"))
+    //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
+    webpackBundlingMode := BundlingMode.LibraryAndApplication()
+  )
+  .dependsOn(three)
+
+lazy val xpto = (project in file("xpto"))
+  .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
+  .settings(
+    name := "fmgp-threejs-xpto",
     publishArtifact := false,
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.8",
     scalaJSUseMainModuleInitializer := true,
     npmDependencies in Compile += "three" -> threeVersion,
     mainClass := Some("fmgp.Main"),
     //scalaJSMainModuleInitializer := Some(mainMethod("fmgp.Main", "main"))
-    webpackBundlingMode := BundlingMode
-      .LibraryAndApplication() //This is needed for the index.html to avoid calling webpack all the time
+    //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
+    webpackBundlingMode := BundlingMode.LibraryAndApplication()
   )
   .dependsOn(three)
