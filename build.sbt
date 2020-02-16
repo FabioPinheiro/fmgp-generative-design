@@ -1,5 +1,5 @@
 ThisBuild / scalaVersion := "2.13.1"
-ThisBuild / version := "0.1-M1"
+ThisBuild / version := "0.1-M2-SNAPSHOT" //SNAPSHOT
 ThisBuild / organization := "app.fmgp"
 ThisBuild / organizationHomepage := Some(url("https://fmgp.app/"))
 
@@ -47,10 +47,20 @@ lazy val demo = (project in file("demo"))
   )
   .dependsOn(three)
 
-lazy val xpto = (project in file("xpto"))
+lazy val geometryModel = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("geometryModel"))
+  .settings(
+    name := "fmgp-geometry-model"
+  )
+
+lazy val geometryModelJs = geometryModel.js
+lazy val geometryModelJvm = geometryModel.jvm
+
+lazy val geometryCore = (project in file("geometryCore"))
   .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
   .settings(
-    name := "fmgp-threejs-xpto",
+    name := "fmgp-geometry-core",
     publishArtifact := false,
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.8",
     scalaJSUseMainModuleInitializer := true,
@@ -60,4 +70,4 @@ lazy val xpto = (project in file("xpto"))
     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
     webpackBundlingMode := BundlingMode.LibraryAndApplication()
   )
-  .dependsOn(three)
+  .dependsOn(three, geometryModelJs)
