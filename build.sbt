@@ -3,6 +3,13 @@ ThisBuild / version := "0.1-M2-SNAPSHOT" //SNAPSHOT
 ThisBuild / organization := "app.fmgp"
 ThisBuild / organizationHomepage := Some(url("https://fmgp.app/"))
 
+// ### PUBLISH ###
+// must not have SNAPSHOT on the version
+//> project three
+//> publishSigned
+//> sonatypePrepare
+//> sonatypeBundleUpload
+
 // format: off
 ThisBuild / sonatypeProfileName := "app.fmgp"
 ThisBuild / publishMavenStyle := true
@@ -10,7 +17,7 @@ ThisBuild / licenses := Seq("MIT" -> url("https://github.com/FabioPinheiro/fmgp-
 ThisBuild / homepage := Some(url("http://threejs.fmgp.app/"))
 ThisBuild / scmInfo := Some(ScmInfo(url("https://github.com/FabioPinheiro/fmgp-threejs"), "scm:git@github.com:FabioPinheiro/fmgp-threejs.git"))
 ThisBuild / developers := List(Developer(id = "FabioPinheiro", name = "Fabio Pinheiro", email = "fabiomgpinheiro@gmail.com", url = url("https://fmgp.app")))
-usePgpKeyHex("E1FC5E4D458BB2DB0B99B285F1CBAB1E3F257949")
+usePgpKeyHex("E1FC5E4D458BB2DB0B99B285F1CBAB1E3F257949") //This is just a reference of the key
 // format: on
 ThisBuild / publishTo := sonatypePublishToBundle.value //FIXME
 // ThisBuild / publishTo := {
@@ -20,12 +27,16 @@ ThisBuild / publishTo := sonatypePublishToBundle.value //FIXME
 //   else Some("releases" at nexus + "service/local/staging/deploy/maven2")
 //}
 
+name := "fmgp-threejs-root"
+publishArtifact := false
 val threeVersion = "0.108.0" // https://www.npmjs.com/package/three
+//TODO update version 0.113
 
 lazy val three = (project in file("three"))
   .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
   .settings(
     name := "fmgp-threejs",
+    sonatypeProfileName := "app.fmgp",
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.8",
     npmDependencies in Compile += "three" -> threeVersion,
     webpackBundlingMode := BundlingMode.LibraryOnly()
@@ -51,7 +62,8 @@ lazy val geometryModel = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("geometryModel"))
   .settings(
-    name := "fmgp-geometry-model"
+    name := "fmgp-geometry-model",
+    publishArtifact := false
   )
 
 lazy val geometryModelJs = geometryModel.js
