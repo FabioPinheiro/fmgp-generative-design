@@ -32,9 +32,35 @@ publishArtifact := false
 val threeVersion = "0.108.0" // https://www.npmjs.com/package/three
 //TODO update version 0.113
 
+lazy val baseSettings: Project => Project =
+  _.enablePlugins(ScalaJSPlugin)
+    .settings(
+      scalaVersion := "2.13.1",
+      version := "0.1-SNAPSHOT",
+      //scalacOptions ++= ScalacOptions.flags,
+      //scalaJSUseMainModuleInitializer := true,
+      scalaJSLinkerConfig ~= (_
+      /* disabled because it somehow triggers many warnings */
+        .withSourceMap(false)
+        .withModuleKind(ModuleKind.CommonJSModule))
+    )
+
+lazy val bundlerSettings: Project => Project =
+  _.enablePlugins(ScalablyTypedConverterPlugin)
+    .settings(
+      Compile / fastOptJS / webpackExtraArgs += "--mode=development",
+      Compile / fullOptJS / webpackExtraArgs += "--mode=production",
+      Compile / fastOptJS / webpackDevServerExtraArgs += "--mode=development",
+      Compile / fullOptJS / webpackDevServerExtraArgs += "--mode=production",
+      useYarn := true
+    )
+
 lazy val three = (project in file("three"))
-  .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
+  .configure(baseSettings, bundlerSettings)
+  .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
+    useYarn := true,
+    scalaJSUseMainModuleInitializer := false,
     name := "fmgp-threejs",
     sonatypeProfileName := "app.fmgp",
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.8",
@@ -43,14 +69,13 @@ lazy val three = (project in file("three"))
   )
 
 lazy val demo = (project in file("demo"))
-  .enablePlugins(ScalaJSPlugin)
-  .enablePlugins(ScalaJSBundlerPlugin) //, ScalaJSJUnitPlugin)
+  .configure(baseSettings, bundlerSettings)
   .settings(
     name := "fmgp-threejs-demo",
     publishArtifact := false,
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.8",
-    scalaJSUseMainModuleInitializer := true,
     npmDependencies in Compile += "three" -> threeVersion,
+    scalaJSUseMainModuleInitializer := true,
     mainClass := Some("fmgp.threejs.Demo"),
     //scalaJSMainModuleInitializer := Some(mainMethod("fmgp.Main", "main"))
     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
@@ -70,13 +95,14 @@ lazy val geometryModelJs = geometryModel.js
 lazy val geometryModelJvm = geometryModel.jvm
 
 lazy val geometryCore = (project in file("geometryCore"))
-  .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
+  .configure(baseSettings, bundlerSettings) //.enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
   .settings(
     name := "fmgp-geometry-core",
-    publishArtifact := false,
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.8",
-    scalaJSUseMainModuleInitializer := true,
+    //publishArtifact := false,
+    //libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.8",
+    //libraryDependencies ++= Seq(ScalablyTyped.T.three),
     npmDependencies in Compile += "three" -> threeVersion,
+    scalaJSUseMainModuleInitializer := true,
     mainClass := Some("fmgp.Main"),
     //scalaJSMainModuleInitializer := Some(mainMethod("fmgp.Main", "main"))
     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time

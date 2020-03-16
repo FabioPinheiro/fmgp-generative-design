@@ -1,5 +1,9 @@
 package fmgp
 
+import typings.three.loaderMod.Loader
+import typings.three.mod.{Math => ThreeMath, Shape => _, _}
+import typings.three.webGLRendererMod.WebGLRendererParameters
+
 import fmgp.threejs._
 import fmgp.threejs.extras.OrbitControls
 import fmgp.geo._
@@ -24,9 +28,7 @@ object Utils {
     }
 
     val staticRoot = new Object3D()
-    Seq(sunLight, belowLight, hemiLight, gridHelper, axisHelper).foreach(
-      staticRoot.add
-    )
+    Seq(sunLight, belowLight, hemiLight, gridHelper, axisHelper).foreach(e => staticRoot.add(e))
     staticRoot
   }
 
@@ -40,16 +42,9 @@ object Utils {
     (Dimensions.D3: Dimensions.D) match {
       case Dimensions.D2 =>
         val proportions = width / height
-        new OrthographicCamera(
-          -size / 2 * proportions,
-          size / 2 * proportions,
-          size / 2,
-          -size / 2,
-          near,
-          far
-        )
-      case Dimensions.D3 =>
-        new PerspectiveCamera(45, width / height, near, far)
+        val aux = size / 2 * proportions
+        new OrthographicCamera(-aux, aux, size / 2, -size / 2, near, far).asInstanceOf[Camera]
+      case Dimensions.D3 => new PerspectiveCamera(45, width / height, near, far).asInstanceOf[Camera]
       // case Dimensions.Unrecognized(d) =>
       //   throw new RuntimeException(s"Dimensions $d Unrecognized in newCamera")
     }

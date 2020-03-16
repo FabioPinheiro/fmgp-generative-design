@@ -1,3 +1,4 @@
+/*
 package fmgp.threejs
 
 import org.scalajs.dom._
@@ -3369,3 +3370,4 @@ object ShaderFlares extends js.Object {
 //  def end(): js.Any = js.native
 //  var dom: HTMLElement = js.native
 //}
+*/

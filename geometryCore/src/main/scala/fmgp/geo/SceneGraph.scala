@@ -1,6 +1,7 @@
 package fmgp.geo
 
-import fmgp.threejs.{Color => ColorT, _}
+import typings.three.loaderMod.Loader
+import typings.three.mod.{Math => ThreeMath, Color => ColorT, _}
 
 import scala.collection.mutable
 import scala.scalajs.js
@@ -37,7 +38,7 @@ trait DefaultMaterials {
   val solidMat = new MeshPhongMaterial()
   val surfaceMat = {
     val aux = new MeshPhongMaterial()
-    aux.side = Three.DoubleSide
+    aux.side = DoubleSide
     aux
   }
 }
@@ -60,7 +61,7 @@ trait PolygonSurface extends DefaultMaterials {
 
   private def polygonSurfaceGeometry(vertices: js.Array[Vector3]) = {
     val geom = new Geometry()
-    geom.vertices = vertices // set vertices
+    geom.vertices = vertices.map(e => e: typings.three.vector3Mod.Vector3) // set vertices
     val v0 = 0 // set faces (GL_TRIANGLE_FAN)
 
     (1 to vertices.length).map(v1 => geom.faces.push(new Face3(v0, v1, v1 + 1)))
@@ -83,8 +84,7 @@ trait PolygonSurface extends DefaultMaterials {
 
 case class Primitive(name: String, args: Int)
 case class Registry(
-    primitives: mutable.Map[String, () => Primitive] =
-      mutable.Map[String, () => Primitive]()
+    primitives: mutable.Map[String, () => Primitive] = mutable.Map[String, () => Primitive]()
 ) {
   def provide(name: String, value: () => Primitive) =
     primitives.put(name, value)

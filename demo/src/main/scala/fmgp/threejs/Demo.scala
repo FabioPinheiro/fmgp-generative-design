@@ -1,10 +1,15 @@
 package fmgp.threejs
 
+import typings.three.loaderMod.Loader
+import typings.three.mod.{Math => ThreeMath, _}
+import typings.three.webGLRendererMod.WebGLRendererParameters
+
 import fmgp.threejs._
 import fmgp.threejs.extras.OrbitControls
 import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
+import js.{undefined => ^}
 
 object Demo { //extends JSApp {
 
@@ -51,9 +56,8 @@ object Demo { //extends JSApp {
     }
 
     val staticRoot = new Object3D()
-    Seq(sunLight, belowLight, hemiLight, gridHelper, axisHelper).foreach(
-      staticRoot.add
-    )
+    Seq(sunLight, belowLight, hemiLight, gridHelper, axisHelper)
+      .foreach(obj => staticRoot.add(obj))
     staticRoot
   }
 
@@ -67,16 +71,9 @@ object Demo { //extends JSApp {
     (proto.Dimensions.D3: proto.Dimensions.D) match {
       case proto.Dimensions.D2 =>
         val proportions = width / height
-        new OrthographicCamera(
-          -size / 2 * proportions,
-          size / 2 * proportions,
-          size / 2,
-          -size / 2,
-          near,
-          far
-        )
-      case proto.Dimensions.D3 =>
-        new PerspectiveCamera(45, width / height, near, far)
+        val aux = size / 2 * proportions
+        new OrthographicCamera(-aux, aux, size / 2, -size / 2, near, far).asInstanceOf[Camera]
+      case proto.Dimensions.D3 => new PerspectiveCamera(45, width / height, near, far).asInstanceOf[Camera]
       case proto.Dimensions.Unrecognized(d) =>
         throw new RuntimeException(s"Dimensions $d Unrecognized in newCamera")
     }
@@ -90,9 +87,9 @@ object Demo { //extends JSApp {
       // case 2 => Some(GeometryExamples.shapesDemo)
       // case 3 => Some(GeometryExamples.atomiumModel)
       case 0 =>
-        val boxGeom = new BoxGeometry(1, 1, 1) //c.width, c.height, c.depth)
-        val cylinderGeom = new CylinderGeometry(1.0, 1.0, 1.0, 32)
-        val sphereGeom = new SphereGeometry(1.0, 32, 32)
+        val boxGeom = new BoxGeometry(1, 1, 1, ^, ^, ^) //c.width, c.height c.depth
+        val cylinderGeom = new CylinderGeometry(1.0, 1.0, 1.0, 32, ^, ^, ^, ^)
+        val sphereGeom = new SphereGeometry(1.0, 32, 32, ^, ^, ^, ^)
         val obj = new Mesh(boxGeom, new MeshPhongMaterial())
         // obj.scale.set(c.width, c.height, c.depth)
         val parent = new Object3D
@@ -134,7 +131,9 @@ object Demo { //extends JSApp {
   val animate: js.Function1[Double, Unit] = (d: Double) => {
     updateFunction
     animateFrameId = Some(dom.window.requestAnimationFrame(animate))
-    controls.foreach(_.update) // required if controls.enableDamping or controls.autoRotate are set to true
+    controls.foreach(
+      _.update
+    ) // required if controls.enableDamping or controls.autoRotate are set to true
 
     camera.foreach(renderer.render(scene, _))
   }

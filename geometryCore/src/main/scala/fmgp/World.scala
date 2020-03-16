@@ -1,11 +1,13 @@
 package fmgp
 
+import typings.three.loaderMod.Loader
+import typings.three.mod.{Math => ThreeMath, _}
+import typings.three.webGLRendererMod.WebGLRendererParameters
+import typings.three.lineBasicMaterialMod.LineBasicMaterialParameters
+
 import fmgp._
-import fmgp.geo._
 import scala.scalajs.js
-import fmgp.threejs.Object3D
-import fmgp.threejs.Three._
-import fmgp.threejs.Matrix4
+import js.{undefined => ^}
 
 object WorldImprovements {
 
@@ -22,35 +24,35 @@ object WorldImprovements {
     aux
   }
 
-  val boxGeom = new threejs.BoxGeometry(1, 1, 1) //c.width, c.height, c.depth)
-  val cylinderGeom = new threejs.CylinderGeometry(1.0, 1.0, 1.0, 32)
-  val sphereGeom = new threejs.SphereGeometry(1.0, 32, 32)
+  val boxGeom = new BoxGeometry(1, 1, 1, ^, ^, ^) //c.width, c.height c.depth
+  val cylinderGeom = new CylinderGeometry(1.0, 1.0, 1.0, 32, ^, ^, ^, ^)
+  val sphereGeom = new SphereGeometry(1.0, 32, 32, ^, ^, ^, ^)
 
   val parametersLine = js.Dynamic
     .literal("color" -> 0x0000ff)
-    .asInstanceOf[threejs.LineBasicMaterialParameters]
-  val materialLine = new threejs.LineBasicMaterial(parametersLine)
+    .asInstanceOf[LineBasicMaterialParameters]
+  val materialLine = new LineBasicMaterial(parametersLine)
 
-  def generateObj3D(world: World): Object3D = world.dimensions match {
-    case Dimensions.D2 => generateObj3D(world.shapes)
-    case Dimensions.D3 => generateObj3D(world.shapes)
+  def generateObj3D(world: geo.World): Object3D = world.dimensions match {
+    case geo.Dimensions.D2 => generateObj3D(world.shapes)
+    case geo.Dimensions.D3 => generateObj3D(world.shapes)
   }
 
-  def generateObj3D(shapes: Seq[Shape]): Object3D = {
-    def generateShape(shape: Shape): Object3D = shape match {
-      case TransformationShape(shape, transformation) =>
+  def generateObj3D(shapes: Seq[geo.Shape]): Object3D = {
+    def generateShape(shape: geo.Shape): Object3D = shape match {
+      case geo.TransformationShape(shape, transformation) =>
         val aux = generateShape(shape)
         val m = matrix2matrix(transformation.matrix).multiply(aux.matrix)
         aux.applyMatrix(m)
         aux
 
-      case box: Box =>
-        val obj = new threejs.Mesh(boxGeom, SceneGraph.solidMat)
+      case box: geo.Box =>
+        val obj = new Mesh(boxGeom, geo.SceneGraph.solidMat).asInstanceOf[Object3D]
         obj.scale.set(box.width, box.height, box.depth)
         obj
 
-      case sphere: Sphere =>
-        val obj = new threejs.Mesh(sphereGeom, SceneGraph.solidMat)
+      case sphere: geo.Sphere =>
+        val obj = new Mesh(sphereGeom, geo.SceneGraph.solidMat).asInstanceOf[Object3D]
         //obj.scale.set(v.radius, v.radius, v.radius)
         obj.matrixAutoUpdate = false
         val m = geo.Matrix
@@ -59,37 +61,33 @@ object WorldImprovements {
         obj.applyMatrix(matrix2matrix(m))
         obj
 
-      case cylinder: Cylinder =>
-        val obj = new threejs.Mesh(cylinderGeom, SceneGraph.solidMat)
+      case cylinder: geo.Cylinder =>
+        val obj = new Mesh(cylinderGeom, geo.SceneGraph.solidMat).asInstanceOf[Object3D]
         obj.scale.set(cylinder.radius, cylinder.height, cylinder.radius)
         obj
 
-      case line: Line =>
-        val geometryLine = new threejs.Geometry()
-        line.vertices.foreach(v =>
-          geometryLine.vertices.push(new threejs.Vector3(v.x, v.y, v.z))
-        )
-        new threejs.Line(geometryLine, materialLine)
+      case line: geo.Line =>
+        val geometryLine = new Geometry()
+        line.vertices.foreach(v => geometryLine.vertices.push(new Vector3(v.x, v.y, v.z)))
+        new Line(geometryLine, materialLine).asInstanceOf[Object3D]
 
-      case c: Circle =>
-        val geometry = new threejs.CircleGeometry(c.radius, 32)
+      case c: geo.Circle =>
+        val geometry = new CircleGeometry(c.radius, 32)
         val obj = if (c.fill) {
-          new threejs.Mesh(geometry, materialLine)
+          new Mesh(geometry, materialLine).asInstanceOf[Object3D]
         } else {
           geometry.vertices.shift() //Remove center vertex
-          new threejs.LineLoop(geometry, materialLine)
+          new LineLoop(geometry, materialLine).asInstanceOf[Object3D]
         }
         obj.position.set(c.center.x, c.center.y, c.center.z)
         //TODO obj.matrixAutoUpdate = false
         obj
     }
 
-    val tmp: Seq[Object3D] = shapes.map { s =>
-      generateShape(s)
-    }
+    val tmp: Seq[Object3D] = shapes.map { s => generateShape(s) }
 
     val parent = new Object3D
-    tmp.foreach(parent.add)
+    tmp.foreach(e => parent.add(e))
     parent
   }
 }

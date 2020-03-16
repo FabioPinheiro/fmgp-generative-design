@@ -1,5 +1,9 @@
 package fmgp
 
+import typings.three.loaderMod.Loader
+import typings.three.mod.{Math => ThreeMath, Shape => _, _}
+import typings.three.webGLRendererMod.WebGLRendererParameters
+
 import fmgp.threejs._
 import fmgp.threejs.extras.OrbitControls
 import fmgp.geo._
@@ -10,6 +14,8 @@ import scala.scalajs.js.annotation._
 import java.awt.geom.Dimension2D
 import fmgp.{Object3DWarp, NoneWarp, GeoWarp, WorldWarp}
 import org.scalajs.dom.raw.{Event, Element}
+
+import js.{undefined => ^}
 
 object Global {
   var scene: Scene = _
@@ -53,8 +59,7 @@ object Main {
     select.appendChild(option3)
     select.addEventListener(
       `type` = "change",
-      listener = (e0: dom.Event) =>
-        init(js.Dynamic.global.modelSelectId.value.asInstanceOf[String].toInt)
+      listener = (e0: dom.Event) => init(js.Dynamic.global.modelSelectId.value.asInstanceOf[String].toInt)
     )
 
     val message = dom.document.createElement("div")
@@ -71,11 +76,11 @@ object Main {
     val model: GeoWarp = scenario match {
       case 0 => NoneWarp()
       case 1 =>
-        val boxGeom = new BoxGeometry(1, 1, 1) //c.width, c.height, c.depth)
-        val cylinderGeom = new CylinderGeometry(1.0, 1.0, 1.0, 32)
-        val sphereGeom = new SphereGeometry(1.0, 32, 32)
+        val boxGeom = new BoxGeometry(1, 1, 1, ^, ^, ^) //c.width, c.height c.depth
+        val cylinderGeom = new CylinderGeometry(1.0, 1.0, 1.0, 32, ^, ^, ^, ^)
+        val sphereGeom = new SphereGeometry(1.0, 32, 32, ^, ^, ^, ^)
         Object3DWarp(Dimensions.D3)
-          .add(new Mesh(cylinderGeom, new MeshPhongMaterial()))
+          .add(new Mesh(cylinderGeom, new MeshPhongMaterial()).asInstanceOf[Object3D])
       // obj.scale.set(c.width, c.height, c.depth)
       case 2 => WorldWarp(GeometryExamples.shapesDemo2D)
       case 3 => WorldWarp(GeometryExamples.atomiumWorld)
@@ -97,8 +102,7 @@ object Main {
           aux.enableRotate = false
           aux.screenSpacePanning = true
         case Dimensions.D3 =>
-          Global.modelToAnimate =
-            if (model.dimensions.isD3) model.generateObj3D else None
+          Global.modelToAnimate = if (model.dimensions.isD3) model.generateObj3D else None
       }
       aux.keyPanSpeed = 30 //pixes
       aux.panSpeed = 3
@@ -163,7 +167,7 @@ object Fabio {
 
   @JSExport
   def version(): Unit = {
-    val version = fmgp.threejs.Three.REVISION
+    val version = "FIXME Three.REVISION"
     dom.console.log(s"The threejs version is $version")
   }
 

@@ -1,13 +1,18 @@
 package fmgp.threejs.extras
 
-import fmgp.threejs.{Camera, Vector3}
+import typings.three.loaderMod.Loader
+import typings.three.mod.{Math => ThreeMath, _}
 import org.scalajs.dom.raw.{Event, HTMLElement}
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSImport}
 
 @js.native
-@JSImport("three/examples/jsm/controls/OrbitControls", "OrbitControls", "Three.OrbitControls")
+@JSImport(
+  "three/examples/jsm/controls/OrbitControls",
+  "OrbitControls",
+  "Three.OrbitControls"
+)
 class OrbitControls(camera: Camera, element: HTMLElement) extends js.Object {
 
   def this(camera: Camera) = this(camera, null) // scalastyle:ignore
