@@ -125,3 +125,4 @@ lazy val browserRemoteControl = (project in file("browserRemoteControl"))
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
     )
   )
+  .dependsOn(geometryModelJvm)

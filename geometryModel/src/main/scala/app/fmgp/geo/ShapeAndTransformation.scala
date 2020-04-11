@@ -1,4 +1,4 @@
-package fmgp.geo
+package app.fmgp.geo
 
 /** Transformations */
 sealed trait Transformation {

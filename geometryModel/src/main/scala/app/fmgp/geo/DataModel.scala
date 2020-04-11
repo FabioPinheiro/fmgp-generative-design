@@ -1,7 +1,7 @@
-package fmgp.geo
+package app.fmgp.geo
 
 object Dimensions {
-  trait D {
+  sealed trait D {
     def isD3: Boolean = false
     def isD2: Boolean = false
   }

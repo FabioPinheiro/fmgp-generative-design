@@ -1,4 +1,4 @@
-package fmgp
+package app.fmgp
 
 import org.scalajs.dom.raw.{CloseEvent, Event, MessageEvent, WebSocket}
 import org.scalajs.logging.Logger

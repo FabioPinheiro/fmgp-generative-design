@@ -1,6 +1,6 @@
-package fmgp.geo
+package app.fmgp.geo
 
-import fmgp.geo._
+import app.fmgp.geo._
 
 object Atomium {
 

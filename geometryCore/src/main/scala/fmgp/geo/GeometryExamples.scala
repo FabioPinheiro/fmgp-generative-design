@@ -1,4 +1,4 @@
-package fmgp.geo
+package app.fmgp.geo
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation._

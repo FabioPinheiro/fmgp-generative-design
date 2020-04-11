@@ -18,27 +18,35 @@ import scala.io._
 
 object Main extends Logger {
 
-  implicit val actorSystem = ActorSystem("akka-system")
-  implicit val flowMaterializer = ActorMaterializer()
-  val interface = "127.0.0.1"
-  val port = 8080
-  val server = new app.fmgp.MyAkkaServer
+  implicit lazy val actorSystem = ActorSystem("akka-system")
+  implicit lazy val flowMaterializer = ActorMaterializer()
+  var server: Option[MyAkkaServer] = None
 
-  def start = {
-    server.runServer(interface, port)
-    logger.info(s"Server is now online at ws://$interface:$port\nPress RETURN to stop...")
+  def start(interface: String = "127.0.0.1", port: Int = 8080) = {
+    if (server.isEmpty) {
+      server = Some(app.fmgp.MyAkkaServer(interface = "127.0.0.1", port = 8080))
+      server.map(_.start)
+      logger.info("Main starting")
+    } else {
+      logger.info("Main is alredy started")
+    }
   }
 
   def stop = {
     //import actorSystem.dispatcher
-    logger.debug("Server is down...")
-    val f = server.binding.flatMap(_.unbind()).onComplete(_ => actorSystem.terminate())
-    //Await.result(f, 10.seconds)
-    logger.info("Server down now")
+    logger.info("Main stoping")
+    server.map { s =>
+      val a = Await.result(s.stop, 10.seconds)
+      logger.info(a.toString())
+    }
+    val b = Await.result(actorSystem.terminate(), 10.seconds)
+    logger.info(b.toString())
+    flowMaterializer.shutdown()
+    logger.info("Main in now STOP")
   }
 
   def main(args: Array[String]): Unit = {
-    start
+    start()
     StdIn.readLine()
     stop
   }

@@ -1,18 +1,18 @@
-package fmgp
+package app.fmgp
 
 import typings.three.loaderMod.Loader
 import typings.three.mod.{Math => ThreeMath, Shape => _, _}
 import typings.three.webGLRendererMod.WebGLRendererParameters
 
-import fmgp.threejs._
-import fmgp.threejs.extras.OrbitControls
-import fmgp.geo._
-import fmgp.Utils
+import app.fmgp.threejs._
+import app.fmgp.threejs.extras.OrbitControls
+import app.fmgp.geo._
+import app.fmgp.Utils
 import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import java.awt.geom.Dimension2D
-import fmgp.{Object3DWarp, NoneWarp, GeoWarp, WorldWarp}
+import app.fmgp.{Object3DWarp, NoneWarp, GeoWarp, WorldWarp}
 import org.scalajs.dom.raw.{Event, Element}
 
 import js.{undefined => ^}
@@ -43,7 +43,7 @@ object Main {
   }
 
   def main(args: Array[String]): Unit = {
-    fmgp.Fabio.version()
+    app.fmgp.Fabio.version()
 
     //mount(dom.document.body, mainDiv)
     val select = dom.document.createElement("select")

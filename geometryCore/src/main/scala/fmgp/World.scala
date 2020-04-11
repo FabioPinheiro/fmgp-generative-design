@@ -1,11 +1,11 @@
-package fmgp
+package app.fmgp
 
 import typings.three.loaderMod.Loader
 import typings.three.mod.{Math => ThreeMath, _}
 import typings.three.webGLRendererMod.WebGLRendererParameters
 import typings.three.lineBasicMaterialMod.LineBasicMaterialParameters
 
-import fmgp._
+import app.fmgp._
 import scala.scalajs.js
 import js.{undefined => ^}
 

@@ -1,4 +1,4 @@
-package fmgp.threejs.extras
+package app.fmgp.threejs.extras
 
 import typings.three.loaderMod.Loader
 import typings.three.mod.{Math => ThreeMath, _}

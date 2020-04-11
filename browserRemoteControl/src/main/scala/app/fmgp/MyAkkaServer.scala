@@ -20,14 +20,50 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import akka.actor._
 import scala.concurrent.ExecutionContext
+import app.fmgp.geo.World
 
-class MyAkkaServer(
+case class MyAkkaServer(interface: String, port: Int)(
     implicit ex: ExecutionContext,
     system: ActorSystem,
     mat: ActorMaterializer
 ) extends Logger {
 
-  var binding: Future[Http.ServerBinding] = _
+  lazy val binding: Future[Http.ServerBinding] = {
+    val aux = Http().bindAndHandle(route, interface, port)
+    logger.info(s"Server is now online at [$interface:$port]\nPress RETURN to stop...")
+    aux
+  }
+
+  def start = binding
+  def stop = binding.flatMap { s =>
+    logger.info(s"Server unbinding")
+    s.unbind
+      .flatMap { _ =>
+        logger.info(s"Server terminating")
+        s.terminate(5.seconds)
+      }
+      .map { e =>
+        logger.info(s"Server in now terminated")
+        e
+      }
+  }
+
+  val route =
+    pathSingleSlash {
+      get {
+        handleWebSocketMessages(broadcastFlow)
+      }
+    } ~ path("room") {
+      parameters('room ? "A") { room => handleWebSocketMessages(roomFlow(room)) }
+    } ~ path("solo") {
+      handleWebSocketMessages(soloFlow)
+    } ~ path("broadcast") {
+      handleWebSocketMessages(broadcastFlow)
+    } ~ path("ada") {
+      handleWebSocketMessages(adaFlow)
+    } ~ path("browser") {
+      handleWebSocketMessages(browserFlow)
+    }
 
   case class AkkaChatMessage(msg: String, oUser: Option[String])
   //trait ChatServerEvent
@@ -119,9 +155,17 @@ class MyAkkaServer(
   //     }
   // }
 
-  case class World(data: String)
-
   private val (geoSink, geoSource) = MergeHub.source[World].toMat(BroadcastHub.sink[World])(Keep.both).run
+
+  // val geoRunnableGraph: RunnableGraph[Source[World, NotUsed]] = geoSource.toMat(BroadcastHub.sink)(Keep.right)
+  // val geoConsoleProducer: Source[World, NotUsed] = geoRunnableGraph.run()
+  object GeoSyntax extends app.fmgp.geo.Syntax {
+    def addShape[T <: app.fmgp.geo.Shape](t: T): T = {
+      val w = World.w2D(shapes = Seq(t))
+      geoSink.runWith(Source(Seq(w)))
+      t
+    }
+  }
 
   val sourceDumy = Source.maybe[World]
   val sinkDumy = Sink.onComplete {
@@ -137,7 +181,7 @@ class MyAkkaServer(
           w
         case Left(error) =>
           logger.error("Failed to decode World", error)
-          World("")
+          World.w2D(Seq.empty)
       }
       .via(Flow.fromSinkAndSource(geoSink, sourceDumy))
       .map { world => TextMessage(world.asJson.noSpaces) }
@@ -161,30 +205,8 @@ class MyAkkaServer(
           logger.warn(s"BrowserFlow(Binary): ${bm.toString}")
           Future.successful(())
       }
-      .via(Flow.fromSinkAndSource(sinkDumy, geoSource.filterNot(_.data.isEmpty)))
+      .via(Flow.fromSinkAndSource(sinkDumy, geoSource.filterNot(_.shapes.isEmpty)))
       .map { world => TextMessage(world.asJson.noSpaces) }
   }
 
-  def runServer(interface: String, port: Int) = {
-    val route =
-      pathSingleSlash {
-        get {
-          handleWebSocketMessages(broadcastFlow)
-        }
-      } ~ path("room") {
-        parameters('room ? "A") { room => handleWebSocketMessages(roomFlow(room)) }
-      } ~ path("solo") {
-        handleWebSocketMessages(soloFlow)
-      } ~ path("broadcast") {
-        handleWebSocketMessages(broadcastFlow)
-      } ~ path("ada") {
-        handleWebSocketMessages(adaFlow)
-      } ~ path("browser") {
-        handleWebSocketMessages(browserFlow)
-      }
-
-    binding = Http().bindAndHandle(route, interface, port)
-    binding
-  }
 }
-//{"msg":"ola","oUser":"Fabio"}
