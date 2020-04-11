@@ -16,6 +16,7 @@ import fmgp.{Object3DWarp, NoneWarp, GeoWarp, WorldWarp}
 import org.scalajs.dom.raw.{Event, Element}
 
 import js.{undefined => ^}
+import org.scalajs.logging.Logger
 
 object Global {
   var scene: Scene = _
@@ -24,6 +25,11 @@ object Global {
   var camera: Option[Camera] = None
   var controls: Option[OrbitControls] = None
 
+}
+
+object Log extends Logger {
+  def log(level: org.scalajs.logging.Level, message: => String): Unit = println(s"[$level] $message")
+  def trace(t: => Throwable): Unit = log(org.scalajs.logging.Level.Debug, t.toString)
 }
 
 object Main {
@@ -38,6 +44,7 @@ object Main {
 
   def main(args: Array[String]): Unit = {
     fmgp.Fabio.version()
+
     //mount(dom.document.body, mainDiv)
     val select = dom.document.createElement("select")
     select.id = "modelSelectId"
@@ -49,7 +56,7 @@ object Main {
     option1.asInstanceOf[js.Dynamic].value = "1"
     option2.asInstanceOf[js.Dynamic].value = "2"
     option3.asInstanceOf[js.Dynamic].value = "3"
-    option0.textContent = "None"
+    option0.textContent = "WebSocketText"
     option1.textContent = "Cylinder"
     option2.textContent = "shapesDemo2D"
     option3.textContent = "atomiumWorld"
@@ -57,16 +64,32 @@ object Main {
     select.appendChild(option1)
     select.appendChild(option2)
     select.appendChild(option3)
-    select.addEventListener(
-      `type` = "change",
-      listener = (e0: dom.Event) => init(js.Dynamic.global.modelSelectId.value.asInstanceOf[String].toInt)
-    )
 
     val message = dom.document.createElement("div")
     message.textContent = "Hi this is a dome of the threejs scalajs facede : "
     message.appendChild(select)
     dom.document.body.appendChild(message)
-    dom.document.body.appendChild(renderer.domElement)
+    val textarea: Element = dom.document.createElement("textarea")
+    var node: Option[Element] = None
+
+    Websocket.newWebSocket("ws://127.0.0.1:8080/browser", Log, textarea)
+    select.addEventListener(
+      `type` = "change",
+      listener = (e0: dom.Event) => {
+        val selected = js.Dynamic.global.modelSelectId.value.asInstanceOf[String].toInt
+        if (selected == 0) {
+          node.foreach(dom.document.body.removeChild)
+          node = Some(textarea)
+          dom.document.body.appendChild(textarea)
+        } else {
+          node.foreach(dom.document.body.removeChild)
+          node = Some(renderer.domElement)
+          dom.document.body.appendChild(renderer.domElement)
+        }
+        init(selected)
+      }
+    )
+
     ()
   }
 

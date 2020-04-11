@@ -101,6 +101,7 @@ lazy val geometryCore = (project in file("geometryCore"))
     //publishArtifact := false,
     //libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.8",
     //libraryDependencies ++= Seq(ScalablyTyped.T.three),
+    libraryDependencies += "org.scala-js" %%% "scalajs-logging" % "1.0.1",
     npmDependencies in Compile += "three" -> threeVersion,
     scalaJSUseMainModuleInitializer := true,
     mainClass := Some("fmgp.Main"),
