@@ -68,20 +68,20 @@ lazy val three = (project in file("three"))
     webpackBundlingMode := BundlingMode.LibraryOnly()
   )
 
-lazy val demo = (project in file("demo"))
-  .configure(baseSettings, bundlerSettings)
-  .settings(
-    name := "fmgp-threejs-demo",
-    publishArtifact := false,
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.8",
-    npmDependencies in Compile += "three" -> threeVersion,
-    scalaJSUseMainModuleInitializer := true,
-    mainClass := Some("fmgp.threejs.Demo"),
-    //scalaJSMainModuleInitializer := Some(mainMethod("fmgp.Main", "main"))
-    //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
-    webpackBundlingMode := BundlingMode.LibraryAndApplication()
-  )
-  .dependsOn(three)
+// lazy val demo = (project in file("demo"))
+//   .configure(baseSettings, bundlerSettings)
+//   .settings(
+//     name := "fmgp-threejs-demo",
+//     publishArtifact := false,
+//     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.8",
+//     npmDependencies in Compile += "three" -> threeVersion,
+//     scalaJSUseMainModuleInitializer := true,
+//     mainClass := Some("fmgp.threejs.Demo"),
+//     //scalaJSMainModuleInitializer := Some(mainMethod("fmgp.Main", "main"))
+//     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
+//     webpackBundlingMode := BundlingMode.LibraryAndApplication()
+//   )
+//   .dependsOn(three)
 
 lazy val geometryModel = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
@@ -109,3 +109,18 @@ lazy val geometryCore = (project in file("geometryCore"))
     webpackBundlingMode := BundlingMode.LibraryAndApplication()
   )
   .dependsOn(three, geometryModelJs)
+
+val circeVersion = "0.13.0"
+lazy val browserRemoteControl = (project in file("browserRemoteControl"))
+  .settings(
+    name := "browserRemoteControl",
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-http" % "10.1.11",
+      "com.typesafe.akka" %% "akka-stream" % "2.6.4",
+      "io.circe" %% "circe-core" % circeVersion,
+      "io.circe" %% "circe-generic" % circeVersion,
+      "io.circe" %% "circe-parser" % circeVersion,
+      "ch.qos.logback" % "logback-classic" % "1.2.3",
+      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
+    )
+  )
