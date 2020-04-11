@@ -27,11 +27,11 @@ fastOptJS
 
 ## Copyright and License
 
-cats-money is licensed under the MIT license, available at
+This project is licensed under the MIT license, available at
 [http://opensource.org/licenses/mit-license.php](http://opensource.org/licenses/mit-license.php)
 and also in the [LICENSE](LICENSE) file.
 
-Copyright the Fabio Pinheiro, 2019.
+Copyright the Fabio Pinheiro, 2020.
 
 [cats-badge]: https://typelevel.org/cats/img/cats-badge-tiny.png
 [cats-infographic]: https://github.com/tpolecat/cats-infographic
