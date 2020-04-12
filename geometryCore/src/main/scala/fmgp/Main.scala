@@ -12,7 +12,7 @@ import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import java.awt.geom.Dimension2D
-import app.fmgp.{Object3DWarp, NoneWarp, GeoWarp, WorldWarp}
+import app.fmgp.{Object3DWarp, NoneWarp, GeoWarp, WorldWarp, DynamicWorldWarp}
 import org.scalajs.dom.raw.{Event, Element}
 
 import js.{undefined => ^}
@@ -21,7 +21,7 @@ import org.scalajs.logging.Logger
 object Global {
   var scene: Scene = _
   var animateFrameId: Option[Int] = None
-  var modelToAnimate: Option[Object3D] = None
+  var modelToAnimate: () => Option[Object3D] = () => None
   var camera: Option[Camera] = None
   var controls: Option[OrbitControls] = None
 
@@ -42,6 +42,8 @@ object Main {
     aux
   }
 
+  val masterWorld = DynamicWorldWarp()
+
   def main(args: Array[String]): Unit = {
     app.fmgp.Fabio.version()
 
@@ -52,15 +54,19 @@ object Main {
     val option1 = dom.document.createElement("option")
     val option2 = dom.document.createElement("option")
     val option3 = dom.document.createElement("option")
+    val option4 = dom.document.createElement("option")
     option0.asInstanceOf[js.Dynamic].value = "0"
     option1.asInstanceOf[js.Dynamic].value = "1"
     option2.asInstanceOf[js.Dynamic].value = "2"
     option3.asInstanceOf[js.Dynamic].value = "3"
+    option4.asInstanceOf[js.Dynamic].value = "4"
     option0.textContent = "WebSocketText"
     option1.textContent = "Cylinder"
     option2.textContent = "shapesDemo2D"
     option3.textContent = "atomiumWorld"
+    option4.textContent = "WebSocket"
     select.appendChild(option0)
+    select.appendChild(option4)
     select.appendChild(option1)
     select.appendChild(option2)
     select.appendChild(option3)
@@ -72,7 +78,7 @@ object Main {
     val textarea: Element = dom.document.createElement("textarea")
     var node: Option[Element] = None
 
-    Websocket.newWebSocket("ws://127.0.0.1:8080/browser", Log, textarea)
+    Websocket.newWebSocket("ws://127.0.0.1:8080/browser", Log, masterWorld)
     select.addEventListener(
       `type` = "change",
       listener = (e0: dom.Event) => {
@@ -107,6 +113,7 @@ object Main {
       // obj.scale.set(c.width, c.height, c.depth)
       case 2 => WorldWarp(GeometryExamples.shapesDemo2D)
       case 3 => WorldWarp(GeometryExamples.atomiumWorld)
+      case 4 => masterWorld
     }
 
     val dimensions: Dimensions.D = Dimensions.D3
@@ -125,7 +132,7 @@ object Main {
           aux.enableRotate = false
           aux.screenSpacePanning = true
         case Dimensions.D3 =>
-          Global.modelToAnimate = if (model.dimensions.isD3) model.generateObj3D else None
+          Global.modelToAnimate = if (model.dimensions.isD3) model.generateObj3D _ else () => None
       }
       aux.keyPanSpeed = 30 //pixes
       aux.panSpeed = 3
@@ -133,7 +140,7 @@ object Main {
     }
 
     model.generateObj3D.foreach { modelObj3D =>
-      Global.scene.add(Global.modelToAnimate.getOrElse(modelObj3D))
+      Global.scene.add(Global.modelToAnimate().getOrElse(modelObj3D))
       Global.scene.add(Utils.computeStaticThreeObjects)
     }
 
@@ -143,7 +150,7 @@ object Main {
 
   @JSExport
   val animate: js.Function1[Double, Unit] = (d: Double) => {
-    Global.modelToAnimate.foreach(Utils.updateFunction _)
+    Global.modelToAnimate().foreach(Utils.updateFunction _)
     Global.animateFrameId = Some(dom.window.requestAnimationFrame(animate))
     Global.controls.foreach(_.update) // required if controls.enableDamping or controls.autoRotate are set to true
     Global.camera.foreach(renderer.render(Global.scene, _))

@@ -6,7 +6,7 @@ import akka.NotUsed
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import akka.http.scaladsl.server.Directives._
-import akka.stream.{ActorMaterializer, Graph, OverflowStrategy, SinkShape}
+import akka.stream.{Materializer, Graph, OverflowStrategy, SinkShape}
 import akka.stream.scaladsl.{Broadcast, BroadcastHub, Flow, Keep, MergeHub, RunnableGraph, Sink, Source}
 import akka.util.ByteString
 import io.circe.generic.auto._
@@ -25,7 +25,7 @@ import app.fmgp.geo.World
 case class MyAkkaServer(interface: String, port: Int)(
     implicit ex: ExecutionContext,
     system: ActorSystem,
-    mat: ActorMaterializer
+    mat: Materializer
 ) extends Logger {
 
   lazy val binding: Future[Http.ServerBinding] = {
@@ -54,7 +54,7 @@ case class MyAkkaServer(interface: String, port: Int)(
         handleWebSocketMessages(broadcastFlow)
       }
     } ~ path("room") {
-      parameters('room ? "A") { room => handleWebSocketMessages(roomFlow(room)) }
+      parameters(Symbol("room") ? "A") { room => handleWebSocketMessages(roomFlow(room)) }
     } ~ path("solo") {
       handleWebSocketMessages(soloFlow)
     } ~ path("broadcast") {

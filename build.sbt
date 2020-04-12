@@ -3,6 +3,16 @@ ThisBuild / version := "0.1-M2-SNAPSHOT" //SNAPSHOT
 ThisBuild / organization := "app.fmgp"
 ThisBuild / organizationHomepage := Some(url("https://fmgp.app/"))
 
+ThisBuild / scalacOptions ++= Seq(
+  "-deprecation",
+  "-feature",
+  "-language:_",
+  "-unchecked"
+  //"-Wunused:_",
+  //"-Xfatal-warnings",
+  //"-Ymacro-annotations"
+)
+
 // ### PUBLISH ###
 // must not have SNAPSHOT on the version
 //> project three
@@ -29,8 +39,8 @@ ThisBuild / publishTo := sonatypePublishToBundle.value //FIXME
 
 name := "fmgp-threejs-root"
 publishArtifact := false
-val threeVersion = "0.108.0" // https://www.npmjs.com/package/three
-//TODO update version 0.113
+val threeVersion = "0.108.0" // https://www.npmjs.com/package/three //TODO update version 0.113
+val circeVersion = "0.13.0"
 
 lazy val baseSettings: Project => Project =
   _.enablePlugins(ScalaJSPlugin)
@@ -102,6 +112,11 @@ lazy val geometryCore = (project in file("geometryCore"))
     //libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.8",
     //libraryDependencies ++= Seq(ScalablyTyped.T.three),
     libraryDependencies += "org.scala-js" %%% "scalajs-logging" % "1.0.1",
+    libraryDependencies ++= Seq(
+      "io.circe" %%% "circe-core" % circeVersion,
+      "io.circe" %%% "circe-generic" % circeVersion,
+      "io.circe" %%% "circe-parser" % circeVersion
+    ),
     npmDependencies in Compile += "three" -> threeVersion,
     scalaJSUseMainModuleInitializer := true,
     mainClass := Some("fmgp.Main"),
@@ -111,7 +126,6 @@ lazy val geometryCore = (project in file("geometryCore"))
   )
   .dependsOn(three, geometryModelJs)
 
-val circeVersion = "0.13.0"
 lazy val browserRemoteControl = (project in file("browserRemoteControl"))
   .settings(
     name := "browserRemoteControl",

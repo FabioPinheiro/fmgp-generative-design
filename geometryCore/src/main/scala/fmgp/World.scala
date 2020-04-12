@@ -33,7 +33,7 @@ object WorldImprovements {
     .asInstanceOf[LineBasicMaterialParameters]
   val materialLine = new LineBasicMaterial(parametersLine)
 
-  def generateObj3D(world: geo.World): Object3D = world.dimensions match {
+  def generateObj3D(world: geo.WorldState): Object3D = world.dimensions match {
     case geo.Dimensions.D2 => generateObj3D(world.shapes)
     case geo.Dimensions.D3 => generateObj3D(world.shapes)
   }

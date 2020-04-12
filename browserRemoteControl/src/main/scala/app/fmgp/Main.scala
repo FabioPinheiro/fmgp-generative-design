@@ -7,7 +7,7 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage, WebSock
 import akka.http.scaladsl.server.Directives.{path, _}
 import akka.stream.scaladsl.GraphDSL.Implicits._
 import akka.stream.scaladsl.{Flow, GraphDSL, Keep, Sink, Source}
-import akka.stream.{ActorMaterializer, FlowShape, OverflowStrategy}
+import akka.stream.{Materializer, FlowShape, OverflowStrategy}
 import akka.{Done, NotUsed}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -19,7 +19,6 @@ import scala.io._
 object Main extends Logger {
 
   implicit lazy val actorSystem = ActorSystem("akka-system")
-  implicit lazy val flowMaterializer = ActorMaterializer()
   var server: Option[MyAkkaServer] = None
 
   def start(interface: String = "127.0.0.1", port: Int = 8080) = {
@@ -41,7 +40,6 @@ object Main extends Logger {
     }
     val b = Await.result(actorSystem.terminate(), 10.seconds)
     logger.info(b.toString())
-    flowMaterializer.shutdown()
     logger.info("Main in now STOP")
   }
 

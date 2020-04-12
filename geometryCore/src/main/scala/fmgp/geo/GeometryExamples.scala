@@ -11,10 +11,10 @@ object GeometryExamples {
   def atomium: Seq[Shape] = Atomium.atomium(0.8, 3.0, 0.3)
 
   @JSExport
-  def atomiumWorld: World = World.w3D(atomium)
+  def atomiumWorld: WorldState = World.w3D(atomium)
 
   @JSExport
-  def shapesDemo: World = World.w3D(
+  def shapesDemo: WorldState = World.w3D(
     Seq(
       Sphere(0.3, XYZ(3, 3 + 8, -1)),
       Sphere(0.2, XYZ(2, 2 + 8, -1)),
@@ -35,7 +35,7 @@ object GeometryExamples {
   )
 
   @JSExport
-  def shapesDemo2D: World = World.w2D(
+  def shapesDemo2D: WorldState = World.w2D(
     Seq(
       Line(Seq(XYZ(-8, 0), XYZ(0, 8), XYZ(8, 0), XYZ(0, 4), XYZ(-8, 0))),
       TransformationShape(
