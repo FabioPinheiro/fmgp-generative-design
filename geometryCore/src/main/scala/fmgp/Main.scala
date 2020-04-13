@@ -12,7 +12,7 @@ import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import java.awt.geom.Dimension2D
-import app.fmgp.{Object3DWarp, NoneWarp, GeoWarp, WorldWarp, DynamicWorldWarp}
+import app.fmgp.{Object3DWarp, GeoWarp, WorldWarp, DynamicWorldWarp}
 import org.scalajs.dom.raw.{Event, Element}
 
 import js.{undefined => ^}
@@ -100,52 +100,53 @@ object Main {
   }
 
   def init(scenario: Int) = {
-    println(s"### INIT scenario:'$scenario' ###")
-    Global.scene = new Scene()
-    val model: GeoWarp = scenario match {
-      case 0 => NoneWarp()
-      case 1 =>
-        val boxGeom = new BoxGeometry(1, 1, 1, ^, ^, ^) //c.width, c.height c.depth
-        val cylinderGeom = new CylinderGeometry(1.0, 1.0, 1.0, 32, ^, ^, ^, ^)
-        val sphereGeom = new SphereGeometry(1.0, 32, 32, ^, ^, ^, ^)
-        Object3DWarp(Dimensions.D3)
-          .add(new Mesh(cylinderGeom, new MeshPhongMaterial()).asInstanceOf[Object3D])
-      // obj.scale.set(c.width, c.height, c.depth)
-      case 2 => WorldWarp(GeometryExamples.shapesDemo2D)
-      case 3 => WorldWarp(GeometryExamples.atomiumWorld)
-      case 4 => masterWorld
-    }
-
-    val dimensions: Dimensions.D = Dimensions.D3
-
-    Global.camera = Some(
-      Utils.newCamera(dom.window.innerWidth, dom.window.innerHeight)
-    )
-    Global.camera.foreach { c =>
-      c.position.set(0, 0, 10)
-      c.lookAt(new Vector3(0, 0, 0))
-    }
-    Global.controls = Global.camera.map { c =>
-      val aux = new OrbitControls(c, renderer.domElement)
-      dimensions match {
-        case Dimensions.D2 =>
-          aux.enableRotate = false
-          aux.screenSpacePanning = true
-        case Dimensions.D3 =>
-          Global.modelToAnimate = if (model.dimensions.isD3) model.generateObj3D _ else () => None
+    Log.info(s"### INIT scenario:'$scenario' ###")
+    if (scenario == 0) {
+      Log.info(s"This scenario have no geometry model")
+    } else {
+      Global.scene = new Scene()
+      val model: GeoWarp = scenario match {
+        case 1 =>
+          val boxGeom = new BoxGeometry(1, 1, 1, ^, ^, ^) //c.width, c.height c.depth
+          val cylinderGeom = new CylinderGeometry(1.0, 1.0, 1.0, 32, ^, ^, ^, ^)
+          val sphereGeom = new SphereGeometry(1.0, 32, 32, ^, ^, ^, ^)
+          Object3DWarp(Dimensions.D3)
+            .add(new Mesh(cylinderGeom, new MeshPhongMaterial()).asInstanceOf[Object3D])
+        // obj.scale.set(c.width, c.height, c.depth)
+        case 2 => WorldWarp(GeometryExamples.shapesDemo2D)
+        case 3 => WorldWarp(GeometryExamples.atomiumWorld)
+        case 4 => masterWorld
       }
-      aux.keyPanSpeed = 30 //pixes
-      aux.panSpeed = 3
-      aux
-    }
 
-    model.generateObj3D.foreach { modelObj3D =>
-      Global.scene.add(Global.modelToAnimate().getOrElse(modelObj3D))
+      val dimensions: Dimensions.D = Dimensions.D3
+
+      Global.camera = Some(
+        Utils.newCamera(dom.window.innerWidth, dom.window.innerHeight)
+      )
+      Global.camera.foreach { c =>
+        c.position.set(0, 0, 10)
+        c.lookAt(new Vector3(0, 0, 0))
+      }
+      Global.controls = Global.camera.map { c =>
+        val aux = new OrbitControls(c, renderer.domElement)
+        dimensions match {
+          case Dimensions.D2 =>
+            aux.enableRotate = false
+            aux.screenSpacePanning = true
+          case Dimensions.D3 =>
+            Global.modelToAnimate = if (model.dimensions.isD3) { () => Some(model.generateObj3D) }
+            else () => None
+        }
+        aux.keyPanSpeed = 30 //pixes
+        aux.panSpeed = 3
+        aux
+      }
+
+      Global.scene.add(Global.modelToAnimate().getOrElse(model.generateObj3D))
       Global.scene.add(Utils.computeStaticThreeObjects)
+
+      if (Global.animateFrameId.isEmpty) animate(1)
     }
-
-    if (Global.animateFrameId.isEmpty) animate(1)
-
   }
 
   @JSExport
