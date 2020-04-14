@@ -21,7 +21,10 @@ libraryDependencies += "app.fmgp" % "fmgp-threejs_2.13" % "0.1-M1"
 ## Run on sbt:
 ```
 fastOptJS::webpack
-fastOptJS
+
+browserRemoteControl/console
+
+> :load script.sc
 ```
 
 

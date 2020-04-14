@@ -1,5 +1,5 @@
 ThisBuild / scalaVersion := "2.13.1"
-ThisBuild / version := "0.1-M2-SNAPSHOT" //SNAPSHOT
+ThisBuild / version := "0.2-SNAPSHOT"
 ThisBuild / organization := "app.fmgp"
 ThisBuild / organizationHomepage := Some(url("https://fmgp.app/"))
 
@@ -75,7 +75,7 @@ lazy val three = (project in file("three"))
     sonatypeProfileName := "app.fmgp",
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.8",
     npmDependencies in Compile += "three" -> threeVersion,
-    webpackBundlingMode := BundlingMode.LibraryOnly()
+    webpackBundlingMode := BundlingMode.LibraryOnly(),
   )
 
 // lazy val demo = (project in file("demo"))
@@ -98,7 +98,7 @@ lazy val geometryModel = crossProject(JSPlatform, JVMPlatform)
   .in(file("geometryModel"))
   .settings(
     name := "fmgp-geometry-model",
-    publishArtifact := false
+    publishArtifact := false,
   )
 
 lazy val geometryModelJs = geometryModel.js
@@ -122,7 +122,7 @@ lazy val geometryCore = (project in file("geometryCore"))
     mainClass := Some("fmgp.Main"),
     //scalaJSMainModuleInitializer := Some(mainMethod("fmgp.Main", "main"))
     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
-    webpackBundlingMode := BundlingMode.LibraryAndApplication()
+    webpackBundlingMode := BundlingMode.LibraryAndApplication(),
   )
   .dependsOn(three, geometryModelJs)
 
@@ -136,7 +136,15 @@ lazy val browserRemoteControl = (project in file("browserRemoteControl"))
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,
       "ch.qos.logback" % "logback-classic" % "1.2.3",
-      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
-    )
+      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
+    ),
+    initialCommands in console += """
+    app.fmgp.Main.start()
+    val iii = app.fmgp.Main.server.get
+    import iii.GeoSyntax._
+    """,
+    cleanupCommands += """
+    app.fmgp.Main.stop
+    """,
   )
   .dependsOn(geometryModelJvm)
