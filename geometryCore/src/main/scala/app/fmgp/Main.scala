@@ -76,7 +76,9 @@ object Main {
     message.appendChild(select)
     dom.document.body.appendChild(message)
     val textarea: Element = dom.document.createElement("textarea")
-    var node: Option[Element] = None
+    //var node: Option[Element] = None
+    var node: Option[Element] = Some(renderer.domElement)
+    dom.document.body.appendChild(renderer.domElement)
 
     Websocket.newWebSocket("ws://127.0.0.1:8080/browser", Log, masterWorld)
     select.addEventListener(
@@ -96,6 +98,7 @@ object Main {
       }
     )
 
+    init(4) //WebSocket
     ()
   }
 
@@ -151,7 +154,7 @@ object Main {
 
   @JSExport
   val animate: js.Function1[Double, Unit] = (d: Double) => {
-    Global.modelToAnimate().foreach(Utils.updateFunction _)
+    //Global.modelToAnimate().foreach(Utils.updateFunction _)
     Global.animateFrameId = Some(dom.window.requestAnimationFrame(animate))
     Global.controls.foreach(_.update) // required if controls.enableDamping or controls.autoRotate are set to true
     Global.camera.foreach(renderer.render(Global.scene, _))

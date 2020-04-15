@@ -8,7 +8,7 @@ sealed trait Transformation {
 final case class TransformMatrix(matrix: Matrix) extends Transformation
 
 /** Shapes */
-sealed trait Shape {}
+sealed trait Shape
 
 object Shape {
   // We can use Shapeless lib
@@ -38,6 +38,15 @@ case class Box(
     depth: Double
 ) extends Shape
 
+object Box {
+  def fromOppositeVertex(v1: XYZ, v2: XYZ): Shape = {
+    val dimensions = v2 - v1
+    val tranlate = v1 + dimensions.asVec.scale(0.5)
+    Box(dimensions.x, dimensions.y, dimensions.z)
+      .transformWith(Matrix.translate(tranlate.asVec))
+  }
+}
+
 case class Sphere(
     radius: Double,
     center: XYZ
@@ -49,7 +58,7 @@ case class Cylinder(
 ) extends Shape
 
 object Cylinder {
-  def byVerticesRadiusNew(base: XYZ, top: XYZ, radius: Double): Shape = {
+  def fromVerticesRadiusNew(base: XYZ, top: XYZ, radius: Double): Shape = {
     val eixo: Vec = Vec(from = base, to = top)
 
     //move centor (origem) to another center
@@ -59,7 +68,7 @@ object Cylinder {
     //FIXME missing transformation
   }
 
-  def byVerticesRadius(bottom: XYZ, top: XYZ, radius: Double) = {
+  def fromVerticesRadius(bottom: XYZ, top: XYZ, radius: Double) = {
     val cylinderAxis = (top - bottom).asVec
     val orientAxis = Matrix.alignFromAxisToAxis(
       fromAxis = cylinderAxis.normalized,

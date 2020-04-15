@@ -20,6 +20,7 @@ object Main extends Logger {
 
   implicit lazy val actorSystem = ActorSystem("akka-system")
   var server: Option[MyAkkaServer] = None
+  def myAkkaServer: MyAkkaServer = server.get
 
   def start(interface: String = "127.0.0.1", port: Int = 8080) = {
     if (server.isEmpty) {

@@ -8,7 +8,7 @@ object Atomium {
     cs.map(c => Sphere(r, c))
 
   def atomiumTube(p1: XYZ, p2: XYZ, r: Double) =
-    Cylinder.byVerticesRadius(p1, p2, r)
+    Cylinder.fromVerticesRadius(p1, p2, r)
 
   def atomiumTubes(c0: XYZ, upCs: Seq[XYZ], downCs: Seq[XYZ], r: Double) = {
     (upCs ++ downCs).map((c0, _)) ++

@@ -49,12 +49,12 @@ object Utils {
       //   throw new RuntimeException(s"Dimensions $d Unrecognized in newCamera")
     }
 
-  def updateFunction(model: Object3D): Object3D = {
-    println(
-      s"updateFunction (${model.rotation.x}, ${model.rotation.y}, ${model.rotation.z})"
-    )
-    model.rotation.x += 0.02
-    model.rotation.y += 0.01
-    model
-  }
+  // def updateFunction(model: Object3D): Object3D = {
+  //   // println(
+  //   //   s"updateFunction (${model.rotation.x}, ${model.rotation.y}, ${model.rotation.z})"
+  //   // )
+  //   // model.rotation.x += 0.02
+  //   // model.rotation.y += 0.01
+  //   model
+  // }
 }

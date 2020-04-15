@@ -139,9 +139,12 @@ lazy val browserRemoteControl = (project in file("browserRemoteControl"))
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
     ),
     initialCommands in console += """
+    import scala.math._
     app.fmgp.Main.start()
-    val iii = app.fmgp.Main.server.get
-    import iii.GeoSyntax._
+    val myAkkaServer = app.fmgp.Main.server.get
+    import myAkkaServer.GeoSyntax._
+    import app.fmgp.geo._
+    
     """,
     cleanupCommands += """
     app.fmgp.Main.stop

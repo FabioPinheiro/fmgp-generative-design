@@ -21,6 +21,7 @@ import scala.concurrent.duration._
 import akka.actor._
 import scala.concurrent.ExecutionContext
 import app.fmgp.geo.{World, WorldAddition}
+import app.fmgp.geo.Shape
 
 case class MyAkkaServer(interface: String, port: Int)(
     implicit ex: ExecutionContext,
@@ -159,14 +160,14 @@ case class MyAkkaServer(interface: String, port: Int)(
 
   // val geoRunnableGraph: RunnableGraph[Source[World, NotUsed]] = geoSource.toMat(BroadcastHub.sink)(Keep.right)
   // val geoConsoleProducer: Source[World, NotUsed] = geoRunnableGraph.run()
-  object GeoSyntax extends app.fmgp.geo.Syntax {
-    def addShape[T <: app.fmgp.geo.Shape](t: T): T = {
+  object GeoSyntax extends app.fmgp.geo.Syntax with geo.KhepriExamples {
+    override def addShape[T <: app.fmgp.geo.Shape](t: T): T = {
       val w = WorldAddition(shapes = Seq(t))
       geoSink.runWith(Source(Seq(w)))
       t
     }
 
-    def clear: Unit = {
+    override def clear: Unit = {
       geoSink.runWith(Source(Seq(World.w3DEmpty)))
     }
   }
