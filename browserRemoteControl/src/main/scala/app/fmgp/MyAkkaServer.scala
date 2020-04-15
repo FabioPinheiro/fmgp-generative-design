@@ -20,7 +20,7 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import akka.actor._
 import scala.concurrent.ExecutionContext
-import app.fmgp.geo.World
+import app.fmgp.geo.{World, WorldAddition}
 
 case class MyAkkaServer(interface: String, port: Int)(
     implicit ex: ExecutionContext,
@@ -155,15 +155,19 @@ case class MyAkkaServer(interface: String, port: Int)(
   //     }
   // }
 
-  private val (geoSink, geoSource) = MergeHub.source[World].toMat(BroadcastHub.sink[World])(Keep.both).run
+  val (geoSink, geoSource) = MergeHub.source[World].toMat(BroadcastHub.sink[World])(Keep.both).run
 
   // val geoRunnableGraph: RunnableGraph[Source[World, NotUsed]] = geoSource.toMat(BroadcastHub.sink)(Keep.right)
   // val geoConsoleProducer: Source[World, NotUsed] = geoRunnableGraph.run()
   object GeoSyntax extends app.fmgp.geo.Syntax {
     def addShape[T <: app.fmgp.geo.Shape](t: T): T = {
-      val w = World.w2D(shapes = Seq(t))
+      val w = WorldAddition(shapes = Seq(t))
       geoSink.runWith(Source(Seq(w)))
       t
+    }
+
+    def clear: Unit = {
+      geoSink.runWith(Source(Seq(World.w3DEmpty)))
     }
   }
 
@@ -205,7 +209,7 @@ case class MyAkkaServer(interface: String, port: Int)(
           logger.warn(s"BrowserFlow(Binary): ${bm.toString}")
           Future.successful(())
       }
-      .via(Flow.fromSinkAndSource(sinkDumy, geoSource.filterNot(_.shapes.isEmpty)))
+      .via(Flow.fromSinkAndSource(sinkDumy, geoSource)) //.filterNot(_.shapes.isEmpty)
       .map { world => TextMessage(world.asJson.noSpaces) }
   }
 

@@ -26,10 +26,18 @@ class DynamicWorldWarp extends GeoWarp {
   private var multiBodyWorld: Seq[World] = Seq(World.w3DEmpty)
   private val obj: Object3D = new Object3D()
 
-  def merge(w: World) = {
-    multiBodyWorld = multiBodyWorld :+ w
-    val aux: Object3D = WorldImprovements.generateObj3D(w.shapes)
-    obj.add(aux)
+  def update(world: World) = {
+    world match {
+      case WorldAddition(shapes) =>
+        multiBodyWorld = multiBodyWorld :+ world
+        val aux: Object3D = WorldImprovements.generateObj3D(world.shapes)
+        obj.add(aux)
+      case WorldState(shapes, dimensions) =>
+        obj.children.toList.foreach(o => obj.remove(o))
+        //toList method is needed because the obj.remove edit over the array we are iterating
+        val aux: Object3D = WorldImprovements.generateObj3D(world.shapes)
+        obj.add(aux)
+    }
   }
 }
 object DynamicWorldWarp {

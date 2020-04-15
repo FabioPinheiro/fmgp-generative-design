@@ -20,13 +20,11 @@ object Websocket {
     ws.onopen = { ev: Event => log.info(s"WS Connected '${ev.`type`}'") }
     ws.onclose = { ev: CloseEvent => log.warn(s"WS Closed because '${ev.reason}'") }
     ws.onmessage = { ev: MessageEvent =>
-      log.debug(ev.data.toString)
+      log.info(ev.data.toString)
       decode[World](ev.data.toString) match {
-        case Left(ex) => log.error(s"Error parsing the obj World: $ex")
-        case Right(value) =>
-          dynamicWorld.merge(value)
+        case Left(ex)     => log.error(s"Error parsing the obj World: $ex")
+        case Right(value) => dynamicWorld.update(value)
       }
-    ///FIXME textarea.innerHTML = text
     }
     ws.onerror = { ev: Event =>
       import scala.scalajs.js

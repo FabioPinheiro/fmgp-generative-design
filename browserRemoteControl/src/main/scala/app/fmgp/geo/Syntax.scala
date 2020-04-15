@@ -5,10 +5,14 @@ object Syntax extends Syntax {
     println(t)
     t
   }
+  def clear: Unit = {
+    println("Clear all Shapes!")
+  }
 }
 
 trait Syntax {
   def addShape[T <: Shape](t: T): T
+  def clear: Unit
   def xyz(x: Double = 0, y: Double = 0, z: Double = 0): XYZ = XYZ(x, y, z)
 
   def box(width: Double, height: Double, depth: Double): Box = addShape(Box(width, height, depth))
