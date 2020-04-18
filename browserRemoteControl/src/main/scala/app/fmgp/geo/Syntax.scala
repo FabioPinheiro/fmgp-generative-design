@@ -30,10 +30,21 @@ trait BaseSyntax {
 
 trait KhepriSolidPrimitives extends BaseSyntax {
   def box(v1: XYZ, v2: XYZ): Shape = addShape(Box.fromOppositeVertex(v1, v2))
-  def cone(bottom: XYZ, radius: Double, top: XYZ): Shape = addShape(Cylinder.fromVerticesRadius(bottom, top, radius))
-//coneFrustum(xyz(11, 1, 0), 2, xyz(10, 0, 5), 1)
+  def cone(bottom: XYZ, radius: Double, top: XYZ): Shape =
+    coneFrustum(bottom = bottom, bottomRadius = radius, top = top, topRadius = radius)
+  def coneFrustum(bottom: XYZ, bottomRadius: Double, top: XYZ, topRadius: Double) =
+    addShape(Cylinder.fromVerticesRadius(bottom, top, bottomRadius = bottomRadius, topRadius = Some(topRadius)))
   def sphere(center: XYZ, radius: Double): Sphere = sphere(radius, center)
-//cylinder(xyz(8, 7, 0), 1, xyz(6, 8, 7))
-//regular_pyramid(5, xyz(-2, 1, 0), 1, 0, xyz(2, 7, 7))
-//torus(xyz(14, 6, 5), 2, 1)
+  def cylinder = cone _
+  def regularPyramid(radialSegments: Int, bottom: XYZ, size: Double, height: Double, top: XYZ) = addShape(
+    Cylinder.fromVerticesRadius(
+      bottom = bottom,
+      top = top,
+      bottomRadius = RegularPolygon.radius(size, radialSegments),
+      topRadius = Some(0),
+      radialSegments = Some(radialSegments)
+    )
+  )
+  def torus(center: XYZ, radius: Double, tube: Double): Shape =
+    addShape(Torus.withCenter(center = center, radius = radius, tube = tube))
 }

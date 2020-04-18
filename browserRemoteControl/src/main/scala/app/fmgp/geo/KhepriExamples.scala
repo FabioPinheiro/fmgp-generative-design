@@ -28,7 +28,7 @@ trait KhepriExamples extends Syntax {
     * @param hAbacus abacus' height
     * @param lAbacus abacus' length = 2*echinus top radius
     */
-  def doricColumn(
+  def doricColumn2d(
       p: XYZ,
       hShaft: Double,
       rBaseShaft: Double,
@@ -63,6 +63,36 @@ trait KhepriExamples extends Syntax {
     shaft(p, hShaft, rBaseShaft, rBaseEchinus)
     echinus(p + xyz(0, hShaft), hEchinus, rBaseEchinus, lAbacus / 2)
     abacus(p + xyz(0, hShaft + hEchinus), hAbacus, lAbacus)
+  }
+
+  def doricColumn3d(
+      p: XYZ,
+      hShaft: Double,
+      rBaseShaft: Double,
+      hEchinus: Double,
+      rBaseEchinus: Double,
+      hAbacus: Double,
+      lAbacus: Double
+  ) = {
+    def shaft(p: XYZ, hShaft: Double, rBase: Double, rTop: Double) =
+      coneFrustum(p, rBase, p + Vec(y = hShaft), rTop)
+    def echinus(p: XYZ, hEchinus: Double, rBase: Double, rTop: Double) =
+      coneFrustum(p, rBase, p + Vec(y = hEchinus), rTop)
+    def abacus(p: XYZ, hAbacus: Double, lAbacus: Double) =
+      box(p + Vec(-(lAbacus / 2), 0, -(lAbacus / 2)), p + Vec(lAbacus / 2, hAbacus, lAbacus / 2))
+
+    shaft(p, hShaft, rBaseShaft, rBaseEchinus)
+    echinus(p + xyz(0, hShaft), hEchinus, rBaseEchinus, lAbacus / 2)
+    abacus(p + xyz(0, hShaft + hEchinus), hAbacus, lAbacus)
+  }
+
+  def crossOfCones(p: XYZ, rb: Double, rt: Double, l: Double) = {
+    coneFrustum(p, rb, p + Vec(x = l), rt)
+    coneFrustum(p, rb, p + Vec(y = l), rt)
+    coneFrustum(p, rb, p + Vec(z = l), rt)
+    coneFrustum(p, rb, p + Vec(x = -l), rt)
+    coneFrustum(p, rb, p + Vec(y = -l), rt)
+    coneFrustum(p, rb, p + Vec(z = -l), rt)
   }
 
 }

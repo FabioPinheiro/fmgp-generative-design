@@ -8,6 +8,8 @@ import typings.three.lineBasicMaterialMod.LineBasicMaterialParameters
 import app.fmgp._
 import scala.scalajs.js
 import js.{undefined => ^}
+import js.JSConverters._
+import scala.scalajs.js.UndefOrOps
 
 object WorldImprovements {
 
@@ -25,7 +27,6 @@ object WorldImprovements {
   }
 
   val boxGeom = new BoxGeometry(1, 1, 1, ^, ^, ^) //c.width, c.height c.depth
-  val cylinderGeom = new CylinderGeometry(1.0, 1.0, 1.0, 32, ^, ^, ^, ^)
   val sphereGeom = new SphereGeometry(1.0, 32, 32, ^, ^, ^, ^)
 
   val parametersLine = js.Dynamic
@@ -62,9 +63,29 @@ object WorldImprovements {
         obj
 
       case cylinder: geo.Cylinder =>
-        val obj = new Mesh(cylinderGeom, geo.SceneGraph.solidMat).asInstanceOf[Object3D]
-        obj.scale.set(cylinder.radius, cylinder.height, cylinder.radius)
-        obj
+        //CylinderGeometry(radiusTop : Float, radiusBottom : Float, height : Float, radialSegments : Integer, heightSegments : Integer, openEnded : Boolean, thetaStart : Float, thetaLength : Float)
+        val cylinderGeom = new CylinderGeometry(
+          radiusTop = cylinder.topRadius,
+          radiusBottom = cylinder.bottomRadius,
+          height = cylinder.height,
+          radiusSegments = cylinder.radialSegments.orUndefined,
+          heightSegments = cylinder.heightSegments.orUndefined,
+          openEnded = cylinder.openEnded.orUndefined,
+          thetaStart = cylinder.thetaStart.orUndefined,
+          thetaLength = cylinder.thetaLength.orUndefined
+        )
+        //obj.scale.set(cylinder.bottomRadius, cylinder.height)  // For  new CylinderGeometry(1.0, 1.0, 1.0, 32, ^, ^, ^, ^)
+        new Mesh(cylinderGeom, geo.SceneGraph.solidMat).asInstanceOf[Object3D]
+
+      case torus: geo.Torus =>
+        val torusGeom = new TorusGeometry(
+          torus.radius,
+          torus.tube,
+          torus.radialSegments,
+          torus.tubularSegments,
+          torus.arc
+        )
+        new Mesh(torusGeom, geo.SceneGraph.solidMat).asInstanceOf[Object3D]
 
       case line: geo.Line =>
         val geometryLine = new Geometry()
