@@ -5,7 +5,7 @@ import typings.three.mod.{Math => ThreeMath, Shape => _, _}
 import typings.three.webGLRendererMod.WebGLRendererParameters
 
 import app.fmgp.threejs._
-import app.fmgp.threejs.extras.OrbitControls
+import app.fmgp.threejs.extras.{FirstPersonControls, FlyControls, OrbitControls}
 import app.fmgp.geo._
 import app.fmgp.Utils
 import org.scalajs.dom
@@ -23,7 +23,7 @@ object Global {
   var animateFrameId: Option[Int] = None
   var modelToAnimate: () => Option[Object3D] = () => None
   var camera: Option[Camera] = None
-  var controls: Option[OrbitControls] = None
+  var controls: Option[FlyControls] = None
 
 }
 
@@ -131,18 +131,25 @@ object Main {
         c.lookAt(new Vector3(0, 0, 0))
       }
       Global.controls = Global.camera.map { c =>
-        val aux = new OrbitControls(c, renderer.domElement)
+        //val orbit = new OrbitControls(c, renderer.domElement)
+        //orbit.keyPanSpeed = 30 //pixes
+        //orbit.panSpeed = 3
+        val fly = new FlyControls(c, renderer.domElement)
+        fly.dragToLook = true
+        fly.rollSpeed = 0.015
+        fly.movementSpeed = 0.3
+        //val firstPerson = new FirstPersonControls(c, renderer.domElement)
+        //firstPerson.lookSpeed = 0.01
+        //firstPerson.movementSpeed = 0.5
         dimensions match {
           case Dimensions.D2 =>
-            aux.enableRotate = false
-            aux.screenSpacePanning = true
+          //orbit.enableRotate = false
+          //orbit.screenSpacePanning = true
           case Dimensions.D3 =>
             Global.modelToAnimate = if (model.dimensions.isD3) { () => Some(model.generateObj3D) }
             else () => None
         }
-        aux.keyPanSpeed = 30 //pixes
-        aux.panSpeed = 3
-        aux
+        fly //orbit //firstPerson
       }
 
       Global.scene.add(Global.modelToAnimate().getOrElse(model.generateObj3D))
@@ -156,7 +163,7 @@ object Main {
   val animate: js.Function1[Double, Unit] = (d: Double) => {
     //Global.modelToAnimate().foreach(Utils.updateFunction _)
     Global.animateFrameId = Some(dom.window.requestAnimationFrame(animate))
-    Global.controls.foreach(_.update) // required if controls.enableDamping or controls.autoRotate are set to true
+    Global.controls.foreach(_.update(1)) // required if controls.enableDamping or controls.autoRotate are set to true
     Global.camera.foreach(renderer.render(Global.scene, _))
   }
 }
