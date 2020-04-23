@@ -32,6 +32,8 @@ case class TransformationShape(
     transformation: Transformation
 ) extends Shape
 
+case class Wireframe(shape: Shape) extends Shape
+
 case class Box(
     width: Double,
     height: Double,

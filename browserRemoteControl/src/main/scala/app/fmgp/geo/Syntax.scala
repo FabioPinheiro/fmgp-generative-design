@@ -1,19 +1,22 @@
 package app.fmgp.geo
 
 object Syntax extends Syntax {
-  def addShape[T <: Shape](t: T): T = {
-    println(t)
+  override def addShape[T <: Shape](t: T, wireframeMode: Boolean): T = {
+    println(s"wireframeMode=$wireframeMode: $t")
     t
   }
-  def clear: Unit = {
+  override def clear: Unit = {
     println("Clear all Shapes!")
+    super.clear
   }
 }
 
 trait Syntax extends BaseSyntax with KhepriSolidPrimitives
 trait BaseSyntax {
-  def addShape[T <: Shape](t: T): T
-  def clear: Unit
+  var wireframeMode: Boolean = false
+  def addShape[T <: Shape](t: T): T = addShape(t = t, wireframeMode = wireframeMode)
+  def addShape[T <: Shape](t: T, wireframeMode: Boolean): T
+  def clear: Unit = { wireframeMode = false }
 
   def xyz(x: Double = 0, y: Double = 0, z: Double = 0): XYZ = XYZ(x, y, z)
   def pol = polar _

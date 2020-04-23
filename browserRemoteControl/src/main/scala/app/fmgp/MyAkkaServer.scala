@@ -161,14 +161,16 @@ case class MyAkkaServer(interface: String, port: Int)(
   // val geoRunnableGraph: RunnableGraph[Source[World, NotUsed]] = geoSource.toMat(BroadcastHub.sink)(Keep.right)
   // val geoConsoleProducer: Source[World, NotUsed] = geoRunnableGraph.run()
   object GeoSyntax extends app.fmgp.geo.Syntax with geo.KhepriExamples {
-    override def addShape[T <: app.fmgp.geo.Shape](t: T): T = {
-      val w = WorldAddition(shapes = Seq(t))
+    override def addShape[T <: app.fmgp.geo.Shape](t: T, wireframeMode: Boolean): T = {
+      val s: app.fmgp.geo.Shape = if (wireframeMode) app.fmgp.geo.Wireframe(t) else t
+      val w = WorldAddition(shapes = Seq(s))
       geoSink.runWith(Source(Seq(w)))
       t
     }
 
     override def clear: Unit = {
       geoSink.runWith(Source(Seq(World.w3DEmpty)))
+      super.clear
     }
   }
 

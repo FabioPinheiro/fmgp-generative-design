@@ -39,21 +39,48 @@ object WorldImprovements {
     case geo.Dimensions.D3 => generateObj3D(world.shapes)
   }
 
+  case class GenerateOP(
+      wireframe: Boolean = false,
+      material: typings.three.materialMod.Material = geo.SceneGraph.solidMat
+  ) {
+    def withWireframe: GenerateOP = copy(wireframe = true)
+    def withMaterial(material: typings.three.materialMod.Material): GenerateOP = copy(material = material)
+    def toObj3D(
+        geometry: typings.three.bufferGeometryMod.BufferGeometry
+    ): Object3D = {
+      if (wireframe) {
+        val wireframe = new WireframeGeometry(geometry)
+        new LineSegments(wireframe).asInstanceOf[Object3D]
+      } else new Mesh(geometry, material).asInstanceOf[Object3D]
+    }
+    def toObj3D(
+        geometry: typings.three.geometryMod.Geometry
+    ): Object3D = {
+      if (wireframe) {
+        val wireframe = new WireframeGeometry(geometry)
+        new LineSegments(wireframe).asInstanceOf[Object3D]
+      } else new Mesh(geometry, material).asInstanceOf[Object3D]
+    }
+  }
+
   def generateObj3D(shapes: Seq[geo.Shape]): Object3D = {
-    def generateShape(shape: geo.Shape): Object3D = shape match {
+    def generateShape(shape: geo.Shape, state: GenerateOP): Object3D = shape match {
+      case geo.Wireframe(shape) =>
+        generateShape(shape, state.withWireframe)
+
       case geo.TransformationShape(shape, transformation) =>
-        val aux = generateShape(shape)
+        val aux = generateShape(shape, state)
         val m = matrix2matrix(transformation.matrix).multiply(aux.matrix)
         aux.applyMatrix(m)
         aux
 
       case box: geo.Box =>
-        val obj = new Mesh(boxGeom, geo.SceneGraph.solidMat).asInstanceOf[Object3D]
+        val obj = state.toObj3D(boxGeom)
         obj.scale.set(box.width, box.height, box.depth)
         obj
 
       case sphere: geo.Sphere =>
-        val obj = new Mesh(sphereGeom, geo.SceneGraph.solidMat).asInstanceOf[Object3D]
+        val obj = state.toObj3D(sphereGeom)
         //obj.scale.set(v.radius, v.radius, v.radius)
         obj.matrixAutoUpdate = false
         val m = geo.Matrix
@@ -75,7 +102,7 @@ object WorldImprovements {
           thetaLength = cylinder.thetaLength.orUndefined
         )
         //obj.scale.set(cylinder.bottomRadius, cylinder.height)  // For  new CylinderGeometry(1.0, 1.0, 1.0, 32, ^, ^, ^, ^)
-        new Mesh(cylinderGeom, geo.SceneGraph.solidMat).asInstanceOf[Object3D]
+        state.toObj3D(cylinderGeom)
 
       case torus: geo.Torus =>
         val torusGeom = new TorusGeometry(
@@ -85,7 +112,7 @@ object WorldImprovements {
           torus.tubularSegments,
           torus.arc
         )
-        new Mesh(torusGeom, geo.SceneGraph.solidMat).asInstanceOf[Object3D]
+        state.toObj3D(torusGeom)
 
       case line: geo.Line =>
         val geometryLine = new Geometry()
@@ -95,7 +122,7 @@ object WorldImprovements {
       case c: geo.Circle =>
         val geometry = new CircleGeometry(c.radius, 32)
         val obj = if (c.fill) {
-          new Mesh(geometry, materialLine).asInstanceOf[Object3D]
+          state.withMaterial(materialLine).toObj3D(geometry)
         } else {
           geometry.vertices.shift() //Remove center vertex
           new LineLoop(geometry, materialLine).asInstanceOf[Object3D]
@@ -105,7 +132,7 @@ object WorldImprovements {
         obj
     }
 
-    val tmp: Seq[Object3D] = shapes.map { s => generateShape(s) }
+    val tmp: Seq[Object3D] = shapes.map { s => generateShape(s, GenerateOP()) }
 
     val parent = new Object3D
     tmp.foreach(e => parent.add(e))
