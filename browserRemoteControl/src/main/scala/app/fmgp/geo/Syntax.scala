@@ -20,7 +20,11 @@ trait BaseSyntax {
 
   def xyz(x: Double = 0, y: Double = 0, z: Double = 0): XYZ = XYZ(x, y, z)
   def pol = polar _
-  def polar(module: Double, argument: Double): XYZ = Polar(module, argument).toXY
+  def polar(module: Double, argument: Double): XYZ = Polar(rho = argument, phi = module).toXYZ
+  def cyl = cylindrical _
+  def cylindrical(rho: Double, phi: Double, y: Double) = Cylindrical(rho = rho, phi = phi, y = y)
+  def sph = spherical _
+  def spherical(rho: Double, phi: Double, psi: Double) = Spherical(rho = rho, phi = phi, psi = psi)
 
   def box(width: Double, height: Double, depth: Double): Box = addShape(Box(width, height, depth))
   def sphere(radius: Double, center: XYZ = XYZ.origin): Sphere = addShape(Sphere(radius, center))

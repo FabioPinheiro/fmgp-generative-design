@@ -50,9 +50,14 @@ clear
 // crossOfCones(XYZ(1, 2, 3), 0.2, 1, 2)
 wireframeMode = true
 
-doricColumn3d(xyz(0, 0), 9, 0.5, 0.4, 0.3, 0.3, 1.0)
-doricColumn3d(xyz(3, 0), 7, 0.5, 0.4, 0.6, 0.6, 1.6)
-doricColumn3d(xyz(6, 0), 9, 0.7, 0.5, 0.3, 0.2, 1.2)
-doricColumn3d(xyz(9, 0), 8, 0.4, 0.3, 0.2, 0.3, 1.0)
-doricColumn3d(xyz(12, 0), 5, 0.5, 0.4, 0.3, 0.1, 1.0)
-doricColumn3d(xyz(15, 0), 6, 0.8, 0.3, 0.2, 0.4, 1.4)
+// doricColumn3d(xyz(0, 0), 9, 0.5, 0.4, 0.3, 0.3, 1.0)
+// doricColumn3d(xyz(3, 0), 7, 0.5, 0.4, 0.6, 0.6, 1.6)
+// doricColumn3d(xyz(6, 0), 9, 0.7, 0.5, 0.3, 0.2, 1.2)
+// doricColumn3d(xyz(9, 0), 8, 0.4, 0.3, 0.2, 0.3, 1.0)
+// doricColumn3d(xyz(12, 0), 5, 0.5, 0.4, 0.3, 0.1, 1.0)
+// doricColumn3d(xyz(15, 0), 6, 0.8, 0.3, 0.2, 0.4, 1.4)
+
+wireframeMode = false
+spiralStairs(xyz(0, 0, 0), 0.1, 3, Pi / 6, 1, 10)
+//spiralStairs(xyz(0, 40, 0), 1.5, 5, Pi / 9)
+//spiralStairs(xyz(0, 80, 0), 0.5, 6, Pi / 8)

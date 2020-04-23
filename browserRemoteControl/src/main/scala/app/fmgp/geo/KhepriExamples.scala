@@ -95,4 +95,15 @@ trait KhepriExamples extends Syntax {
     coneFrustum(p, rb, p + Vec(z = -l), rt)
   }
 
+  def spiralStairs(p: XYZ, radius: Double, height: Double, angle: Double, stairSize: Double = 1, stairs: Int = 10) = {
+    assert(stairs >= 1)
+    cone(p, radius * 2, p.+(y = height))
+    for (i <- 1 to stairs - 1) {
+      val hDelta = i * height / stairs
+      val p1 = p.+(y = hDelta)
+      val p2 = p + Cylindrical(stairSize, i * angle, hDelta).asVec
+      cone(p1, radius, p2)
+    }
+  }
+
 }

@@ -29,6 +29,14 @@ object World {
   def w3DEmpty: WorldState = w3D(Seq.empty)
 }
 
+sealed trait Coordinate {
+  def x: Double
+  def y: Double
+  def z: Double
+  def toXYZ = XYZ(x, y, z)
+  def asVec: Vec = Vec(x, y, z)
+}
+
 /**
   * XYZ
   *
@@ -36,8 +44,7 @@ object World {
   * @param y
   * @param z
   */
-final case class XYZ(x: Double, y: Double, z: Double = 0) {
-  def asVec: Vec = Vec(x, y, z)
+final case class XYZ(x: Double, y: Double, z: Double = 0) extends Coordinate {
   def toPolar = {
     assert(z == 0)
     Polar.fromXY(x, y)
@@ -67,17 +74,47 @@ object XYZ {
   * @param module 'ρ' (Rho) - module is also called the radius vector
   * @param argument 'ϕ' (Phi) - argument is also called the polar angle
   */
-final case class Polar(module: Double, argument: Double) {
-  def rho = argument
-  def phi = module
+final case class Polar(rho: Double, phi: Double) extends Coordinate {
+  def argument = rho
+  def module = phi
 
-  def x = module * Math.cos(argument)
-  def y = module * Math.sin(argument)
-  def toXY = XYZ(x, y, 0)
+  def x = rho * Math.cos(phi)
+  def y = rho * Math.sin(phi)
+  def z = 0
 }
+
 object Polar {
+  type Pol = Polar
+
+  /** Node the Z coordinate is discasted */
+  def fromXYZ(xyz: XYZ): Polar = fromXY(xyz.x, xyz.y)
   def fromXY(x: Double, y: Double): Polar =
     Polar(Math.sqrt(x * x + y * y), Math.atan(y / x))
+}
+
+/** Cylindrical Coordinate among the Y-axis */
+final case class Cylindrical(rho: Double, phi: Double, y: Double) extends Coordinate {
+  def x = rho * Math.cos(phi)
+  def z = rho * Math.sin(phi)
+}
+
+object Cylindrical {
+  type Cyl = Cylindrical
+  def fromXYZ(xyz: XYZ): Cylindrical = fromXYZ(xyz.x, xyz.y, xyz.z)
+  def fromXYZ(x: Double, y: Double, z: Double): Cylindrical =
+    Cylindrical(Math.sqrt(x * x + z * z), Math.atan(z / x), y)
+}
+
+final case class Spherical(rho: Double, phi: Double, psi: Double) extends Coordinate {
+  def x = rho * Math.sin(psi) * Math.cos(phi)
+  def y = rho * Math.sin(psi) * Math.sin(phi)
+  def z = rho * Math.cos(psi)
+}
+object Spherical {
+  type Sph = Spherical
+  def fromXYZ(xyz: XYZ): Spherical = fromXYZ(xyz.x, xyz.y, xyz.z)
+  def fromXYZ(x: Double, y: Double, z: Double): Spherical =
+    Spherical(Math.sqrt(x * x + y * y + z * z), Math.atan(y / x), Math.atan(x * x + y * y) / z)
 }
 
 final case class Vec(x: Double = 0, y: Double = 0, z: Double = 0) {
