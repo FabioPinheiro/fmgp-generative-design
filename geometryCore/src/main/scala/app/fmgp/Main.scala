@@ -3,6 +3,7 @@ package app.fmgp
 import typings.three.loaderMod.Loader
 import typings.three.mod.{Math => ThreeMath, Shape => _, _}
 import typings.three.webGLRendererMod.WebGLRendererParameters
+import typings.statsJs.mod.{^ => Stats}
 
 import app.fmgp.threejs._
 import app.fmgp.threejs.extras.{FirstPersonControls, FlyControls, OrbitControls}
@@ -24,7 +25,9 @@ object Global {
   var modelToAnimate: () => Option[Object3D] = () => None
   var camera: Option[Camera] = None
   var controls: Option[FlyControls] = None
-
+  var stats: Stats = new Stats()
+  stats.showPanel(1); // 0: fps, 1: ms, 2: mb, 3+: custom
+  dom.document.body.appendChild(Global.stats.dom);
 }
 
 object Log extends Logger {
@@ -161,10 +164,12 @@ object Main {
 
   @JSExport
   val animate: js.Function1[Double, Unit] = (d: Double) => {
+    Global.stats.begin();
     //Global.modelToAnimate().foreach(Utils.updateFunction _)
     Global.animateFrameId = Some(dom.window.requestAnimationFrame(animate))
     Global.controls.foreach(_.update(1)) // required if controls.enableDamping or controls.autoRotate are set to true
     Global.camera.foreach(renderer.render(Global.scene, _))
+    Global.stats.end();
   }
 }
 
@@ -197,7 +202,7 @@ object Fabio {
   @JSExport
   var test: Event = _
   @JSExport
-  var test2: Element = _
+  var any: Any = _
 
   /** (new $c_Lfmgp_Fabio$).f() */
   @JSExport
@@ -208,8 +213,7 @@ object Fabio {
 
   @JSExport
   def version(): Unit = {
-    val version = "FIXME Three.REVISION"
-    dom.console.log(s"The threejs version is $version")
+    dom.console.log(s"The threejs version is 0.108.0")
   }
 
   @JSExport

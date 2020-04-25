@@ -120,6 +120,8 @@ lazy val geometryCore = (project in file("geometryCore"))
       "io.circe" %%% "circe-parser" % circeVersion
     ),
     npmDependencies in Compile += "three" -> threeVersion,
+    npmDependencies in Compile += "stats.js" -> "0.17.0",
+    npmDependencies in Compile += "@types/stats.js" -> "0.17.0", //https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
     scalaJSUseMainModuleInitializer := true,
     mainClass := Some("fmgp.Main"),
     //scalaJSMainModuleInitializer := Some(mainMethod("fmgp.Main", "main"))
