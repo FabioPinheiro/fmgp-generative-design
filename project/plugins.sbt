@@ -28,4 +28,4 @@ addSbtPlugin("org.scalablytyped" % "sbt-scalablytyped" % "202001240947")
 
 //https://scalablytyped.org/docs/plugin
 resolvers += Resolver.bintrayRepo("oyvindberg", "converter")
-addSbtPlugin("org.scalablytyped.converter" % "sbt-converter" % "1.0.0-beta5")
+addSbtPlugin("org.scalablytyped.converter" % "sbt-converter" % "1.0.0-beta11")

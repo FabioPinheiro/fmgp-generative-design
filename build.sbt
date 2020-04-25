@@ -1,5 +1,7 @@
-ThisBuild / scalaVersion := "2.13.1"
-ThisBuild / version := "0.2-SNAPSHOT"
+val appScalaVersion = "2.13.2"
+val appVersion = "0.2-SNAPSHOT"
+ThisBuild / scalaVersion := appScalaVersion
+ThisBuild / version := appVersion
 ThisBuild / organization := "app.fmgp"
 ThisBuild / organizationHomepage := Some(url("https://fmgp.app/"))
 
@@ -45,8 +47,8 @@ val circeVersion = "0.13.0"
 lazy val baseSettings: Project => Project =
   _.enablePlugins(ScalaJSPlugin)
     .settings(
-      scalaVersion := "2.13.1",
-      version := "0.1-SNAPSHOT",
+      scalaVersion := appScalaVersion,
+      version := appVersion,
       //scalacOptions ++= ScalacOptions.flags,
       //scalaJSUseMainModuleInitializer := true,
       scalaJSLinkerConfig ~= (_
