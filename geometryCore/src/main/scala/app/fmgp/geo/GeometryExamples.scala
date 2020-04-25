@@ -8,7 +8,7 @@ import app.fmgp.geo._
 object GeometryExamples {
 
   @JSExport
-  def atomium: Seq[Shape] = Atomium.atomium(0.8, 3.0, 0.3)
+  def atomium: ShapeSeq = Atomium.atomium(0.8, 3.0, 0.3)
 
   @JSExport
   def atomiumWorld: WorldState = World.w3D(atomium)

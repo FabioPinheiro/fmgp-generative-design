@@ -33,6 +33,15 @@ case class TransformationShape(
 ) extends Shape
 
 case class Wireframe(shape: Shape) extends Shape
+case class ShapeSeq(shapes: Seq[Shape]) extends Shape with Seq[Shape] {
+  override def iterator: Iterator[Shape] = shapes.iterator
+  override def apply(i: Int): Shape = shapes(i)
+  override def length: Int = shapes.length
+}
+object ShapeSeq {
+  def apply(shape: Shape): ShapeSeq = ShapeSeq(Seq(shape))
+  implicit def implicitConverter(s: Seq[Shape]): ShapeSeq = ShapeSeq(s)
+}
 
 case class Box(
     width: Double,

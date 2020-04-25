@@ -27,6 +27,9 @@ browserRemoteControl/console
 > :load script.sc
 ```
 
+## TODO LIST
+Use https://github.com/mrdoob/stats.js/
+
 
 ## Copyright and License
 

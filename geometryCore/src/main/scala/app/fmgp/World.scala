@@ -67,7 +67,8 @@ object WorldImprovements {
     def generateShape(shape: geo.Shape, state: GenerateOP): Object3D = shape match {
       case geo.Wireframe(shape) =>
         generateShape(shape, state.withWireframe)
-
+      case geo.ShapeSeq(shapes) =>
+        shapes.map(generateShape(_, state.withWireframe)).fold(new Object3D)((z, n) => z.add(n))
       case geo.TransformationShape(shape, transformation) =>
         val aux = generateShape(shape, state)
         val m = matrix2matrix(transformation.matrix).multiply(aux.matrix)

@@ -15,17 +15,17 @@ object Dimensions {
 }
 
 sealed trait World {
-  def shapes: Seq[Shape]
+  def shapes: ShapeSeq
 }
 
-//final case class WorldReset(shapes: Seq[Shape] = Seq.empty) extends World
-final case class WorldAddition(shapes: Seq[Shape]) extends World
-final case class WorldState(shapes: Seq[Shape], dimensions: Dimensions.D) extends World
+//final case class WorldReset(shapes: ShapeSeq = Seq.empty) extends World
+final case class WorldAddition(shapes: ShapeSeq) extends World
+final case class WorldState(shapes: ShapeSeq, dimensions: Dimensions.D) extends World
 
 object World {
-  def addition(shapes: Seq[Shape]): WorldAddition = WorldAddition(shapes)
-  def w2D(shapes: Seq[Shape]): WorldState = WorldState(shapes, dimensions = Dimensions.D2)
-  def w3D(shapes: Seq[Shape]): WorldState = WorldState(shapes, dimensions = Dimensions.D3)
+  def addition(shapes: ShapeSeq): WorldAddition = WorldAddition(shapes)
+  def w2D(shapes: ShapeSeq): WorldState = WorldState(shapes, dimensions = Dimensions.D2)
+  def w3D(shapes: ShapeSeq): WorldState = WorldState(shapes, dimensions = Dimensions.D3)
   def w3DEmpty: WorldState = w3D(Seq.empty)
 }
 

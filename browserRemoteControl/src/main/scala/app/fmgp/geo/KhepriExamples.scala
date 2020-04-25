@@ -1,5 +1,6 @@
 package app.fmgp.geo
 import scala.math._
+import scala.util.Random
 
 trait KhepriExamples extends Syntax {
 
@@ -95,7 +96,14 @@ trait KhepriExamples extends Syntax {
     coneFrustum(p, rb, p + Vec(z = -l), rt)
   }
 
-  def spiralStairs(p: XYZ, radius: Double, height: Double, angle: Double, stairSize: Double = 1, stairs: Int = 10) = {
+  def spiralStairs(
+      p: XYZ,
+      radius: Double,
+      height: Double,
+      angle: Double,
+      stairSize: Double = 1,
+      stairs: Int = 10
+  ): Unit = {
     assert(stairs >= 1)
     cone(p, radius * 2, p.+(y = height))
     for (i <- 1 to stairs - 1) {
@@ -106,4 +114,99 @@ trait KhepriExamples extends Syntax {
     }
   }
 
+  // ### Tree ###
+  def tree2d(
+      base: XYZ,
+      length: Double,
+      angle: Double,
+      deltaAngle: Double,
+      reductionFactor: Double,
+      iterations: Int = 6,
+      leafRadius: Double = 0.1
+  ): ShapeSeq = {
+    val top = base + Polar(rho = length, phi = angle).asVec
+    def branch(p0: XYZ, p1: XYZ): Shape = Line(Seq(p0, p1))
+    def leaf(p: XYZ): Shape = Circle(leafRadius, top)
+    ShapeSeq(branch(base, top)) ++ {
+      if (iterations < 1) ShapeSeq(leaf(top))
+      else {
+        tree2d(
+          top,
+          length * reductionFactor,
+          angle + deltaAngle,
+          deltaAngle,
+          reductionFactor,
+          iterations = iterations - 1,
+          leafRadius = leafRadius,
+        ) ++ tree2d(
+          top,
+          length * reductionFactor,
+          angle - deltaAngle,
+          deltaAngle,
+          reductionFactor,
+          iterations = iterations - 1,
+          leafRadius = leafRadius,
+        )
+      }
+    }
+  }
+
+  def tree2Random(
+      base: XYZ,
+      length: Double,
+      angle: Double,
+      minDeltaAngle: Double,
+      maxDeltaAngle: Double,
+      minReductionFactor: Double,
+      maxReductionFactor: Double,
+      leafRadius: Double = 0.1
+  )(implicit random: Random): ShapeSeq = {
+    val top = base + Polar(rho = length, phi = angle).asVec
+    def branch(p0: XYZ, p1: XYZ): Shape = Line(Seq(p0, p1))
+    def leaf(p: XYZ): Shape = Circle(leafRadius, top)
+    ShapeSeq(branch(base, top)) ++ {
+      if (length < 0.5) ShapeSeq(leaf(top))
+      else {
+        tree2Random(
+          top,
+          length * random.between(minReductionFactor, maxReductionFactor),
+          angle + random.between(minDeltaAngle, maxDeltaAngle),
+          minDeltaAngle,
+          maxDeltaAngle,
+          minReductionFactor,
+          maxReductionFactor,
+          leafRadius
+        ) ++ tree2Random(
+          top,
+          length * random.between(minReductionFactor, maxReductionFactor),
+          angle - random.between(minDeltaAngle, maxDeltaAngle),
+          minDeltaAngle,
+          maxDeltaAngle,
+          minReductionFactor,
+          maxReductionFactor,
+          leafRadius
+        )
+      }
+    }
+  }
+
+  //def tree3d(
+
+  // ### Trusses ### 6.7.1 Modeling Trusses
+  //def truss
+  //def DNA double helix
+
+  //### 7.2 Constructive Geometry - union; intersection; subtraction
+
+  //### 7.6 Extrusions
+
+  //def sinusoidalWall ### 7.6.2 Extrusion Along a Path
+
+  //7.7 Gaudí’s Columns
+  // ### 8 Transformations ###
+  // 8.2 Translation - move(sphere(), vxyz(1, 2, 3))
+  // 8.3 Scale - scale(papal_cross(), 3)
+  // 8.4 Rotation - rotate(papal_cross(), pi/4)
+  // 8.5 Reflection - mirror(cone_frustum(p, rb, p+vz(h/2), rn), p+vz(h/2)) = def hourglass(p, rb, rn, h)
+  // 12 Coordinate Space
 }

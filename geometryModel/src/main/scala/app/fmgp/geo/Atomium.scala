@@ -33,7 +33,7 @@ object Atomium {
     Seq(s, t)
   }
 
-  def atomium(sphereR: Double, frameW: Double, tubeR: Double): Seq[Shape] =
+  def atomium(sphereR: Double, frameW: Double, tubeR: Double): ShapeSeq =
     atomiumFrame(sphereR, frameW, tubeR).flatten
 
 }

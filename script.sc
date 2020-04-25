@@ -48,7 +48,7 @@ clear
 // torus(xyz(14, 6, 5), 2, 1)
 
 // crossOfCones(XYZ(1, 2, 3), 0.2, 1, 2)
-wireframeMode = true
+//wireframeMode = true
 
 // doricColumn3d(xyz(0, 0), 9, 0.5, 0.4, 0.3, 0.3, 1.0)
 // doricColumn3d(xyz(3, 0), 7, 0.5, 0.4, 0.6, 0.6, 1.6)
@@ -57,7 +57,19 @@ wireframeMode = true
 // doricColumn3d(xyz(12, 0), 5, 0.5, 0.4, 0.3, 0.1, 1.0)
 // doricColumn3d(xyz(15, 0), 6, 0.8, 0.3, 0.2, 0.4, 1.4)
 
-wireframeMode = false
-spiralStairs(xyz(0, 0, 0), 0.1, 3, Pi / 6, 1, 10)
+//spiralStairs(xyz(0, 0, 0), 0.1, 3, Pi / 6, 1, 10)
 //spiralStairs(xyz(0, 40, 0), 1.5, 5, Pi / 9)
 //spiralStairs(xyz(0, 80, 0), 0.5, 6, Pi / 8)
+
+//tree2d(xyz(0, 0), 20, Pi / 2, Pi / 8, 0.7, iterations = 7)
+
+//addShape(tree2d(xyz(-10, 0), 5, Pi / 2, Pi / 8, 0.6, iterations = 7))
+//addShape(tree2d(xyz(0, 0), 5, Pi / 2, Pi / 8, 0.8, iterations = 7))
+//addShape(tree2d(xyz(10, 0), 5, Pi / 2, Pi / 6, 0.7, iterations = 7))
+
+implicit val random: scala.util.Random = new scala.util.Random
+//random.setSeed(532443)
+
+addShape(tree2Random(xyz(-20, 0), 5, Pi / 2, Pi / 16, Pi / 4, 0.6, 0.9))
+addShape(tree2Random(xyz(0, 0), 5, Pi / 2, Pi / 16, Pi / 4, 0.6, 0.9))
+addShape(tree2Random(xyz(20, 0), 5, Pi / 2, Pi / 16, Pi / 4, 0.6, 0.9))

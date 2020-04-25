@@ -80,7 +80,7 @@ object Main {
     var node: Option[Element] = Some(renderer.domElement)
     dom.document.body.appendChild(renderer.domElement)
 
-    Websocket.newWebSocket("ws://127.0.0.1:8080/browser", Log, masterWorld)
+    Websocket.newWebSocket("ws://127.0.0.1:8888/browser", Log, masterWorld)
     select.addEventListener(
       `type` = "change",
       listener = (e0: dom.Event) => {

@@ -22,9 +22,9 @@ object Main extends Logger {
   var server: Option[MyAkkaServer] = None
   def myAkkaServer: MyAkkaServer = server.get
 
-  def start(interface: String = "127.0.0.1", port: Int = 8080) = {
+  def start(interface: String = "127.0.0.1", port: Int = 8888) = {
     if (server.isEmpty) {
-      server = Some(app.fmgp.MyAkkaServer(interface = "127.0.0.1", port = 8080))
+      server = Some(app.fmgp.MyAkkaServer(interface = interface, port = port))
       server.map(_.start)
       logger.info("Main starting")
     } else {
