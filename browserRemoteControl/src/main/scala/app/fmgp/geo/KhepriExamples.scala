@@ -190,14 +190,118 @@ trait KhepriExamples extends Syntax {
     }
   }
 
-  //def tree3d(
+  //def tree3d
 
   // ### Trusses ### 6.7.1 Modeling Trusses
-  //def truss
-  //def DNA double helix
+  object Truss {
+    private def trussNode(p: XYZ, trussNodeRadius: Double = 0.1): Shape = Sphere(trussNodeRadius, p)
+    private def trussStrut(p0: XYZ, p1: XYZ, trussStrutRadius: Double = 0.03) =
+      Cylinder.fromVerticesRadius(p0, p1, trussStrutRadius)
+    def trussNodes(ps: Seq[XYZ]): ShapeSeq = ps.map(p => trussNode(p))
+    def trussStruts(ps: Seq[XYZ], qs: Seq[XYZ]): ShapeSeq =
+      ps.zip(qs).map { case (p, q) => trussStrut(p, q) } //truss_bar(p, q)
 
+    def truss(as: Seq[XYZ], bs: Seq[XYZ], cs: Seq[XYZ]): ShapeSeq =
+      trussNodes(as) ++ trussNodes(bs) ++ trussNodes(cs) ++
+        trussStruts(as, cs) ++ trussStruts(as, bs) ++ trussStruts(bs, cs) ++
+        trussStruts(bs, as.drop(1)) ++ trussStruts(bs, cs.drop(1)) ++
+        trussStruts(as, as.drop(1)) ++ trussStruts(bs, bs.drop(2)) ++
+        trussStruts(cs, cs.drop(1))
+
+    def arcPositions(center: XYZ, radius: Double, phi: Double, psi0: Double, psi1: Double, dpsi: Double): Seq[XYZ] =
+      if (psi0 > psi1) Seq.empty
+      else {
+        (center + Spherical(rho = radius, phi = phi, psi = psi0).asVec) +: arcPositions(
+          center,
+          radius,
+          phi,
+          psi0 + dpsi,
+          psi1,
+          dpsi
+        )
+        //[p+vsph(r, phi, psi0), arc_positions(p, r, phi, psi0+dpsi, psi1, dpsi)...]
+      }
+
+    def arcTruss(center: XYZ, rac: Double, rb: Double, phi: Double, psi0: Double, psi1: Double, l: Double, n: Int) = {
+      val dpsi = (psi1 - psi0) / n
+      truss(
+        arcPositions(center + Polar(l / 2.0, phi + Pi / 2).asVec, rac, phi, psi0, psi1, dpsi),
+        arcPositions(center, rb, phi, psi0 + dpsi / 2.0, psi1 - dpsi / 2.0, dpsi),
+        arcPositions(center + Polar(l / 2.0, phi - Pi / 2).asVec, rac, phi, psi0, psi1, dpsi)
+      )
+    }
+
+    def spaceTruss(ptss: Seq[Seq[XYZ]]): ShapeSeq = ptss match {
+      case as +: bs +: cs +: next =>
+        trussNodes(as) ++
+          trussNodes(bs) ++
+          trussStruts(as, cs) ++
+          trussStruts(as, bs) ++
+          trussStruts(bs, cs) ++
+          trussStruts(bs, as.drop(1)) ++
+          trussStruts(bs, cs.drop(1)) ++
+          trussStruts(as, as.drop(1)) ++
+          trussStruts(bs, bs.drop(1)) ++ {
+          if (ptss.size == 3 /*no nodes left?*/ ) trussNodes(cs) ++ trussStruts(cs, cs.drop(1))
+          else spaceTruss(ptss.drop(2)) ++ trussStruts(bs, ptss(3))
+        }
+    }
+
+    def horizontalTrussPositions(p: XYZ, h: Double, l: Double, n: Int, m: Int): Seq[Seq[XYZ]] = {
+      def linearPositions(p: XYZ, l: Double, n: Int): Seq[XYZ] = {
+        if (n == 0) Seq.empty else p +: linearPositions(p + Vec(x = l), l, n - 1)
+      }
+      if (m == 0) Seq(linearPositions(p, l, n))
+      else {
+        Seq(
+          linearPositions(p, l, n),
+          linearPositions(p + Vec(l / 2, l / 2, h), l, n - 1),
+        ) ++ horizontalTrussPositions(p + Vec(y = l), h, l, n, m - 1)
+      }
+    }
+
+    def trussPyramid(
+        hashtagX: Int,
+        hashtagY: Int,
+        length: Double = 1,
+        height: Double = 1,
+        heightFactor: Double = 1
+    ): ShapeSeq = {
+      val m: Seq[Seq[Seq[XYZ]]] = for (level <- 0 to scala.math.min(hashtagX, hashtagY) - 1) yield {
+        (0 to hashtagX - 1 - level).map(x =>
+          (0 to hashtagY - 1 - level).map(y =>
+            XYZ(
+              length * (x + level / 2.0),
+              level * height * scala.math.pow(heightFactor, level),
+              length * (y + level / 2.0),
+            )
+          )
+        )
+      }
+      m.flatMap(_.flatMap(_.map(p => trussNode(p)))) ++ {
+        (0 to m.length - 1).flatMap { w =>
+          (0 to m(w).length - 1).flatMap { j =>
+            (0 to m(w)(j).length - 1).flatMap { i =>
+              (if (i > 0) Seq(trussStrut(m(w)(j)(i - 1), m(w)(j)(i))) else Seq.empty) ++
+                (if (j > 0) Seq(trussStrut(m(w)(j - 1)(i), m(w)(j)(i))) else Seq.empty) ++ {
+                if (w == 0) Seq.empty
+                else
+                  Seq(
+                    trussStrut(m(w - 1)(j)(i), m(w)(j)(i)),
+                    trussStrut(m(w - 1)(j)(i + 1), m(w)(j)(i)),
+                    trussStrut(m(w - 1)(j + 1)(i), m(w)(j)(i)),
+                    trussStrut(m(w - 1)(j + 1)(i + 1), m(w)(j)(i)),
+                  )
+              }
+            }
+          }
+        }
+      }
+    }
+  }
   //### 7.2 Constructive Geometry - union; intersection; subtraction
-
+  //https://github.com/mrdoob/three.js/issues/16099
+  //https://threejs.org/examples/#webgl_clipping_stencil
   //### 7.6 Extrusions
 
   //def sinusoidalWall ### 7.6.2 Extrusion Along a Path

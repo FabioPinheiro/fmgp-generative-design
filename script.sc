@@ -67,9 +67,48 @@ clear
 //addShape(tree2d(xyz(0, 0), 5, Pi / 2, Pi / 8, 0.8, iterations = 7))
 //addShape(tree2d(xyz(10, 0), 5, Pi / 2, Pi / 6, 0.7, iterations = 7))
 
-implicit val random: scala.util.Random = new scala.util.Random
+//implicit val random: scala.util.Random = new scala.util.Random
 //random.setSeed(532443)
+// addShape(tree2Random(xyz(-20, 0), 5, Pi / 2, Pi / 16, Pi / 4, 0.6, 0.9))
+// addShape(tree2Random(xyz(0, 0), 5, Pi / 2, Pi / 16, Pi / 4, 0.6, 0.9))
+// addShape(tree2Random(xyz(20, 0), 5, Pi / 2, Pi / 16, Pi / 4, 0.6, 0.9))
 
-addShape(tree2Random(xyz(-20, 0), 5, Pi / 2, Pi / 16, Pi / 4, 0.6, 0.9))
-addShape(tree2Random(xyz(0, 0), 5, Pi / 2, Pi / 16, Pi / 4, 0.6, 0.9))
-addShape(tree2Random(xyz(20, 0), 5, Pi / 2, Pi / 16, Pi / 4, 0.6, 0.9))
+// addShape(
+//   truss(
+//     Seq(
+//       xyz(0, -1, 0),
+//       xyz(1, -1.1, 0),
+//       xyz(2, -1.4, 0),
+//       xyz(3, -1.6, 0),
+//       xyz(4, -1.5, 0),
+//       xyz(5, -1.3, 0),
+//       xyz(6, -1.1, 0),
+//       xyz(7, -1, 0)
+//     ),
+//     Seq(
+//       xyz(0.5, 0, 0.5),
+//       xyz(1.5, 0, 1),
+//       xyz(2.5, 0, 1.5),
+//       xyz(3.5, 0, 2),
+//       xyz(4.5, 0, 1.5),
+//       xyz(5.5, 0, 1.1),
+//       xyz(6.5, 0, 0.8)
+//     ),
+//     Seq(
+//       xyz(0, 1, 0),
+//       xyz(1, 1.1, 0),
+//       xyz(2, 1.4, 0),
+//       xyz(3, 1.6, 0),
+//       xyz(4, 1.5, 0),
+//       xyz(5, 1.3, 0),
+//       xyz(6, 1.1, 0),
+//       xyz(7, 1, 0)
+//     )
+//   )
+// )
+
+//addShape(arcTruss(xyz(0, 0, 0), 10, 9, 0, -Pi / 2, Pi / 2, 1.0, 20))
+//addShape(arcTruss(xyz(0, 5, 0), 8, 9, 0, -Pi / 3, Pi / 3, 2.0, 20))
+//addShape(spaceTruss(horizontalTrussPositions(xyz(0, 0, 0), 1, 1, 9, 10)))
+
+addShape(Truss.trussPyramid(10, 10, 1, 1, 0.98))

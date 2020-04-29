@@ -1,7 +1,5 @@
-val appScalaVersion = "2.13.2"
-val appVersion = "0.2-SNAPSHOT"
-ThisBuild / scalaVersion := appScalaVersion
-ThisBuild / version := appVersion
+ThisBuild / scalaVersion := "2.13.1"
+ThisBuild / version := "0.2-SNAPSHOT"
 ThisBuild / organization := "app.fmgp"
 ThisBuild / organizationHomepage := Some(url("https://fmgp.app/"))
 
@@ -39,7 +37,7 @@ ThisBuild / publishTo := sonatypePublishToBundle.value //FIXME
 //   else Some("releases" at nexus + "service/local/staging/deploy/maven2")
 //}
 
-name := "fmgp-threejs-root"
+name := "fmgp-generative-design"
 publishArtifact := false
 val threeVersion = "0.108.0" // https://www.npmjs.com/package/three //TODO update version 0.113
 val circeVersion = "0.13.0"
@@ -47,8 +45,6 @@ val circeVersion = "0.13.0"
 lazy val baseSettings: Project => Project =
   _.enablePlugins(ScalaJSPlugin)
     .settings(
-      scalaVersion := appScalaVersion,
-      version := appVersion,
       //scalacOptions ++= ScalacOptions.flags,
       //scalaJSUseMainModuleInitializer := true,
       scalaJSLinkerConfig ~= (_
