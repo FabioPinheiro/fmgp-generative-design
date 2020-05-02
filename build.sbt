@@ -1,5 +1,5 @@
-ThisBuild / scalaVersion := "2.13.1"
-ThisBuild / version := "0.2-SNAPSHOT"
+ThisBuild / scalaVersion := "2.13.1" //"2.13.2"
+ThisBuild / version := "0.1-M2-SNAPSHOT"
 ThisBuild / organization := "app.fmgp"
 ThisBuild / organizationHomepage := Some(url("https://fmgp.app/"))
 
