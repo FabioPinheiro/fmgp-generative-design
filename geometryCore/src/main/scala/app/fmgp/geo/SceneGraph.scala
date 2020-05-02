@@ -41,6 +41,12 @@ trait DefaultMaterials {
     aux.side = DoubleSide
     aux
   }
+  val basicMat = new MeshBasicMaterial(
+    typings.three.meshBasicMaterialMod.MeshBasicMaterialParameters(
+      color = 0x00ff00,
+      side = DoubleSide
+    )
+  )
 }
 
 /** @see [[https://github.com/pafalium/gd-web-env/blob/master/src/SceneGraph/extrusion.js]] */

@@ -110,5 +110,10 @@ clear
 //addShape(arcTruss(xyz(0, 0, 0), 10, 9, 0, -Pi / 2, Pi / 2, 1.0, 20))
 //addShape(arcTruss(xyz(0, 5, 0), 8, 9, 0, -Pi / 3, Pi / 3, 2.0, 20))
 //addShape(spaceTruss(horizontalTrussPositions(xyz(0, 0, 0), 1, 1, 9, 10)))
+//addShape(Truss.trussPyramid(10, 10, 1, 1, 0.98))
 
-addShape(Truss.trussPyramid(10, 10, 1, 1, 0.98))
+addShape(Heart.path(x = 0, y = 0))
+//addShape(Heart.planeShape(x = 0, y = 0))
+//addShape(Heart.planeShape(x = 0, y = 0, size = 0.5))
+//addShape(Heart.planeShape(holes = Seq(Heart.path(x = 0, y = 1, size = 0.5)), x = 0, y = 0, size = 1))
+addShape(Heart.extrude(holes = Seq(Heart.path(x = 0, y = 1, size = 0.5)), x = 0, y = 0, size = 1))

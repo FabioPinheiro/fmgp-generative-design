@@ -139,15 +139,57 @@ object Torus {
       .transformWith(Matrix.translate(center.asVec))
 }
 
-case class Line(
-    vertices: Seq[XYZ]
+// ###########################
+// ### PATH & Line & Curve ###
+// ###########################
+case class Extrude(
+    path: MultiPath,
+    holes: Seq[MultiPath] = Seq.empty,
+    options: Option[Extrude.Options] = None
 ) extends Shape
+
+object Extrude {
+  case class Options(
+      //UVGenerator: Option[typings.three.extrudeGeometryMod.UVGenerator] = None,
+      bevelEnabled: Option[Boolean] = None,
+      bevelOffset: Option[Double] = None,
+      bevelSegments: Option[Double] = None,
+      bevelSize: Option[Double] = None,
+      bevelThickness: Option[Double] = None,
+      curveSegments: Option[Double] = None,
+      depth: Option[Double] = None,
+      extrudePath: Option[MultiPath] = None,
+      steps: Option[Double] = None
+  )
+}
+
+case class PlaneShape(path: MultiPath, holes: Seq[MultiPath] = Seq.empty) extends Shape
+
+sealed trait MyPath extends Shape //val curveSegments: Int = 12
+
+case class LinePath(vertices: Seq[XYZ]) extends MyPath
+object LinePath {
+  def apply(v1: XYZ, v2: XYZ): LinePath = LinePath(Seq(v1, v2))
+}
+
+case class MultiPath(paths: Seq[MyPath]) extends MyPath with Seq[MyPath] {
+  override def iterator: Iterator[MyPath] = paths.iterator
+  override def apply(i: Int): MyPath = paths(i)
+  override def length: Int = paths.length
+}
+object MultiPath {
+  def apply(path: MyPath): MultiPath = MultiPath(Seq(path))
+  def apply(): MultiPath = MultiPath(Seq.empty)
+  //implicit def implicitConverter(s: Seq[MyPath]): MultiPath = MultiPath(s)
+}
+
+case class CubicBezierPath(a: XYZ, af: Vec, bf: Vec, b: XYZ) extends MyPath //add arcLengthDivisions: Double
 
 case class Circle(
     radius: Double,
     center: XYZ = XYZ.origin,
     fill: Boolean = false
-) extends Shape
+) extends Shape //MyPath
 
 // ###################
 // ### $$$$$$$$$$$ ###
@@ -157,4 +199,26 @@ object RegularPolygon {
   def radius(size: Double, numberOfSides: Double) = size / (2 * math.sin(math.Pi / numberOfSides))
   //Apothem = Radius × cos(Pi/n)  # n=numbner of sides
   //Side = 2 × Apothem × tan(Pi/n) # n=number of sides
+}
+
+case class PathBuilder(startPoint: XYZ) {
+  var currentPoint: XYZ = startPoint
+  var multiPath: Seq[MyPath] = Seq.empty
+
+  def build: MultiPath = MultiPath(multiPath.reverse)
+  def moveToStart: PathBuilder = moveTo(startPoint)
+  def moveTo(xyz: XYZ): PathBuilder = {
+    currentPoint = xyz
+    this
+  }
+  def lineTo(traget: XYZ): PathBuilder = {
+    multiPath = LinePath(currentPoint, traget) +: multiPath
+    currentPoint = traget
+    this
+  }
+  def bezierCurveTo(af: Vec, bf: Vec, tangent: XYZ): PathBuilder = {
+    multiPath = CubicBezierPath(a = currentPoint, af = af, bf = bf, b = tangent) +: multiPath
+    currentPoint = tangent
+    this
+  }
 }

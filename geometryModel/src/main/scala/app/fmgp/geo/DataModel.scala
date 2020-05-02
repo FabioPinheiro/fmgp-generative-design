@@ -37,6 +37,12 @@ sealed trait Coordinate {
   def asVec: Vec = Vec(x, y, z)
 }
 
+sealed trait Coordinate2D extends Coordinate {
+  def toXY0: XYZ = { assert(z == 0); XYZ(x, y, 0) }
+  def toX0Z: XYZ = { assert(z == 0); XYZ(x, 0, z) }
+}
+sealed trait Coordinate3D extends Coordinate2D
+
 /**
   * XYZ
   *
@@ -49,6 +55,8 @@ final case class XYZ(x: Double, y: Double, z: Double = 0) extends Coordinate {
     assert(z == 0)
     Polar.fromXY(x, y)
   }
+
+  def scale(s: Double): XYZ = XYZ(x * s, y * s, z * s)
 
   def +(other: XYZ) = XYZ(x + other.x, y + other.y, z + other.z)
   def +(x: Double = 0, y: Double = 0, z: Double = 0): XYZ = this + XYZ(x, y, z)
@@ -71,16 +79,16 @@ object XYZ {
 /**
   * ### 2D ###
   *
-  * @param module 'ρ' (Rho) - module is also called the radius vector
+  * @param module 'ρ' (Rho) - module*size is also called the radius vector
   * @param argument 'ϕ' (Phi) - argument is also called the polar angle
   */
-final case class Polar(rho: Double, phi: Double) extends Coordinate {
+final case class Polar(rho: Double, phi: Double) extends Coordinate2D {
   def argument = rho
   def module = phi
 
   def x = rho * Math.cos(phi)
   def y = rho * Math.sin(phi)
-  def z = 0
+  def z = 0 //FIXME
 }
 
 object Polar {
@@ -93,7 +101,7 @@ object Polar {
 }
 
 /** Cylindrical Coordinate among the Y-axis */
-final case class Cylindrical(rho: Double, phi: Double, y: Double) extends Coordinate {
+final case class Cylindrical(rho: Double, phi: Double, y: Double) extends Coordinate3D {
   def x = rho * Math.cos(phi)
   def z = rho * Math.sin(phi)
 }
@@ -105,7 +113,7 @@ object Cylindrical {
     Cylindrical(Math.sqrt(x * x + z * z), Math.atan(z / x), y)
 }
 
-final case class Spherical(rho: Double, phi: Double, psi: Double) extends Coordinate {
+final case class Spherical(rho: Double, phi: Double, psi: Double) extends Coordinate3D {
   def x = rho * Math.sin(psi) * Math.cos(phi)
   def y = rho * Math.sin(psi) * Math.sin(phi)
   def z = rho * Math.cos(psi)

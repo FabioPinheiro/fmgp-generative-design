@@ -10,6 +10,9 @@ import scala.scalajs.js
 import js.{undefined => ^}
 import js.JSConverters._
 import scala.scalajs.js.UndefOrOps
+import app.fmgp.geo.LinePath
+import app.fmgp.geo.CubicBezierPath
+import app.fmgp.geo.MultiPath
 
 object WorldImprovements {
 
@@ -41,7 +44,7 @@ object WorldImprovements {
 
   case class GenerateOP(
       wireframe: Boolean = false,
-      material: typings.three.materialMod.Material = geo.SceneGraph.solidMat
+      material: typings.three.materialMod.Material = geo.SceneGraph.surfaceMat
   ) {
     def withWireframe: GenerateOP = copy(wireframe = true)
     def withMaterial(material: typings.three.materialMod.Material): GenerateOP = copy(material = material)
@@ -61,6 +64,97 @@ object WorldImprovements {
         new LineSegments(wireframe).asInstanceOf[Object3D]
       } else new Mesh(geometry, material).asInstanceOf[Object3D]
     }
+  }
+
+  def multiPath2ShapePath(multiPath: geo.MultiPath): typings.three.shapeMod.Shape = {
+    val sss = new typings.three.shapeMod.Shape
+    var location: Option[geo.XYZ] = None
+    multiPath.paths.map {
+      case LinePath(vertices) =>
+        vertices match {
+          case Nil => //NONE
+          case head +: seq =>
+            location = Some(
+              location
+                .filter(_ == head)
+                .getOrElse { sss.moveTo(head.x, head.y); head }
+            )
+            seq.foreach { v =>
+              sss.lineTo(v.x, v.y)
+              location = Some(v)
+            }
+        }
+      case CubicBezierPath(a, af, bf, b) =>
+        location = Some(
+          location
+            .filter(_ == a)
+            .getOrElse { sss.moveTo(a.x, a.y); a }
+        )
+        sss.bezierCurveTo(af.x, af.y, bf.x, bf.y, b.x, b.y)
+        location = Some(b)
+
+      case MultiPath(paths) => ???
+    }
+    sss
+  }
+
+  def multiPath2Path(multiPath: geo.MultiPath): typings.three.pathMod.Path = {
+    val sss = new typings.three.pathMod.Path
+    var location: Option[geo.XYZ] = None
+    multiPath.paths.map {
+      case LinePath(vertices) =>
+        vertices match {
+          case Nil => //NONE
+          case head +: seq =>
+            location = Some(
+              location
+                .filter(_ == head)
+                .getOrElse { sss.moveTo(head.x, head.y); head }
+            )
+            seq.foreach { v =>
+              sss.lineTo(v.x, v.y)
+              location = Some(v)
+            }
+        }
+      case CubicBezierPath(a, af, bf, b) =>
+        location = Some(
+          location
+            .filter(_ == a)
+            .getOrElse { sss.moveTo(a.x, a.y); a }
+        )
+        sss.bezierCurveTo(af.x, af.y, bf.x, bf.y, b.x, b.y)
+        location = Some(b)
+
+      case MultiPath(paths) => ???
+    }
+    sss
+  }
+
+  def multiPath2Curve(multiPath: geo.MultiPath): typings.three.curveMod.Curve[typings.three.vector3Mod.Vector3] = {
+    val curves = new CurvePath[typings.three.vector3Mod.Vector3]
+    multiPath.paths.map {
+      case LinePath(vertices) =>
+        vertices match {
+          case Nil => //NONE
+          case head +: seq =>
+            seq
+              .foldLeft(head) { (a, b) =>
+                val lc = new LineCurve3(new Vector3(a.x, a.y, a.z), new Vector3(b.x, b.y, b.z))
+                curves.add(lc)
+                b
+              }
+        }
+      case CubicBezierPath(a, af, bf, b) =>
+        val cbc = new CubicBezierCurve3(
+          new Vector3(a.x, a.y, a.z),
+          new Vector3(af.x, af.y, af.z),
+          new Vector3(bf.x, bf.y, bf.z),
+          new Vector3(b.x, b.y, b.z)
+        )
+        curves.add(cbc)
+      case MultiPath(paths) => ???
+    }
+    curves
   }
 
   def generateObj3D(shapes: Seq[geo.Shape]): Object3D = {
@@ -91,7 +185,6 @@ object WorldImprovements {
         obj
 
       case cylinder: geo.Cylinder =>
-        //CylinderGeometry(radiusTop : Float, radiusBottom : Float, height : Float, radialSegments : Integer, heightSegments : Integer, openEnded : Boolean, thetaStart : Float, thetaLength : Float)
         val cylinderGeom = new CylinderGeometry(
           radiusTop = cylinder.topRadius,
           radiusBottom = cylinder.bottomRadius,
@@ -102,7 +195,6 @@ object WorldImprovements {
           thetaStart = cylinder.thetaStart.orUndefined,
           thetaLength = cylinder.thetaLength.orUndefined
         )
-        //obj.scale.set(cylinder.bottomRadius, cylinder.height)  // For  new CylinderGeometry(1.0, 1.0, 1.0, 32, ^, ^, ^, ^)
         state.toObj3D(cylinderGeom)
 
       case torus: geo.Torus =>
@@ -115,11 +207,55 @@ object WorldImprovements {
         )
         state.toObj3D(torusGeom)
 
-      case line: geo.Line =>
-        val geometryLine = new Geometry()
-        line.vertices.foreach(v => geometryLine.vertices.push(new Vector3(v.x, v.y, v.z)))
-        new Line(geometryLine, materialLine).asInstanceOf[Object3D]
+      case geo.Extrude(multiPath: MultiPath, holes: Seq[MultiPath], options: Option[geo.Extrude.Options]) =>
+        val ooo = options
+          .map { o =>
+            typings.three.extrudeGeometryMod.ExtrudeGeometryOptions(
+              //UVGenerator: UVGenerator = null,
+              bevelEnabled = if (o.bevelEnabled.isDefined) o.bevelEnabled.get else null,
+              bevelOffset = if (o.bevelOffset.isDefined) o.bevelOffset.get else null,
+              bevelSegments = if (o.bevelSegments.isDefined) o.bevelSegments.get else null,
+              bevelSize = if (o.bevelSize.isDefined) o.bevelSize.get else null,
+              bevelThickness = if (o.bevelThickness.isDefined) o.bevelThickness.get else null,
+              curveSegments = if (o.curveSegments.isDefined) o.curveSegments.get else null,
+              depth = if (o.depth.isDefined) o.depth.get else null,
+              extrudePath = o.extrudePath.map(e => multiPath2Curve(e)).orNull,
+              steps = if (o.steps.isDefined) o.steps.get else null,
+            )
+          }
+          .getOrElse(typings.three.extrudeGeometryMod.ExtrudeGeometryOptions())
 
+        val jsPath = multiPath2ShapePath(multiPath)
+        jsPath.holes = holes.map(e => multiPath2Path(e)).toJSArray
+        state.toObj3D(new ExtrudeBufferGeometry(jsPath, ooo))
+
+      case geo.PlaneShape(multiPath, holes: Seq[MultiPath]) =>
+        val shape = multiPath2ShapePath(multiPath)
+        shape.holes = holes.map(e => multiPath2Path(e)).toJSArray
+        val geometry = new ShapeBufferGeometry(shape)
+        new Mesh(geometry, geo.SceneGraph.basicMat).asInstanceOf[Object3D]
+
+      case path: geo.MyPath =>
+        path match {
+          case multiPath: geo.MultiPath =>
+            val points = multiPath2Path(multiPath).getPoints()
+            val bg = new BufferGeometry().setFromPoints(points.map(e => e))
+            new Line(bg, materialLine).asInstanceOf[Object3D]
+          case geo.LinePath(vertices) =>
+            val geometryLine = new Geometry()
+            vertices.foreach(v => geometryLine.vertices.push(new Vector3(v.x, v.y, v.z)))
+            new Line(geometryLine, materialLine).asInstanceOf[Object3D]
+          case geo.CubicBezierPath(a, af, bf, b) =>
+            val curve = new CubicBezierCurve3(
+              new Vector3(a.x, a.y, a.z),
+              new Vector3(af.x, af.y, af.z),
+              new Vector3(bf.x, bf.y, bf.z),
+              new Vector3(b.x, b.y, b.z)
+            )
+            val geometry = new BufferGeometry().setFromPoints(curve.getPoints(50).map(x => x))
+            new Line(geometry, materialLine).asInstanceOf[Object3D]
+        }
+      //new Line(geometryLine, materialLine).asInstanceOf[Object3D]
       case c: geo.Circle =>
         val geometry = new CircleGeometry(c.radius, 32)
         val obj = if (c.fill) {

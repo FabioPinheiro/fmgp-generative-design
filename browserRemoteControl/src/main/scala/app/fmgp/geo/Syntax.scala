@@ -30,8 +30,8 @@ trait BaseSyntax {
   def sphere(radius: Double, center: XYZ = XYZ.origin): Sphere = addShape(Sphere(radius, center))
   def cylinder(radius: Double, height: Double): Cylinder = addShape(Cylinder(radius, height))
 
-  def line(vertices: Seq[XYZ], closeLine: Boolean = false): Line =
-    addShape(Line(if (closeLine) vertices ++ vertices.headOption else vertices))
+  def line(vertices: Seq[XYZ], closeLine: Boolean = false): LinePath =
+    addShape(LinePath(if (closeLine) vertices ++ vertices.headOption else vertices))
   def circle(radius: Double, center: XYZ = XYZ.origin): Circle = addShape(Circle(radius, center))
 }
 

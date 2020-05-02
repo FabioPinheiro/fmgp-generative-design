@@ -125,7 +125,7 @@ trait KhepriExamples extends Syntax {
       leafRadius: Double = 0.1
   ): ShapeSeq = {
     val top = base + Polar(rho = length, phi = angle).asVec
-    def branch(p0: XYZ, p1: XYZ): Shape = Line(Seq(p0, p1))
+    def branch(p0: XYZ, p1: XYZ): Shape = LinePath(Seq(p0, p1))
     def leaf(p: XYZ): Shape = Circle(leafRadius, top)
     ShapeSeq(branch(base, top)) ++ {
       if (iterations < 1) ShapeSeq(leaf(top))
@@ -162,7 +162,7 @@ trait KhepriExamples extends Syntax {
       leafRadius: Double = 0.1
   )(implicit random: Random): ShapeSeq = {
     val top = base + Polar(rho = length, phi = angle).asVec
-    def branch(p0: XYZ, p1: XYZ): Shape = Line(Seq(p0, p1))
+    def branch(p0: XYZ, p1: XYZ): Shape = LinePath(Seq(p0, p1))
     def leaf(p: XYZ): Shape = Circle(leafRadius, top)
     ShapeSeq(branch(base, top)) ++ {
       if (length < 0.5) ShapeSeq(leaf(top))
@@ -299,10 +299,42 @@ trait KhepriExamples extends Syntax {
       }
     }
   }
-  //### 7.2 Constructive Geometry - union; intersection; subtraction
-  //https://github.com/mrdoob/three.js/issues/16099
-  //https://threejs.org/examples/#webgl_clipping_stencil
+
   //### 7.6 Extrusions
+  object Heart {
+    def path(x: Double = 0, y: Double = 0, size: Double = 1): MultiPath = {
+      PathBuilder(XYZ(x, y).scale(size))
+        .bezierCurveTo(Vec(x, y).scale(size), Vec(x - 1, y - 5).scale(size), XYZ(x - 5, y - 5).scale(size))
+        .bezierCurveTo(Vec(x - 11, y - 5).scale(size), Vec(x - 11, y + 2).scale(size), XYZ(x - 11, y + 2).scale(size))
+        .bezierCurveTo(Vec(x - 11, y + 6).scale(size), Vec(x - 8, y + 10.4).scale(size), XYZ(x, y + 14).scale(size))
+        .bezierCurveTo(Vec(x + 7, y + 10.4).scale(size), Vec(x + 11, y + 6).scale(size), XYZ(x + 11, y + 2).scale(size))
+        .bezierCurveTo(Vec(x + 11, y + 2).scale(size), Vec(x + 11, y - 5).scale(size), XYZ(x + 5, y - 5).scale(size))
+        .bezierCurveTo(Vec(x + 2, y - 5).scale(size), Vec(x, y).scale(size), XYZ(x, y).scale(size))
+        .build
+    }
+
+    def planeShape(
+        holes: Seq[MultiPath] = Seq.empty,
+        x: Double = 0,
+        y: Double = 0,
+        size: Double = 1
+    ) = PlaneShape(path(x = x, y = y, size = size), holes = holes)
+
+    val extrudePath: MultiPath =
+      PathBuilder(XYZ(0, 0, 0)).bezierCurveTo(Vec(0, 0, -5), Vec(0, 0, -10), XYZ(0, 20, -20)).build
+
+    def extrude(
+        holes: Seq[MultiPath] = Seq.empty,
+        extrudePath: MultiPath = extrudePath,
+        x: Double = 0,
+        y: Double = 0,
+        size: Double = 1
+    ) = Extrude(
+      path = path(x = x, y = y, size = size),
+      holes = holes,
+      options = Some(Extrude.Options(extrudePath = Some(extrudePath), steps = Some(50)))
+    )
+  }
 
   //def sinusoidalWall ### 7.6.2 Extrusion Along a Path
 
