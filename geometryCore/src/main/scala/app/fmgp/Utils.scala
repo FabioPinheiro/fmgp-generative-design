@@ -35,11 +35,12 @@ object Utils {
   def newCamera(
       width: Double,
       height: Double,
+      dimensions: Dimensions.D = Dimensions.D3,
       size: Double = 30,
       near: Double = 1,
       far: Double = 500
   ): Camera =
-    (Dimensions.D3: Dimensions.D) match {
+    (dimensions) match {
       case Dimensions.D2 =>
         val proportions = width / height
         val aux = size / 2 * proportions

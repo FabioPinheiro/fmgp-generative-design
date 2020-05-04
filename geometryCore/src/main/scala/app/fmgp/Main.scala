@@ -20,14 +20,21 @@ import js.{undefined => ^}
 import org.scalajs.logging.Logger
 
 object Global {
+  val debugUI = true
+  val wsURL = "ws://127.0.0.1:8888/browser"
   var scene: Scene = _
+  var sceneUI: Scene = _
   var animateFrameId: Option[Int] = None
   var modelToAnimate: () => Option[Object3D] = () => None
   var camera: Option[Camera] = None
+  var cameraUI: Option[Camera] = None
   var controls: Option[FlyControls] = None
   var stats: Stats = new Stats()
-  stats.showPanel(1); // 0: fps, 1: ms, 2: mb, 3+: custom
-  dom.document.body.appendChild(Global.stats.dom);
+
+  stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+  stats.dom.style.right = "0px"
+  stats.dom.style.left = null
+  dom.document.body.appendChild(stats.dom)
 }
 
 object Log extends Logger {
@@ -39,9 +46,14 @@ object Main {
 
   lazy val renderer: WebGLRenderer = {
     val aux = new WebGLRenderer(
-      WebGLRendererParameters(antialias = true, alpha = true)
+      WebGLRendererParameters(
+        antialias = true,
+        alpha = true,
+        //context = org.scalajs.dom.raw.WebGLRenderingContext.WEBGL2
+      )
     )
-    aux.setSize(dom.window.innerWidth * 1, dom.window.innerHeight * 0.9)
+    aux.setSize(dom.window.innerWidth, dom.window.innerHeight)
+    aux.autoClear = false //For multi scene
     aux
   }
 
@@ -51,55 +63,55 @@ object Main {
     app.fmgp.Fabio.version()
 
     //mount(dom.document.body, mainDiv)
-    val select = dom.document.createElement("select")
-    select.id = "modelSelectId"
-    val option0 = dom.document.createElement("option")
-    val option1 = dom.document.createElement("option")
-    val option2 = dom.document.createElement("option")
-    val option3 = dom.document.createElement("option")
-    val option4 = dom.document.createElement("option")
-    option0.asInstanceOf[js.Dynamic].value = "0"
-    option1.asInstanceOf[js.Dynamic].value = "1"
-    option2.asInstanceOf[js.Dynamic].value = "2"
-    option3.asInstanceOf[js.Dynamic].value = "3"
-    option4.asInstanceOf[js.Dynamic].value = "4"
-    option0.textContent = "WebSocketText"
-    option1.textContent = "Cylinder"
-    option2.textContent = "shapesDemo2D"
-    option3.textContent = "atomiumWorld"
-    option4.textContent = "WebSocket"
-    select.appendChild(option0)
-    select.appendChild(option4)
-    select.appendChild(option1)
-    select.appendChild(option2)
-    select.appendChild(option3)
+    // val select = dom.document.createElement("select")
+    // select.id = "modelSelectId"
+    // val option0 = dom.document.createElement("option")
+    // val option1 = dom.document.createElement("option")
+    // val option2 = dom.document.createElement("option")
+    // val option3 = dom.document.createElement("option")
+    // val option4 = dom.document.createElement("option")
+    // option0.asInstanceOf[js.Dynamic].value = "0"
+    // option1.asInstanceOf[js.Dynamic].value = "1"
+    // option2.asInstanceOf[js.Dynamic].value = "2"
+    // option3.asInstanceOf[js.Dynamic].value = "3"
+    // option4.asInstanceOf[js.Dynamic].value = "4"
+    // option0.textContent = "WebSocketText"
+    // option1.textContent = "Cylinder"
+    // option2.textContent = "shapesDemo2D"
+    // option3.textContent = "atomiumWorld"
+    // option4.textContent = "WebSocket"
+    // select.appendChild(option0)
+    // select.appendChild(option4)
+    // select.appendChild(option1)
+    // select.appendChild(option2)
+    // select.appendChild(option3)
 
-    val message = dom.document.createElement("div")
-    message.textContent = "Hi this is a dome of the threejs scalajs facede : "
-    message.appendChild(select)
-    dom.document.body.appendChild(message)
-    val textarea: Element = dom.document.createElement("textarea")
-    //var node: Option[Element] = None
-    var node: Option[Element] = Some(renderer.domElement)
+    // val message = dom.document.createElement("div")
+    // message.appendChild(select)
+    // dom.document.body.appendChild(message)
+    // val textarea: Element = dom.document.createElement("textarea")
+    // //var node: Option[Element] = None
+    //var node: Option[Element] = Some(renderer.domElement)
     dom.document.body.appendChild(renderer.domElement)
+    renderer.domElement.style = "position: fixed; top: 0px; left: 0px;"
 
-    Websocket.newWebSocket("ws://127.0.0.1:8888/browser", Log, masterWorld)
-    select.addEventListener(
-      `type` = "change",
-      listener = (e0: dom.Event) => {
-        val selected = js.Dynamic.global.modelSelectId.value.asInstanceOf[String].toInt
-        if (selected == 0) {
-          node.foreach(dom.document.body.removeChild)
-          node = Some(textarea)
-          dom.document.body.appendChild(textarea)
-        } else {
-          node.foreach(dom.document.body.removeChild)
-          node = Some(renderer.domElement)
-          dom.document.body.appendChild(renderer.domElement)
-        }
-        init(selected)
-      }
-    )
+    Websocket.newWebSocket(Global.wsURL, Log, masterWorld)
+    // select.addEventListener(
+    //   `type` = "change",
+    //   listener = (e0: dom.Event) => {
+    //     val selected = js.Dynamic.global.modelSelectId.value.asInstanceOf[String].toInt
+    //     if (selected == 0) {
+    //       node.foreach(dom.document.body.removeChild)
+    //       node = Some(textarea)
+    //       dom.document.body.appendChild(textarea)
+    //     } else {
+    //node.foreach(dom.document.body.removeChild)
+    //node = Some(renderer.domElement)
+    //dom.document.body.appendChild(renderer.domElement)
+    //     }
+    //     init(selected)
+    //   }
+    // )
 
     init(4) //WebSocket
     ()
@@ -110,19 +122,22 @@ object Main {
     if (scenario == 0) {
       Log.info(s"This scenario have no geometry model")
     } else {
+      Global.sceneUI = new Scene()
       Global.scene = new Scene()
-      val model: GeoWarp = scenario match {
-        case 1 =>
-          val boxGeom = new BoxGeometry(1, 1, 1, ^, ^, ^) //c.width, c.height c.depth
-          val cylinderGeom = new CylinderGeometry(1.0, 1.0, 1.0, 32, ^, ^, ^, ^)
-          val sphereGeom = new SphereGeometry(1.0, 32, 32, ^, ^, ^, ^)
-          Object3DWarp(Dimensions.D3)
-            .add(new Mesh(cylinderGeom, new MeshPhongMaterial()).asInstanceOf[Object3D])
-        // obj.scale.set(c.width, c.height, c.depth)
-        case 2 => WorldWarp(GeometryExamples.shapesDemo2D)
-        case 3 => WorldWarp(GeometryExamples.atomiumWorld)
-        case 4 => masterWorld
-      }
+
+      val model: GeoWarp = masterWorld
+      // scenario match {
+      //   case 1 =>
+      //     val boxGeom = new BoxGeometry(1, 1, 1, ^, ^, ^) //c.width, c.height c.depth
+      //     val cylinderGeom = new CylinderGeometry(1.0, 1.0, 1.0, 32, ^, ^, ^, ^)
+      //     val sphereGeom = new SphereGeometry(1.0, 32, 32, ^, ^, ^, ^)
+      //     Object3DWarp(Dimensions.D3)
+      //       .add(new Mesh(cylinderGeom, new MeshPhongMaterial()).asInstanceOf[Object3D])
+      //   // obj.scale.set(c.width, c.height, c.depth)
+      //   case 2 => WorldWarp(GeometryExamples.shapesDemo2D)
+      //   case 3 => WorldWarp(GeometryExamples.atomiumWorld)
+      //   case 4 => masterWorld
+      // }
 
       val dimensions: Dimensions.D = Dimensions.D3
 
@@ -156,6 +171,43 @@ object Main {
       }
 
       Global.scene.add(Global.modelToAnimate().getOrElse(model.generateObj3D))
+
+      Global.cameraUI = {
+        def addToScene(obj: typings.three.object3DMod.Object3D) = {
+          if (Global.debugUI) Global.scene.add(obj.clone(true))
+          Global.sceneUI.add(obj)
+        }
+
+        val proportions = dom.window.innerHeight / dom.window.innerWidth
+        val ui =
+          new OrthographicCamera(left = 0, right = 1, top = 0, bottom = -proportions, near = 0, far = 3)
+            .asInstanceOf[Camera]
+
+        Global.scene.add((new CameraHelper(ui)))
+
+        ui.position.set(0, 0, 0)
+        ui.lookAt(new Vector3(0, 0, -1))
+        addToScene(new typings.three.mod.Mesh(new CircleGeometry(0.05, 32)).translateZ(-1))
+        val loader = new FontLoader()
+        loader.load(
+          "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/gentilis_regular.typeface.json", //"fonts/helvetiker_bold.typeface.json",
+          (f: typings.three.fontMod.Font) => {
+            val textParameters = typings.three.textGeometryMod.TextGeometryParameters(
+              font = f,
+              size = 0.02,
+              height = 0,
+              curveSegments = 12,
+            )
+            val geometry = new TextBufferGeometry(Global.wsURL, textParameters).translate(0.01, -0.02, 0)
+            val basicMarerial = new typings.three.meshBasicMaterialMod.MeshBasicMaterial()
+            basicMarerial.color = new typings.three.colorMod.Color(0x000000)
+            addToScene(new typings.three.mod.Mesh(geometry, basicMarerial))
+
+          }
+        )
+
+        Some(ui)
+      }
       Global.scene.add(Utils.computeStaticThreeObjects)
 
       if (Global.animateFrameId.isEmpty) animate(1)
@@ -169,6 +221,7 @@ object Main {
     Global.animateFrameId = Some(dom.window.requestAnimationFrame(animate))
     Global.controls.foreach(_.update(1)) // required if controls.enableDamping or controls.autoRotate are set to true
     Global.camera.foreach(renderer.render(Global.scene, _))
+    Global.cameraUI.foreach(renderer.render(Global.sceneUI, _))
     Global.stats.end();
   }
 }

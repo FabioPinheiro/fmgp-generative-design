@@ -157,6 +157,7 @@ object WorldImprovements {
     curves
   }
 
+  //FIXME change Object3D to typings.three.object3DMod.Object3D and remove the asInstanceOf
   def generateObj3D(shapes: Seq[geo.Shape]): Object3D = {
     def generateShape(shape: geo.Shape, state: GenerateOP): Object3D = shape match {
       case geo.Wireframe(shape) =>

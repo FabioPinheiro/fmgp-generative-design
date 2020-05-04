@@ -28,7 +28,7 @@ browserRemoteControl/console
 ```
 
 ## TODO LIST / Roadmap / Ideas
-- Basic interface FE
+- Basic interface FE [WIP]
 - Improve Websocket (feedback and reconnect) [12h]
 - Make/Get nice algorithmic design examples [3W]
 - Fix Live Demo [8h]
@@ -36,13 +36,16 @@ browserRemoteControl/console
   - Support for Terrain[16h]
   - Draft initial support for light[16h]
   - Draft initial support for materials [1w]
+- Interface improvements:
+  - Support for scene resizing[8h]
 - Publish version 0.1 to Maven
   - Fix build.sbt for publish [16h]
   - Make documentation [2w]
+  - Cleanup code
   - Rename Github repositorym, project name in Maven and modelos in SBT
   - Make a Docker Container with everything ready to use.
     - Serve the FE's javascript file via HTTP from the BE. [4h]
-    - Draft DocketFile [8h]
+    - Draft DocketFile [16h]
   - Selling points ideas:
     - Scala has really nice BigData libraries but is lack of libraries for Machine Learning, unlike python.
       I don't think the language is difficult, quite the opposite! IMO the problem is the lack of tools and libs for Data Visualization.
