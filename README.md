@@ -29,7 +29,7 @@ browserRemoteControl/console
 
 ## TODO LIST / Roadmap / Ideas
 - Basic interface FE [WIP]
-- Improve Websocket (feedback and reconnect) [12h]
+  - Improve Websocket feedback on state [12h]
 - Make/Get nice algorithmic design examples [3W]
 - Fix Live Demo [8h]
 - Threejs:

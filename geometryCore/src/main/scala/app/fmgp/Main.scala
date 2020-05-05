@@ -95,7 +95,7 @@ object Main {
     dom.document.body.appendChild(renderer.domElement)
     renderer.domElement.style = "position: fixed; top: 0px; left: 0px;"
 
-    Websocket.newWebSocket(Global.wsURL, Log, masterWorld)
+    Websocket.AutoReconnect(Global.wsURL, Log, masterWorld)
     // select.addEventListener(
     //   `type` = "change",
     //   listener = (e0: dom.Event) => {
