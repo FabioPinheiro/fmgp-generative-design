@@ -14,32 +14,52 @@ import scala.scalajs.js
 //case class World(data: String)
 
 object Websocket {
-  val decoder = implicitly[Decoder[World]]
 
-  object AutoReconnect {
-    def apply(wsUrl: String, log: Logger, dynamicWorld: DynamicWorldWarp, defualtReconnectDelay: Int = 10000) =
-      new AutoReconnect(wsUrl, log, dynamicWorld, defualtReconnectDelay)
+  object State extends Enumeration {
+    type State = Value
+
+    /**	Socket has been created. The connection is not yet open. */
+    val CONNECTING = Value(0)
+
+    /** The connection is open and ready to communicate. */
+    val OPEN = Value(1)
+
+    /** The connection is in the process of closing. */
+    val CLOSING = Value(2)
+
+    /**	The connection is closed or couldn't be opened. */
+    val CLOSED = Value(3)
   }
 
-  class AutoReconnect(
+  val decoder = implicitly[Decoder[World]]
+
+  case class AutoReconnect(
       wsUrl: String,
       log: Logger,
       dynamicWorld: DynamicWorldWarp,
       defualtReconnectDelay: Int = 10000,
+      var onStateChange: State.State => Unit = (_: State.State) => (),
       var ws: js.UndefOr[WebSocket] = js.undefined,
   ) {
     connect(0)
+
+    def getState: State.State = ws.map(e => State(e.readyState)).getOrElse(State.CLOSED)
 
     /** @see https://japgolly.github.io/scalajs-react/#examples/websockets */
     private def connect(delay: Int): Unit = {
       log.info(s"WS try reconect to $wsUrl (in ${delay / 1000} s)")
       js.timers.setTimeout(delay) {
+        onStateChange(getState)
         val tmpWS = new WebSocket(wsUrl) //TODO Add a timeout here
         ws = tmpWS
-        tmpWS.onopen = { ev: Event => log.info(s"WS Connected '${ev.`type`}'") }
+        tmpWS.onopen = { ev: Event =>
+          log.info(s"WS Connected '${ev.`type`}'")
+          onStateChange(getState)
+        }
         tmpWS.onclose = { ev: CloseEvent =>
           log.warn(s"WS Closed because '${ev.reason}'")
           connect(defualtReconnectDelay)
+          onStateChange(getState)
         }
         tmpWS.onmessage = { ev: MessageEvent =>
           log.info(ev.data.toString)

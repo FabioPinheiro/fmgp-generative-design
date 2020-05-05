@@ -20,8 +20,9 @@ import js.{undefined => ^}
 import org.scalajs.logging.Logger
 
 object Global {
+  val masterWorld = DynamicWorldWarp()
+  var websocket = Websocket.AutoReconnect("ws://127.0.0.1:8888/browser", Log, masterWorld)
   val debugUI = true
-  val wsURL = "ws://127.0.0.1:8888/browser"
   var scene: Scene = _
   var sceneUI: Scene = _
   var animateFrameId: Option[Int] = None
@@ -57,10 +58,10 @@ object Main {
     aux
   }
 
-  val masterWorld = DynamicWorldWarp()
-
   def main(args: Array[String]): Unit = {
     app.fmgp.Fabio.version()
+    dom.document.body.appendChild(renderer.domElement)
+    renderer.domElement.style = "position: fixed; top: 0px; left: 0px;"
 
     //mount(dom.document.body, mainDiv)
     // val select = dom.document.createElement("select")
@@ -92,10 +93,7 @@ object Main {
     // val textarea: Element = dom.document.createElement("textarea")
     // //var node: Option[Element] = None
     //var node: Option[Element] = Some(renderer.domElement)
-    dom.document.body.appendChild(renderer.domElement)
-    renderer.domElement.style = "position: fixed; top: 0px; left: 0px;"
 
-    Websocket.AutoReconnect(Global.wsURL, Log, masterWorld)
     // select.addEventListener(
     //   `type` = "change",
     //   listener = (e0: dom.Event) => {
@@ -125,7 +123,7 @@ object Main {
       Global.sceneUI = new Scene()
       Global.scene = new Scene()
 
-      val model: GeoWarp = masterWorld
+      //val model: GeoWarp = masterWorld
       // scenario match {
       //   case 1 =>
       //     val boxGeom = new BoxGeometry(1, 1, 1, ^, ^, ^) //c.width, c.height c.depth
@@ -164,13 +162,14 @@ object Main {
           //orbit.enableRotate = false
           //orbit.screenSpacePanning = true
           case Dimensions.D3 =>
-            Global.modelToAnimate = if (model.dimensions.isD3) { () => Some(model.generateObj3D) }
-            else () => None
+            Global.modelToAnimate = if (Global.masterWorld.dimensions.isD3) { () =>
+              Some(Global.masterWorld.generateObj3D)
+            } else () => None
         }
         fly //orbit //firstPerson
       }
 
-      Global.scene.add(Global.modelToAnimate().getOrElse(model.generateObj3D))
+      Global.scene.add(Global.modelToAnimate().getOrElse(Global.masterWorld.generateObj3D))
 
       Global.cameraUI = {
         def addToScene(obj: typings.three.object3DMod.Object3D) = {
@@ -178,7 +177,7 @@ object Main {
           Global.sceneUI.add(obj)
         }
 
-        val proportions = dom.window.innerHeight / dom.window.innerWidth
+        val proportions /*aspect*/ = dom.window.innerHeight / dom.window.innerWidth
         val ui =
           new OrthographicCamera(left = 0, right = 1, top = 0, bottom = -proportions, near = 0, far = 3)
             .asInstanceOf[Camera]
@@ -187,7 +186,21 @@ object Main {
 
         ui.position.set(0, 0, 0)
         ui.lookAt(new Vector3(0, 0, -1))
-        addToScene(new typings.three.mod.Mesh(new CircleGeometry(0.05, 32)).translateZ(-1))
+
+        {
+          val circle = new CircleGeometry(0.05, 32)
+          val material = new MeshBasicMaterial(typings.three.meshBasicMaterialMod.MeshBasicMaterialParameters())
+          def updateColor(s: Websocket.State.State) = s match {
+            case Websocket.State.CONNECTING => material.color = new typings.three.colorMod.Color("blue")
+            case Websocket.State.OPEN       => material.color = new typings.three.colorMod.Color("green")
+            case Websocket.State.CLOSING    => material.color = new typings.three.colorMod.Color("yellow")
+            case Websocket.State.CLOSED     => material.color = new typings.three.colorMod.Color("red")
+          }
+          Global.websocket.onStateChange = updateColor _
+          val mesh = new typings.three.mod.Mesh(circle, material).translateZ(-1)
+          addToScene(mesh)
+        }
+
         val loader = new FontLoader()
         loader.load(
           "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/gentilis_regular.typeface.json", //"fonts/helvetiker_bold.typeface.json",
@@ -198,7 +211,7 @@ object Main {
               height = 0,
               curveSegments = 12,
             )
-            val geometry = new TextBufferGeometry(Global.wsURL, textParameters).translate(0.01, -0.02, 0)
+            val geometry = new TextBufferGeometry(Global.websocket.wsUrl, textParameters).translate(0.01, -0.02, 0)
             val basicMarerial = new typings.three.meshBasicMaterialMod.MeshBasicMaterial()
             basicMarerial.color = new typings.three.colorMod.Color(0x000000)
             addToScene(new typings.three.mod.Mesh(geometry, basicMarerial))

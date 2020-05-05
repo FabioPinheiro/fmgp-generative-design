@@ -28,8 +28,6 @@ browserRemoteControl/console
 ```
 
 ## TODO LIST / Roadmap / Ideas
-- Basic interface FE [WIP]
-  - Improve Websocket feedback on state [12h]
 - Make/Get nice algorithmic design examples [3W]
 - Fix Live Demo [8h]
 - Threejs:
@@ -38,6 +36,7 @@ browserRemoteControl/console
   - Draft initial support for materials [1w]
 - Interface improvements:
   - Support for scene resizing[8h]
+  - Make a way to select examples (including the debug interface)
 - Publish version 0.1 to Maven
   - Fix build.sbt for publish [16h]
   - Make documentation [2w]
