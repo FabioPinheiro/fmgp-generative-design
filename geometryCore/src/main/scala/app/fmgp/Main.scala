@@ -19,6 +19,8 @@ import org.scalajs.dom.raw.{Event, Element}
 import js.{undefined => ^}
 import org.scalajs.logging.Logger
 
+import scala.util.chaining._
+
 object Global {
   val masterWorld = DynamicWorldWarp()
   var websocket = Websocket.AutoReconnect("ws://127.0.0.1:8888/browser", Log, masterWorld)
@@ -36,6 +38,15 @@ object Global {
   stats.dom.style.right = "0px"
   stats.dom.style.left = null
   dom.document.body.appendChild(stats.dom)
+
+  val uiElements: scala.collection.mutable.HashMap[Int, InteractiveMesh] = scala.collection.mutable.HashMap.empty
+  def addUiElement(o: InteractiveMesh) = {
+    uiElements.put(o.id.toInt, o)
+    sceneUI.add(o.mesh); if (debugUI) scene.add(o.mesh.clone(true))
+  }
+
+  val raycaster = new Raycaster()
+  var uiEvent: Option[typings.three.AnonX] = None
 }
 
 object Log extends Logger {
@@ -43,7 +54,22 @@ object Log extends Logger {
   def trace(t: => Throwable): Unit = log(org.scalajs.logging.Level.Debug, t.toString)
 }
 
+case class InteractiveMesh(mesh: Mesh, onSelected: () => Unit = () => ()) { def id = mesh.id }
+
 object Main {
+  def onClickEvent(event: dom.MouseEvent) = {
+    // calculate mouse position in normalized device coordinates (-1 to +1) for both components
+    val x = (event.clientX / dom.window.innerWidth) * 2 - 1
+    val y = -(event.clientY / dom.window.innerHeight) * 2 + 1
+    Global.uiEvent = Some(typings.three.AnonX(x, y))
+  }
+  def onTouchEvent(event: dom.TouchEvent) = {
+    val x = (event.touches(0).screenX / dom.window.innerWidth) * 2 - 1
+    val y = -(event.touches(0).screenY / dom.window.innerHeight) * 2 + 1
+    Global.uiEvent = Some(typings.three.AnonX(x, y))
+  }
+  dom.window.addEventListener("click", onClickEvent, false)
+  dom.window.addEventListener("ontouch", onTouchEvent, false) //TODO need to test this
 
   lazy val renderer: WebGLRenderer = {
     val aux = new WebGLRenderer(
@@ -62,180 +88,155 @@ object Main {
     app.fmgp.Fabio.version()
     dom.document.body.appendChild(renderer.domElement)
     renderer.domElement.style = "position: fixed; top: 0px; left: 0px;"
-
-    //mount(dom.document.body, mainDiv)
-    // val select = dom.document.createElement("select")
-    // select.id = "modelSelectId"
-    // val option0 = dom.document.createElement("option")
-    // val option1 = dom.document.createElement("option")
-    // val option2 = dom.document.createElement("option")
-    // val option3 = dom.document.createElement("option")
-    // val option4 = dom.document.createElement("option")
-    // option0.asInstanceOf[js.Dynamic].value = "0"
-    // option1.asInstanceOf[js.Dynamic].value = "1"
-    // option2.asInstanceOf[js.Dynamic].value = "2"
-    // option3.asInstanceOf[js.Dynamic].value = "3"
-    // option4.asInstanceOf[js.Dynamic].value = "4"
-    // option0.textContent = "WebSocketText"
-    // option1.textContent = "Cylinder"
-    // option2.textContent = "shapesDemo2D"
-    // option3.textContent = "atomiumWorld"
-    // option4.textContent = "WebSocket"
-    // select.appendChild(option0)
-    // select.appendChild(option4)
-    // select.appendChild(option1)
-    // select.appendChild(option2)
-    // select.appendChild(option3)
-
-    // val message = dom.document.createElement("div")
-    // message.appendChild(select)
-    // dom.document.body.appendChild(message)
-    // val textarea: Element = dom.document.createElement("textarea")
-    // //var node: Option[Element] = None
-    //var node: Option[Element] = Some(renderer.domElement)
-
-    // select.addEventListener(
-    //   `type` = "change",
-    //   listener = (e0: dom.Event) => {
-    //     val selected = js.Dynamic.global.modelSelectId.value.asInstanceOf[String].toInt
-    //     if (selected == 0) {
-    //       node.foreach(dom.document.body.removeChild)
-    //       node = Some(textarea)
-    //       dom.document.body.appendChild(textarea)
-    //     } else {
-    //node.foreach(dom.document.body.removeChild)
-    //node = Some(renderer.domElement)
-    //dom.document.body.appendChild(renderer.domElement)
-    //     }
-    //     init(selected)
-    //   }
-    // )
-
-    init(4) //WebSocket
+    init
     ()
   }
 
-  def init(scenario: Int) = {
-    Log.info(s"### INIT scenario:'$scenario' ###")
-    if (scenario == 0) {
-      Log.info(s"This scenario have no geometry model")
-    } else {
-      Global.sceneUI = new Scene()
-      Global.scene = new Scene()
+  def init = {
+    Log.info(s"### INIT ###")
+    Global.sceneUI = new Scene()
+    Global.scene = new Scene()
 
-      //val model: GeoWarp = masterWorld
-      // scenario match {
-      //   case 1 =>
-      //     val boxGeom = new BoxGeometry(1, 1, 1, ^, ^, ^) //c.width, c.height c.depth
-      //     val cylinderGeom = new CylinderGeometry(1.0, 1.0, 1.0, 32, ^, ^, ^, ^)
-      //     val sphereGeom = new SphereGeometry(1.0, 32, 32, ^, ^, ^, ^)
-      //     Object3DWarp(Dimensions.D3)
-      //       .add(new Mesh(cylinderGeom, new MeshPhongMaterial()).asInstanceOf[Object3D])
-      //   // obj.scale.set(c.width, c.height, c.depth)
-      //   case 2 => WorldWarp(GeometryExamples.shapesDemo2D)
-      //   case 3 => WorldWarp(GeometryExamples.atomiumWorld)
-      //   case 4 => masterWorld
-      // }
+    val dimensions: Dimensions.D = Dimensions.D3
 
-      val dimensions: Dimensions.D = Dimensions.D3
-
-      Global.camera = Some(
-        Utils.newCamera(dom.window.innerWidth, dom.window.innerHeight)
-      )
-      Global.camera.foreach { c =>
-        c.position.set(0, 0, 10)
-        c.lookAt(new Vector3(0, 0, 0))
-      }
-      Global.controls = Global.camera.map { c =>
-        //val orbit = new OrbitControls(c, renderer.domElement)
-        //orbit.keyPanSpeed = 30 //pixes
-        //orbit.panSpeed = 3
-        val fly = new FlyControls(c, renderer.domElement)
-        fly.dragToLook = true
-        fly.rollSpeed = 0.015
-        fly.movementSpeed = 0.3
-        //val firstPerson = new FirstPersonControls(c, renderer.domElement)
-        //firstPerson.lookSpeed = 0.01
-        //firstPerson.movementSpeed = 0.5
-        dimensions match {
-          case Dimensions.D2 =>
-          //orbit.enableRotate = false
-          //orbit.screenSpacePanning = true
-          case Dimensions.D3 =>
-            Global.modelToAnimate = if (Global.masterWorld.dimensions.isD3) { () =>
-              Some(Global.masterWorld.generateObj3D)
-            } else () => None
-        }
-        fly //orbit //firstPerson
-      }
-
-      Global.scene.add(Global.modelToAnimate().getOrElse(Global.masterWorld.generateObj3D))
-
-      Global.cameraUI = {
-        def addToScene(obj: typings.three.object3DMod.Object3D) = {
-          if (Global.debugUI) Global.scene.add(obj.clone(true))
-          Global.sceneUI.add(obj)
-        }
-
-        val proportions /*aspect*/ = dom.window.innerHeight / dom.window.innerWidth
-        val ui =
-          new OrthographicCamera(left = 0, right = 1, top = 0, bottom = -proportions, near = 0, far = 3)
-            .asInstanceOf[Camera]
-
-        Global.scene.add((new CameraHelper(ui)))
-
-        ui.position.set(0, 0, 0)
-        ui.lookAt(new Vector3(0, 0, -1))
-
-        {
-          val circle = new CircleGeometry(0.05, 32)
-          val material = new MeshBasicMaterial(typings.three.meshBasicMaterialMod.MeshBasicMaterialParameters())
-          def updateColor(s: Websocket.State.State) = s match {
-            case Websocket.State.CONNECTING => material.color = new typings.three.colorMod.Color("blue")
-            case Websocket.State.OPEN       => material.color = new typings.three.colorMod.Color("green")
-            case Websocket.State.CLOSING    => material.color = new typings.three.colorMod.Color("yellow")
-            case Websocket.State.CLOSED     => material.color = new typings.three.colorMod.Color("red")
-          }
-          Global.websocket.onStateChange = updateColor _
-          val mesh = new typings.three.mod.Mesh(circle, material).translateZ(-1)
-          addToScene(mesh)
-        }
-
-        val loader = new FontLoader()
-        loader.load(
-          "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/gentilis_regular.typeface.json", //"fonts/helvetiker_bold.typeface.json",
-          (f: typings.three.fontMod.Font) => {
-            val textParameters = typings.three.textGeometryMod.TextGeometryParameters(
-              font = f,
-              size = 0.02,
-              height = 0,
-              curveSegments = 12,
-            )
-            val geometry = new TextBufferGeometry(Global.websocket.wsUrl, textParameters).translate(0.01, -0.02, 0)
-            val basicMarerial = new typings.three.meshBasicMaterialMod.MeshBasicMaterial()
-            basicMarerial.color = new typings.three.colorMod.Color(0x000000)
-            addToScene(new typings.three.mod.Mesh(geometry, basicMarerial))
-
-          }
-        )
-
-        Some(ui)
-      }
-      Global.scene.add(Utils.computeStaticThreeObjects)
-
-      if (Global.animateFrameId.isEmpty) animate(1)
+    Global.camera = Some(
+      Utils.newCamera(dom.window.innerWidth, dom.window.innerHeight)
+    )
+    Global.camera.foreach { c =>
+      c.position.set(0, 0, 10)
+      c.lookAt(new Vector3(0, 0, 0))
     }
+    Global.controls = Global.camera.map { c =>
+      //val orbit = new OrbitControls(c, renderer.domElement)
+      //orbit.keyPanSpeed = 30 //pixes
+      //orbit.panSpeed = 3
+      val fly = new FlyControls(c, renderer.domElement)
+      fly.dragToLook = true
+      fly.rollSpeed = 0.015
+      fly.movementSpeed = 0.3
+      //val firstPerson = new FirstPersonControls(c, renderer.domElement)
+      //firstPerson.lookSpeed = 0.01
+      //firstPerson.movementSpeed = 0.5
+      dimensions match {
+        case Dimensions.D2 =>
+        //orbit.enableRotate = false
+        //orbit.screenSpacePanning = true
+        case Dimensions.D3 =>
+          Global.modelToAnimate = if (Global.masterWorld.dimensions.isD3) { () =>
+            Some(Global.masterWorld.generateObj3D)
+          } else () => None
+      }
+      fly //orbit //firstPerson
+    }
+
+    Global.scene.add(Global.modelToAnimate().getOrElse(Global.masterWorld.generateObj3D))
+
+    Global.cameraUI = {
+
+      val proportions /*aspect*/ = dom.window.innerHeight / dom.window.innerWidth
+      val ui =
+        new OrthographicCamera(left = 0, right = 1, top = 0, bottom = -proportions, near = 0, far = 3)
+          .asInstanceOf[Camera]
+
+      Global.scene.add((new CameraHelper(ui)))
+
+      ui.position.set(0, 0, 0)
+      ui.lookAt(new Vector3(0, 0, -1))
+      Some(ui)
+    }
+
+    { // WS state
+      val circle = new CircleBufferGeometry(0.05, 32)
+      val material = new MeshBasicMaterial(typings.three.meshBasicMaterialMod.MeshBasicMaterialParameters())
+      val mesh = new typings.three.mod.Mesh(circle, material).translateZ(-1)
+      def updateColor(s: Websocket.State.State) = s match {
+        case Websocket.State.CONNECTING => material.color = new typings.three.colorMod.Color("blue")
+        case Websocket.State.OPEN       => material.color = new typings.three.colorMod.Color("green")
+        case Websocket.State.CLOSING    => material.color = new typings.three.colorMod.Color("yellow")
+        case Websocket.State.CLOSED     => material.color = new typings.three.colorMod.Color("red")
+      }
+      Global.websocket.onStateChange = updateColor _
+
+      Global.addUiElement(InteractiveMesh(mesh, () => material.color = new typings.three.colorMod.Color("blue")))
+    }
+    { //text WS URL
+      val loader = new FontLoader()
+      loader.load(
+        "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/gentilis_regular.typeface.json", //"fonts/helvetiker_bold.typeface.json",
+        (f: typings.three.fontMod.Font) => {
+          val textParameters = typings.three.textGeometryMod.TextGeometryParameters(
+            font = f,
+            size = 0.02,
+            height = 0,
+            curveSegments = 12,
+          )
+          val geometry = new TextBufferGeometry(Global.websocket.wsUrl, textParameters).translate(0.01, -0.02, 0)
+          val basicMarerial = new typings.three.meshBasicMaterialMod.MeshBasicMaterial()
+          basicMarerial.color = new typings.three.colorMod.Color(0x444444)
+          val mesh = new typings.three.mod.Mesh(geometry, basicMarerial)
+          Global.addUiElement(InteractiveMesh(mesh))
+        }
+      )
+    }
+    { //Examples
+      val bottonGeometry = new PlaneBufferGeometry(0.05, 0.05).translate(0.025, -0.025, 0)
+      val materialParameters = typings.three.meshBasicMaterialMod.MeshBasicMaterialParameters()
+      materialParameters.color_=(new typings.three.colorMod.Color(0x666666))
+      val aux = (0 to 2)
+        .map { i =>
+          val material = new MeshBasicMaterial(materialParameters)
+          val mesh = new typings.three.mod.Mesh(bottonGeometry, material)
+            .translateZ(-1.1)
+            .translateY(-0.07 - i * 0.05)
+          (mesh, material, i)
+        }
+      aux
+        .map {
+          case (mesh, material, index) =>
+            def update() = aux.foreach { e =>
+              if (mesh.id == e._1.id) e._2.color = new typings.three.colorMod.Color("blue")
+              else e._2.color = new typings.three.colorMod.Color(0x666666)
+              index match {
+                case 0 => Global.masterWorld.update(World.w3DEmpty)
+                case 1 => Global.masterWorld.update(WorldWarp(GeometryExamples.atomiumWorld).world)
+                case 2 => Global.masterWorld.update(WorldWarp(GeometryExamples.shapesDemo2D).world)
+              }
+            }
+            InteractiveMesh(mesh, update _)
+        }
+        .map(Global.addUiElement _)
+    }
+
+    Global.scene.add(Utils.computeStaticThreeObjects)
+    if (Global.animateFrameId.isEmpty) animate(1)
+
   }
 
   @JSExport
   val animate: js.Function1[Double, Unit] = (d: Double) => {
-    Global.stats.begin();
+    Global.stats.begin()
+
+    Global.uiEvent.foreach { event =>
+      val intersects = Global.raycaster
+        .tap(_.setFromCamera(event, Global.cameraUI.get))
+        .intersectObjects(Global.sceneUI.children, true)
+      Global.scene.raycast(Global.raycaster, intersects)
+      intersects
+        .map(_.`object`.id.toInt)
+        .toSet
+        .tap(e => println(s"click on: $e"))
+        .map { id: Int => Global.uiElements.get(id).map(_.onSelected()) }
+    }
+    Global.uiEvent = None
+
     //Global.modelToAnimate().foreach(Utils.updateFunction _)
     Global.animateFrameId = Some(dom.window.requestAnimationFrame(animate))
     Global.controls.foreach(_.update(1)) // required if controls.enableDamping or controls.autoRotate are set to true
     Global.camera.foreach(renderer.render(Global.scene, _))
+    renderer.clearDepth()
     Global.cameraUI.foreach(renderer.render(Global.sceneUI, _))
-    Global.stats.end();
+
+    Global.stats.end()
   }
 }
 

@@ -107,8 +107,7 @@ lazy val geometryCore = (project in file("geometryCore"))
   .settings(
     name := "fmgp-geometry-core",
     //publishArtifact := false,
-    //libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.8",
-    //libraryDependencies ++= Seq(ScalablyTyped.T.three),
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "1.0.0",
     libraryDependencies += "org.scala-js" %%% "scalajs-logging" % "1.0.1",
     libraryDependencies ++= Seq(
       "io.circe" %%% "circe-core" % circeVersion,

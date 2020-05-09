@@ -28,7 +28,10 @@ browserRemoteControl/console
 ```
 
 ## TODO LIST / Roadmap / Ideas
-- Make/Get nice algorithmic design examples [3W]
+- Make/Get nice algorithmic design examples [3w]
+ - Scala logo (university stairs)
+ - Bamboo house?
+ - Transformer house? Single room multi configurations
 - Fix Live Demo [8h]
 - Threejs:
   - Support for Terrain[16h]
@@ -36,7 +39,8 @@ browserRemoteControl/console
   - Draft initial support for materials [1w]
 - Interface improvements:
   - Support for scene resizing[8h]
-  - Make a way to select examples (including the debug interface)
+  - Write Interface with our API [?d]
+  - Make interface with 3D obj (could be used for mobile and be very useful for VR)
 - Publish version 0.1 to Maven
   - Fix build.sbt for publish [16h]
   - Make documentation [2w]
@@ -67,6 +71,11 @@ browserRemoteControl/console
     https://stemkoski.github.io/Three.js/CSG.html
     https://github.com/stemkoski/stemkoski.github.com/blob/master/Three.js/CSG.html
     https://github.com/chandlerprall/ThreeCSG
+- Experiments:
+  - Input controller: GamePad; VR; Ray Tracing Pixel-select
+  - Game idia: make an empty city or a shopping mall.
+    Give each player's a place to remodel.
+    Would be like an Architecture (algorithmic design) hackathon.
 - Optimizations: 
   - Config circe entity encoder json to drop null values vs Encode text on binary vs Use protobuf
   - Experiment with webgl shaders for optimizations.
