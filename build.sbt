@@ -39,7 +39,7 @@ ThisBuild / publishTo := sonatypePublishToBundle.value //FIXME
 
 name := "fmgp-generative-design"
 publishArtifact := false
-val threeVersion = "0.108.0" // https://www.npmjs.com/package/three //TODO update version 0.113
+val threeVersion = "0.116.1" // https://www.npmjs.com/package/three
 val circeVersion = "0.13.0"
 
 lazy val baseSettings: Project => Project =

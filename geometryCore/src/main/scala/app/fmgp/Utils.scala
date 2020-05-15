@@ -1,7 +1,7 @@
 package app.fmgp
 
 import typings.three.loaderMod.Loader
-import typings.three.mod.{Math => ThreeMath, Shape => _, _}
+import typings.three.mod._
 import typings.three.webGLRendererMod.WebGLRendererParameters
 
 import app.fmgp.threejs._

@@ -1,7 +1,7 @@
 package app.fmgp
 
 import typings.three.loaderMod.Loader
-import typings.three.mod.{Math => ThreeMath, _}
+import typings.three.mod._
 import typings.three.webGLRendererMod.WebGLRendererParameters
 import typings.three.lineBasicMaterialMod.LineBasicMaterialParameters
 
@@ -166,8 +166,7 @@ object WorldImprovements {
         shapes.map(generateShape(_, state)).fold(new Object3D)((z, n) => z.add(n))
       case geo.TransformationShape(shape, transformation) =>
         val aux = generateShape(shape, state)
-        val m = matrix2matrix(transformation.matrix).multiply(aux.matrix)
-        aux.applyMatrix(m)
+        aux.applyMatrix4(matrix2matrix(transformation.matrix).multiply(aux.matrix))
         aux
 
       case box: geo.Box =>
@@ -182,7 +181,7 @@ object WorldImprovements {
         val m = geo.Matrix
           .scale(sphere.radius, sphere.radius, sphere.radius)
           .preTranslate(sphere.center.x, sphere.center.y, sphere.center.z)
-        obj.applyMatrix(matrix2matrix(m))
+        obj.applyMatrix4(matrix2matrix(m))
         obj
 
       case cylinder: geo.Cylinder =>

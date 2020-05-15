@@ -1,7 +1,7 @@
 package app.fmgp.threejs.extras
 
 import typings.three.loaderMod.Loader
-import typings.three.mod.{Math => ThreeMath, _}
+import typings.three.mod._
 import org.scalajs.dom.raw.{Event, HTMLElement}
 
 import scala.scalajs.js

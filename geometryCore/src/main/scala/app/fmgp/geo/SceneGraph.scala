@@ -1,7 +1,7 @@
 package app.fmgp.geo
 
 import typings.three.loaderMod.Loader
-import typings.three.mod.{Math => ThreeMath, Color => ColorT, _}
+import typings.three.mod.{Color => ColorT, _}
 
 import scala.collection.mutable
 import scala.scalajs.js
