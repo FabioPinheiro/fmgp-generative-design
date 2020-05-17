@@ -112,8 +112,30 @@ clear
 //addShape(spaceTruss(horizontalTrussPositions(xyz(0, 0, 0), 1, 1, 9, 10)))
 //addShape(Truss.trussPyramid(10, 10, 1, 1, 0.98))
 
-addShape(Heart.path(x = 0, y = 0))
+//addShape(Heart.path(x = 0, y = 0))
 //addShape(Heart.planeShape(x = 0, y = 0))
 //addShape(Heart.planeShape(x = 0, y = 0, size = 0.5))
 //addShape(Heart.planeShape(holes = Seq(Heart.path(x = 0, y = 1, size = 0.5)), x = 0, y = 0, size = 1))
-addShape(Heart.extrude(holes = Seq(Heart.path(x = 0, y = 1, size = 0.5)), x = 0, y = 0, size = 1))
+//addShape(Heart.extrude(holes = Seq(Heart.path(x = 0, y = 1, size = 0.5)), x = 0, y = 0, size = 1))
+// addShape(extrudePath)
+
+// val path = PathBuilder(XYZ(0, 0)).lineTo(XYZ(0, 3)).lineTo(XYZ(0.01, 3)).lineTo(XYZ(0.01, 0)).build
+// addShape(path)
+// val extrudePath = {
+//   PathBuilder(XYZ(0, 0, 0))
+//     .lineTo(XYZ(0, 1, 0))
+//     .lineTo(XYZ(0, 1, -1.2))
+//     .lineTo(XYZ(0, 2, -1))
+//     .lineTo(XYZ(0, 2, -2.2))
+//     .lineTo(XYZ(0, 3, -2))
+//     .lineTo(XYZ(0, 3, -3.2))
+//     .build
+// }
+
+// addShape(extrudePath)
+
+// addShape(
+//   Extrude(path = path, options = Some(Extrude.Options(extrudePath = Some(extrudePath), steps = Some(100))))
+// )
+
+addShape(TestShape())

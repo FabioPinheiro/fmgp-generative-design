@@ -13,7 +13,9 @@ import scala.scalajs.js.UndefOrOps
 import app.fmgp.geo.LinePath
 import app.fmgp.geo.CubicBezierPath
 import app.fmgp.geo.MultiPath
-
+import scala.util.chaining._
+import app.fmgp.threejs.extras.FaceNormalsHelper
+import app.fmgp.geo.{Vec, XYZ}
 object WorldImprovements {
 
   def matrix2matrix(m: geo.Matrix): Matrix4 = {
@@ -28,6 +30,19 @@ object WorldImprovements {
     // format: on
     aux
   }
+
+  @inline def xyz2ArrayLike(points: Seq[XYZ]): typings.std.ArrayLike[Double] =
+    float2ArrayLike(points.flatMap(p => Seq(p.x.toFloat, p.y.toFloat, p.z.toFloat)))
+
+  @inline def float2ArrayLike(points: Seq[Float]): typings.std.ArrayLike[Double] =
+    new scala.scalajs.js.typedarray.Float32Array(points.toJSIterable)
+      .asInstanceOf[typings.std.ArrayLike[Double]] //FIXME ... TS
+
+  @inline def float2BufferAttribute(points: Seq[Float]): BufferAttribute =
+    new BufferAttribute(float2ArrayLike(points), 3)
+
+  @inline def float2Float32BufferAttribute(points: Seq[Float]): Float32BufferAttribute =
+    new Float32BufferAttribute(float2ArrayLike(points), 3)
 
   val boxGeom = new BoxGeometry(1, 1, 1, ^, ^, ^) //c.width, c.height c.depth
   val sphereGeom = new SphereGeometry(1.0, 32, 32, ^, ^, ^, ^)
@@ -68,7 +83,7 @@ object WorldImprovements {
 
   def multiPath2ShapePath(multiPath: geo.MultiPath): typings.three.shapeMod.Shape = {
     val sss = new typings.three.shapeMod.Shape
-    var location: Option[geo.XYZ] = None
+    var location: Option[XYZ] = None
     multiPath.paths.map {
       case LinePath(vertices) =>
         vertices match {
@@ -100,7 +115,7 @@ object WorldImprovements {
 
   def multiPath2Path(multiPath: geo.MultiPath): typings.three.pathMod.Path = {
     val sss = new typings.three.pathMod.Path
-    var location: Option[geo.XYZ] = None
+    var location: Option[XYZ] = None
     multiPath.paths.map {
       case LinePath(vertices) =>
         vertices match {
@@ -130,7 +145,9 @@ object WorldImprovements {
     sss
   }
 
-  def multiPath2Curve(multiPath: geo.MultiPath): typings.three.curveMod.Curve[typings.three.vector3Mod.Vector3] = {
+  def multiPath2Curve(
+      multiPath: geo.MultiPath
+  ): typings.three.curvePathMod.CurvePath[typings.three.vector3Mod.Vector3] = {
     val curves = new CurvePath[typings.three.vector3Mod.Vector3]
     multiPath.paths.map {
       case LinePath(vertices) =>
@@ -211,7 +228,6 @@ object WorldImprovements {
         val ooo = options
           .map { o =>
             typings.three.extrudeGeometryMod.ExtrudeGeometryOptions(
-              //UVGenerator: UVGenerator = null,
               bevelEnabled = if (o.bevelEnabled.isDefined) o.bevelEnabled.get else null,
               bevelOffset = if (o.bevelOffset.isDefined) o.bevelOffset.get else null,
               bevelSegments = if (o.bevelSegments.isDefined) o.bevelSegments.get else null,
@@ -238,7 +254,7 @@ object WorldImprovements {
       case path: geo.MyPath =>
         path match {
           case multiPath: geo.MultiPath =>
-            val points = multiPath2Path(multiPath).getPoints()
+            val points = multiPath2Curve(multiPath).getPoints()
             val bg = new BufferGeometry().setFromPoints(points.map(e => e))
             new Line(bg, materialLine).asInstanceOf[Object3D]
           case geo.LinePath(vertices) =>
@@ -255,7 +271,6 @@ object WorldImprovements {
             val geometry = new BufferGeometry().setFromPoints(curve.getPoints(50).map(x => x))
             new Line(geometry, materialLine).asInstanceOf[Object3D]
         }
-      //new Line(geometryLine, materialLine).asInstanceOf[Object3D]
       case c: geo.Circle =>
         val geometry = new CircleGeometry(c.radius, 32)
         val obj = if (c.fill) {
@@ -265,7 +280,93 @@ object WorldImprovements {
           new LineLoop(geometry, materialLine).asInstanceOf[Object3D]
         }
         obj.position.set(c.center.x, c.center.y, c.center.z)
-        //TODO obj.matrixAutoUpdate = false
+        obj
+
+      case geo.TestShape() =>
+        val line = geo.LinePath(vertices = (10 to 16).map(i => XYZ(i, 0, 0)))
+
+        def stairsMatrixTransformation(steps: Int, stepsHeight: Double = 1, stepsAngle: Double = 0.1) =
+          Seq(geo.Matrix.rotate(0, Vec(0, 1, 0)).postTranslate(Vec(5, 0, 0))) +:
+            (0 to steps)
+              .map { index =>
+                Seq(
+                  geo.Matrix
+                    .rotate(stepsAngle * (index + 0.2), Vec(0, 1, 0))
+                    .postTranslate(Vec(5, (index * stepsHeight), 0)),
+                  geo.Matrix
+                    .rotate(stepsAngle * index, Vec(0, 1, 0))
+                    .postTranslate(Vec(5, (index + 1) * stepsHeight, 0)),
+                )
+              }
+        val (topSideVertices, innerSideSurface, outerSideSurface) = stairsMatrixTransformation(steps = 30)
+          .pipe { mmm =>
+            def getVerticesAndNormal(a: Seq[XYZ], b: Seq[XYZ]): Seq[XYZ] = {
+              (a, b) match {
+                case (a1 +: a2 +: aa, b1 +: b2 +: bb) =>
+                  Seq(a1, a2, b1, b1, a2, b2) ++ getVerticesAndNormal(a2 +: aa, b2 +: bb)
+                case _ => Seq.empty
+              }
+            }
+            val topSide = mmm.flatten
+              .dropRight(1)
+              .map(m => line.vertices.map(p => m.dot(p.asVec)))
+              .pipe(aux =>
+                aux
+                  .zip(aux.drop(1))
+                  .flatMap(e => getVerticesAndNormal(e._1, e._2))
+                  .flatMap(e => Seq(e.x.toFloat, e.y.toFloat, e.z.toFloat))
+              )
+            def sideTriangles(v: Vec) =
+              mmm
+                .drop(1)
+                .map {
+                  case m1 +: m2 +: Nil => (m1.dot(v).pipe(_.copy(y = 0)), m1.dot(v), m2.dot(v))
+                  case m1 +: Nil       => (m1.dot(v).pipe(_.copy(y = 0)), m1.dot(v), m1.dot(v))
+                }
+                //.dropRight(1)
+                .pipe(aux =>
+                  aux
+                    .zip(aux.drop(1))
+                    .flatMap {
+                      case (a, b) =>
+                        Seq(
+                          geo.Triangle(a._1, a._2, b._1),
+                          geo.Triangle(b._2, b._1, a._2),
+                          geo.Triangle(a._2, a._3, b._2)
+                        )
+                    }
+                )
+            (topSide, sideTriangles(line.vertices.head.asVec), sideTriangles(line.vertices.last.asVec).map(_.invert))
+          }
+
+        val topSideGeometry = new BufferGeometry()
+          .tap(_.addAttribute("position", float2BufferAttribute(topSideVertices)))
+          .tap(_.computeVertexNormals())
+
+        val innerSideGeometry = new BufferGeometry()
+          .tap(_.addAttribute("position", float2BufferAttribute(innerSideSurface.pipe {
+            _.flatMap(_.toSeqFloat)
+          })))
+          .tap(_.addAttribute("normal", float2BufferAttribute(innerSideSurface.pipe {
+            _.flatMap(_.map(_.forceX0Z).toSeqFloat)
+          })))
+
+        val outerSideGeometry = new BufferGeometry()
+          .tap(_.addAttribute("position", float2BufferAttribute(outerSideSurface.pipe {
+            _.flatMap(_.toSeqFloat)
+          })))
+          .tap(_.addAttribute("normal", float2BufferAttribute(outerSideSurface.pipe {
+            _.flatMap(_.map(_.forceX0Z).toSeqFloat)
+          })))
+
+        // ### OBJ ###
+        val op = state.withMaterial(geo.SceneGraph.surfaceNormalMat)
+        val obj = op.toObj3D(topSideGeometry)
+        obj.add(op.toObj3D(innerSideGeometry))
+        obj.add(op.toObj3D(outerSideGeometry))
+        // val geometryPoint = new BufferGeometry()
+        //   .tap(_.addAttribute("position", float2Float32BufferAttribute(pointsIt)))
+        //obj.add(new Points(geometryPoint, geo.SceneGraph.pointMat))
         obj
     }
 
@@ -276,3 +377,71 @@ object WorldImprovements {
     parent
   }
 }
+
+// def multiPath2Curves(
+//     multiPath: geo.MultiPath
+// ): Seq[typings.three.curveMod.Curve[typings.three.vector3Mod.Vector3]] = {
+//   multiPath.paths.flatMap {
+//     case LinePath(vertices) =>
+//       vertices.zip(vertices.drop(1)).map {
+//         case (XYZ(ax, ay, az), XYZ(bx, by, bz)) =>
+//           new LineCurve3(
+//             new Vector3(ax, ay, az),
+//             new Vector3(bx, by, bz)
+//           )
+//       }
+//     case CubicBezierPath(a, af, bf, b) =>
+//       Seq(
+//         new CubicBezierCurve3(
+//           new Vector3(a.x, a.y, a.z),
+//           new Vector3(af.x, af.y, af.z),
+//           new Vector3(bf.x, bf.y, bf.z),
+//           new Vector3(b.x, b.y, b.z)
+//         )
+//       )
+//     case another: MultiPath => multiPath2Curves(another)
+//   }
+// }
+
+// case geo.Extrude(multiPath: MultiPath, holes: Seq[MultiPath], options: Option[geo.Extrude.Options]) =>
+//   val optionsSeq: Seq[typings.three.extrudeGeometryMod.ExtrudeGeometryOptions] =
+//     options
+//       .map { o =>
+//         o.extrudePath
+//           .map(extrudeMultiPath =>
+//             multiPath2Curves(extrudeMultiPath).map(curve =>
+//               typings.three.extrudeGeometryMod.ExtrudeGeometryOptions(
+//                 bevelEnabled = if (o.bevelEnabled.isDefined) o.bevelEnabled.get else null,
+//                 bevelOffset = if (o.bevelOffset.isDefined) o.bevelOffset.get else null,
+//                 bevelSegments = if (o.bevelSegments.isDefined) o.bevelSegments.get else null,
+//                 bevelSize = if (o.bevelSize.isDefined) o.bevelSize.get else null,
+//                 bevelThickness = if (o.bevelThickness.isDefined) o.bevelThickness.get else null,
+//                 curveSegments = if (o.curveSegments.isDefined) o.curveSegments.get else null,
+//                 depth = if (o.depth.isDefined) o.depth.get else null,
+//                 extrudePath = curve,
+//                 steps = if (o.steps.isDefined) o.steps.get else null,
+//               )
+//             )
+//           )
+//           .getOrElse(
+//             Seq(
+//               typings.three.extrudeGeometryMod.ExtrudeGeometryOptions(
+//                 bevelEnabled = if (o.bevelEnabled.isDefined) o.bevelEnabled.get else null,
+//                 bevelOffset = if (o.bevelOffset.isDefined) o.bevelOffset.get else null,
+//                 bevelSegments = if (o.bevelSegments.isDefined) o.bevelSegments.get else null,
+//                 bevelSize = if (o.bevelSize.isDefined) o.bevelSize.get else null,
+//                 bevelThickness = if (o.bevelThickness.isDefined) o.bevelThickness.get else null,
+//                 curveSegments = if (o.curveSegments.isDefined) o.curveSegments.get else null,
+//                 depth = if (o.depth.isDefined) o.depth.get else null,
+//                 extrudePath = null,
+//                 steps = if (o.steps.isDefined) o.steps.get else null,
+//               )
+//             )
+//           )
+//       }
+//       .getOrElse(Seq(typings.three.extrudeGeometryMod.ExtrudeGeometryOptions()))
+//   val jsPath = multiPath2ShapePath(multiPath)
+//   jsPath.holes = holes.map(e => multiPath2Path(e)).toJSArray
+//   optionsSeq
+//     .map(ooo => state.toObj3D(new ExtrudeBufferGeometry(jsPath, ooo)))
+//     .fold(new Object3D)((z, n) => z.add(n))

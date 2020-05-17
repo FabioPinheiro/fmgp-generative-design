@@ -24,7 +24,7 @@ import scala.util.chaining._
 object Global {
   val masterWorld = DynamicWorldWarp()
   var websocket = Websocket.AutoReconnect("ws://127.0.0.1:8888/browser", Log, masterWorld)
-  val debugUI = true
+  val debugUI = false
   var scene: Scene = _
   var sceneUI: Scene = _
   var animateFrameId: Option[Int] = None
@@ -138,7 +138,7 @@ object Main {
         new OrthographicCamera(left = 0, right = 1, top = 0, bottom = -proportions, near = 0, far = 3)
           .asInstanceOf[Camera]
 
-      Global.scene.add((new CameraHelper(ui)))
+      if (Global.debugUI) Global.scene.add((new CameraHelper(ui)))
 
       ui.position.set(0, 0, 0)
       ui.lookAt(new Vector3(0, 0, -1))
@@ -182,7 +182,7 @@ object Main {
       val bottonGeometry = new PlaneBufferGeometry(0.05, 0.05).translate(0.025, -0.025, 0)
       val materialParameters = typings.three.meshBasicMaterialMod.MeshBasicMaterialParameters()
       materialParameters.color_=(new typings.three.colorMod.Color(0x666666))
-      val aux = (0 to 2)
+      val aux = (0 to 4)
         .map { i =>
           val material = new MeshBasicMaterial(materialParameters)
           val mesh = new typings.three.mod.Mesh(bottonGeometry, material)
@@ -190,20 +190,21 @@ object Main {
             .translateY(-0.07 - i * 0.05)
           (mesh, material, i)
         }
-      aux
-        .map {
-          case (mesh, material, index) =>
-            def update() = aux.foreach { e =>
-              if (mesh.id == e._1.id) e._2.color = new typings.three.colorMod.Color("blue")
-              else e._2.color = new typings.three.colorMod.Color(0x666666)
-              index match {
-                case 0 => Global.masterWorld.update(World.w3DEmpty)
-                case 1 => Global.masterWorld.update(WorldWarp(GeometryExamples.atomiumWorld).world)
-                case 2 => Global.masterWorld.update(WorldWarp(GeometryExamples.shapesDemo2D).world)
-              }
-            }
-            InteractiveMesh(mesh, update _)
+      def update(meshId: Int, scenario: Int)() = {
+        aux.foreach { e =>
+          if (meshId == e._1.id.toInt) e._2.color = new typings.three.colorMod.Color("blue")
+          else e._2.color = new typings.three.colorMod.Color(0x666666)
         }
+        scenario match {
+          case 0 => Global.masterWorld.update(World.w3DEmpty)
+          case 1 => Global.masterWorld.update(WorldWarp(GeometryExamples.atomiumWorld).world)
+          case 2 => Global.masterWorld.update(WorldWarp(GeometryExamples.shapesDemo2D).world)
+          case 3 => Global.masterWorld.update(World.w3D(Seq(TestShape())))
+          case 4 => Global.masterWorld.update(World.w3D(Seq(Wireframe(TestShape()))))
+        }
+      }
+      aux
+        .map { case (mesh, material, index) => InteractiveMesh(mesh, update(mesh.id.toInt, index) _) }
         .map(Global.addUiElement _)
     }
 

@@ -6,12 +6,9 @@ import typings.three.mod.{Color => ColorT, _}
 import scala.collection.mutable
 import scala.scalajs.js
 
-object SceneGraph
-    extends Color
-    with DefaultMaterials
-    with Extrusion
-    with MakeMatrixTransformedObject3D
-    with PolygonSurface
+import scala.util.chaining._
+
+object SceneGraph extends Color with DefaultMaterials with MakeMatrixTransformedObject3D with PolygonSurface
 
 /** @see [[https://github.com/pafalium/gd-web-env/blob/master/src/SceneGraph/color.js]] */
 trait Color {
@@ -35,22 +32,23 @@ trait Color {
 
 /** @see [[https://github.com/pafalium/gd-web-env/blob/master/src/SceneGraph/default-materials.js]] */
 trait DefaultMaterials {
-  val solidMat = new MeshPhongMaterial()
-  val surfaceMat = {
-    val aux = new MeshPhongMaterial()
-    aux.side = DoubleSide
-    aux
-  }
+  val solidMat = new MeshStandardMaterial()
+  val surfaceMatOneSide = new MeshStandardMaterial()
+  val surfaceMat = new MeshStandardMaterial().tap(_.side = DoubleSide)
+  val surfaceNormalMat = new MeshNormalMaterial()
   val basicMat = new MeshBasicMaterial(
     typings.three.meshBasicMaterialMod.MeshBasicMaterialParameters(
       color = 0x00ff00,
       side = DoubleSide
     )
   )
+  val pointMat = new typings.three.materialsMod.PointsMaterial(
+    typings.three.pointsMaterialMod.PointsMaterialParameters(
+      color = 0x5416b4,
+      size = 0.3
+    )
+  )
 }
-
-/** @see [[https://github.com/pafalium/gd-web-env/blob/master/src/SceneGraph/extrusion.js]] */
-trait Extrusion //TODO
 
 /** @see [[https://github.com/pafalium/gd-web-env/blob/master/src/SceneGraph/makeMatrixTransformedObject3D.js]] */
 trait MakeMatrixTransformedObject3D {

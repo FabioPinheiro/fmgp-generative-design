@@ -28,8 +28,14 @@ browserRemoteControl/console
 ```
 
 ## TODO LIST / Roadmap / Ideas
+- Add Shapes:
+ - Point (XYZ that is a Shape) [1h]
+ - Frustum (Camera Helper) [2h]
+ - Axis Helper [2h]
+ - Axis Path [2d]
+ - Text [2w]
 - Make/Get nice algorithmic design examples [3w]
- - Scala logo (university stairs)
+ - Scala logo (university stairs) [WIP]
  - Bamboo house?
  - Transformer house? Single room multi configurations
 - Fix Live Demo [8h]
@@ -39,13 +45,15 @@ browserRemoteControl/console
   - Draft initial support for materials [1w]
 - Interface improvements:
   - Support for scene resizing[8h]
+    - [Example from webglfundamentals](https://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html)
   - Write Interface with our API [?d]
   - Make interface with 3D obj (could be used for mobile and be very useful for VR)
 - Publish version 0.1 to Maven
   - Fix build.sbt for publish [16h]
   - Make documentation [2w]
   - Cleanup code
-  - Rename Github repositorym, project name in Maven and modelos in SBT
+  - Rename Github repository, project name in Maven and modelos in SBT
+   - Chaos theory; Butterfly effect; FMGP; Scala; Geometry
   - Make a Docker Container with everything ready to use.
     - Serve the FE's javascript file via HTTP from the BE. [4h]
     - Draft DocketFile [16h]
@@ -53,6 +61,7 @@ browserRemoteControl/console
     - Scala has really nice BigData libraries but is lack of libraries for Machine Learning, unlike python.
       I don't think the language is difficult, quite the opposite! IMO the problem is the lack of tools and libs for Data Visualization.
       I think scalaJS could feel that hole. So the plan here is the make a simples API.
+- 3 Dimensional Vector graphics
 - Draft support for real-time collaborative work on algorithmic design.
   - The system has 3 Components:
     - FE - A browser here the models is viewed. Most of the mesh of the models are generated on the FE!
@@ -76,11 +85,15 @@ browserRemoteControl/console
   - Game idia: make an empty city or a shopping mall.
     Give each player's a place to remodel.
     Would be like an Architecture (algorithmic design) hackathon.
+  - Use Node.js as the JavaScript runtime system. (We can try also the [Electron](https://www.electronjs.org/)
+  - Compile code on the backend as a module and dynamically load it on the FE.
+  - Try WebGPU and try to implemente some machine learning algorithms!
+  - FPV Drone Simulator! How hard can it be?
 - Optimizations: 
   - Config circe entity encoder json to drop null values vs Encode text on binary vs Use protobuf
   - Experiment with webgl shaders for optimizations.
-    - Learn WebGL Shaders
-      https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Getting_started_with_WebGL
+    - Learn [WebGL Shaders](
+      https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Getting_started_with_WebGL)
 
 ## Copyright and License
 

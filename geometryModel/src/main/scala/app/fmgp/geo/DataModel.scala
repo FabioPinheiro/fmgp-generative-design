@@ -33,13 +33,15 @@ sealed trait Coordinate {
   def x: Double
   def y: Double
   def z: Double
-  def toXYZ = XYZ(x, y, z)
-  def asVec: Vec = Vec(x, y, z)
+  @inline def toXYZ = XYZ(x, y, z)
+  @inline def asVec: Vec = Vec(x, y, z)
 }
 
 sealed trait Coordinate2D extends Coordinate {
-  def toXY0: XYZ = { assert(z == 0); XYZ(x, y, 0) }
-  def toX0Z: XYZ = { assert(z == 0); XYZ(x, 0, z) }
+  @inline def toXY0: XYZ = { assert(z == 0); XYZ(x, y, 0) }
+  @inline def toX0Z: XYZ = { assert(z == 0); XYZ(x, 0, y) }
+  @inline def forceX0Z: XYZ = XYZ(x, 0, z)
+  @inline def forceXY0: XYZ = XYZ(x, y, 0)
 }
 sealed trait Coordinate3D extends Coordinate2D
 
@@ -50,7 +52,9 @@ sealed trait Coordinate3D extends Coordinate2D
   * @param y
   * @param z
   */
-final case class XYZ(x: Double, y: Double, z: Double = 0) extends Coordinate {
+final case class XYZ(x: Double, y: Double, z: Double = 0) extends Coordinate3D {
+  @inline override def toXYZ: XYZ = this
+
   def toPolar = {
     assert(z == 0)
     Polar.fromXY(x, y)
@@ -125,8 +129,10 @@ object Spherical {
     Spherical(Math.sqrt(x * x + y * y + z * z), Math.atan(y / x), Math.atan(x * x + y * y) / z)
 }
 
-final case class Vec(x: Double = 0, y: Double = 0, z: Double = 0) {
-  @inline def asXYZ: XYZ = XYZ(x, y, z)
+final case class Vec(x: Double = 0, y: Double = 0, z: Double = 0) extends Coordinate {
+  @inline override def asVec: Vec = this
+
+  @inline def asXYZ: XYZ = toXYZ
   @inline def unary_- = Vec(-x, -y, -z)
 
   /** Returns the vector dividied by the given scalar. */
@@ -165,19 +171,20 @@ final case class Vec(x: Double = 0, y: Double = 0, z: Double = 0) {
 object Vec {
   def origin: Vec = Vec(0, 0, 0)
   def apply(from: XYZ, to: XYZ) = to.pointMinusPoint(from).asVec
+  def cross(a: XYZ, b: XYZ, c: XYZ) = (b - a).asVec.cross((c - a).asVec) //(B - A) x (C - A)
 }
 
-final case class Axis(origin: XYZ, vector: Vec, direction: Vec)
-object Axis {
-  def byXYZVector(XYZ: XYZ, vec: Vec) = Axis(XYZ, vec, vec.normalized)
-  val x = byXYZVector(XYZ(0, 0, 0), Vec(1, 0, 0))
-  val y = byXYZVector(XYZ(0, 0, 0), Vec(0, 1, 0))
-  val z = byXYZVector(XYZ(0, 0, 0), Vec(0, 0, 1))
-  val xy = byXYZVector(XYZ(0, 0, 0), Vec(1, 1, 0))
-  val xz = byXYZVector(XYZ(0, 0, 0), Vec(1, 0, 1))
-  val yz = byXYZVector(XYZ(0, 0, 0), Vec(0, 1, 1))
-  val xyz = byXYZVector(XYZ(0, 0, 0), Vec(1, 1, 1))
-}
+// final case class Axis(origin: XYZ, abscissa: Vec, ordinate: Vec) {
+//   lazy val applicate = xVec.cross(yVec)
+// }
+
+// object Axis {
+//   def apply(origin: XYZ, abscissa: Vec, ordinate: Vec):Axis = {
+//     new Axis(abscissa = )
+//   }
+//   def byXYZVector(XYZ: XYZ, vec: Vec) = Axis(XYZ, vec.normalized,)
+//   val rgb = Axis(XYZ(0, 0, 0), Vec(1, 0, 0), Vec(0, 1, 0))
+// }
 
 // case class Matrix(m: Array[Array[Double]] = Array.ofDim[Double](4, 4)) {
 //   def multiply(m: Matrix): Matrix = ???
@@ -210,6 +217,16 @@ final case class Matrix(
       t = for (j <- 0 to 3; n = a(i * 4 + j)) yield n
     } yield t.mkString("[", ", ", "]")).mkString("Matrix(", " ; ", ")")
   }
+
+  @inline def center: XYZ = XYZ(m03,m13,m23)//dot(Vex(0, 0, 0))
+
+  @inline def *(v: Vec): XYZ = XYZ(
+    x = m00 * v.x + m01 * v.y + m02 * v.z + /*w * v.w*/ m03,
+    y = m10 * v.x + m11 * v.y + m12 * v.z + /*w * v.w*/ m13,
+    z = m20 * v.x + m21 * v.y + m22 * v.z + /*w * v.w*/ m23,
+    //w = m30 * v.x + m31 * v.y + m32 * v.z + w * v.w
+  )
+  @inline def dot(v: Vec): XYZ = this * v
 
   @inline def postMultiply(b: Matrix): Matrix = Matrix(
     m00 = b.m00 * m00 + b.m10 * m01 + b.m20 * m02 + b.m30 * m03,

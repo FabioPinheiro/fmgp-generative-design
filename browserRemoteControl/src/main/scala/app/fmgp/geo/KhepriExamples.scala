@@ -345,4 +345,17 @@ trait KhepriExamples extends Syntax {
   // 8.4 Rotation - rotate(papal_cross(), pi/4)
   // 8.5 Reflection - mirror(cone_frustum(p, rb, p+vz(h/2), rn), p+vz(h/2)) = def hourglass(p, rb, rn, h)
   // 12 Coordinate Space
+
+  object ScalaStairs {
+    val path = PathBuilder(XYZ(0, 0)).lineTo(XYZ(3, 0)).lineTo(XYZ(3, 0.01)).lineTo(XYZ(0, 0.01)).build
+    //addShape(path)
+
+    val extrudePath = PathBuilder(XYZ(0, 0, 0))
+      .lineTo(XYZ(0, 1, 0))
+      .lineTo(XYZ(0, 1, -1.2))
+      .lineTo(XYZ(0, 2, -1))
+      .lineTo(XYZ(0, 2, -2.2))
+      .build
+    //addShape(extrudePath)
+  }
 }

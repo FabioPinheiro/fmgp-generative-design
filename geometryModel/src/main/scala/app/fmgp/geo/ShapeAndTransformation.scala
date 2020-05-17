@@ -43,6 +43,8 @@ object ShapeSeq {
   implicit def implicitConverter(s: Seq[Shape]): ShapeSeq = ShapeSeq(s)
 }
 
+case class TestShape() extends Shape
+
 case class Box(
     width: Double,
     height: Double,
@@ -190,6 +192,25 @@ case class Circle(
     center: XYZ = XYZ.origin,
     fill: Boolean = false
 ) extends Shape //MyPath
+
+case class Triangle[T <: Coordinate](a: T, b: T, c: T) {
+  @inline def invert: Triangle[T] = Triangle(a, c, b)
+  @inline def asTXYZ = Triangle[XYZ](a.toXYZ, b.toXYZ, c.toXYZ)
+  @inline def asTVec = Triangle[Vec](a.asVec, b.asVec, c.asVec)
+  // format: off
+  @inline def toSeqFloat = Seq(
+    a.x.toFloat, a.y.toFloat, a.z.toFloat, // a
+    b.x.toFloat, b.y.toFloat, b.z.toFloat, // b
+    c.x.toFloat, c.y.toFloat, c.z.toFloat, // c
+  )
+  @inline def toInvertSeqFloat = Seq(
+    a.x.toFloat, a.y.toFloat, a.z.toFloat, // a
+    c.x.toFloat, c.y.toFloat, c.z.toFloat, // c
+    b.x.toFloat, b.y.toFloat, b.z.toFloat, // b
+  )
+  // format: on
+  def map[W <: Coordinate](f: T => W): Triangle[W] = Triangle(f(a), f(b), f(c))
+}
 
 // ###################
 // ### $$$$$$$$$$$ ###
