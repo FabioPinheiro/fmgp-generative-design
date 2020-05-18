@@ -29,14 +29,14 @@ browserRemoteControl/console
 
 ## TODO LIST / Roadmap / Ideas
 - Add Shapes:
- - Frustum (Camera Helper) [2h]
- - Axis Helper [2h]
- - Axis Path [2d]
- - Text [2w]
+  - Frustum (Camera Helper) [2h]
+  - Axis Helper [2h]
+  - Axis Path [2d]
+  - Text [2w]
 - Make/Get nice algorithmic design examples [3w]
- - Scala logo (university stairs) [WIP]
- - Bamboo house?
- - Transformer house? Single room multi configurations
+  - Scala logo (university stairs) [WIP]
+  - Bamboo house?
+  - Transformer house? Single room multi configurations
 - Fix Live Demo [8h]
 - Threejs:
   - Support for Terrain[16h]
@@ -52,7 +52,7 @@ browserRemoteControl/console
   - Make documentation [2w]
   - Cleanup code
   - Rename Github repository, project name in Maven and modelos in SBT
-   - Chaos theory; Butterfly effect; FMGP; Scala; Geometry
+    - Chaos theory; Butterfly effect; FMGP; Scala; Geometry
   - Make a Docker Container with everything ready to use.
     - Serve the FE's javascript file via HTTP from the BE. [4h]
     - Draft DocketFile [16h]
@@ -78,7 +78,7 @@ browserRemoteControl/console
     https://github.com/dzufferey/scadla-oce-backend
     https://stemkoski.github.io/Three.js/CSG.html
     https://github.com/stemkoski/stemkoski.github.com/blob/master/Three.js/CSG.html
-    https://github.com/chandlerprall/ThreeCSG
+    https://github.com/chandlerprall/ThreeCSplatformG
 - Experiments:
   - Input controller: GamePad; VR; Ray Tracing Pixel-select
   - Game idia: make an empty city or a shopping mall.
