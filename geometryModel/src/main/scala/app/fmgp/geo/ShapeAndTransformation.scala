@@ -8,7 +8,7 @@ sealed trait Transformation {
 final case class TransformMatrix(matrix: Matrix) extends Transformation
 
 /** Shapes */
-sealed trait Shape
+sealed trait Shape extends Any
 
 object Shape {
   // We can use Shapeless lib
@@ -44,6 +44,8 @@ object ShapeSeq {
 }
 
 case class TestShape() extends Shape
+
+case class Points(val c: Seq[Coordinate3D]) extends AnyVal with Shape
 
 case class Box(
     width: Double,

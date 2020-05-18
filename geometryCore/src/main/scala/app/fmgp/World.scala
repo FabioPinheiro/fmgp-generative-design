@@ -30,19 +30,12 @@ object WorldImprovements {
     // format: on
     aux
   }
-
-  @inline def xyz2ArrayLike(points: Seq[XYZ]): typings.std.ArrayLike[Double] =
-    float2ArrayLike(points.flatMap(p => Seq(p.x.toFloat, p.y.toFloat, p.z.toFloat)))
-
   @inline def float2ArrayLike(points: Seq[Float]): typings.std.ArrayLike[Double] =
     new scala.scalajs.js.typedarray.Float32Array(points.toJSIterable)
       .asInstanceOf[typings.std.ArrayLike[Double]] //FIXME ... TS
 
   @inline def float2BufferAttribute(points: Seq[Float]): BufferAttribute =
     new BufferAttribute(float2ArrayLike(points), 3)
-
-  @inline def float2Float32BufferAttribute(points: Seq[Float]): Float32BufferAttribute =
-    new Float32BufferAttribute(float2ArrayLike(points), 3)
 
   val boxGeom = new BoxGeometry(1, 1, 1, ^, ^, ^) //c.width, c.height c.depth
   val sphereGeom = new SphereGeometry(1.0, 32, 32, ^, ^, ^, ^)
@@ -185,6 +178,14 @@ object WorldImprovements {
         val aux = generateShape(shape, state)
         aux.applyMatrix4(matrix2matrix(transformation.matrix).multiply(aux.matrix))
         aux
+
+      case geo.Points(points) =>
+        val aux = new Float32BufferAttribute(
+          float2ArrayLike(points.flatMap(p => Seq(p.x.toFloat, p.y.toFloat, p.z.toFloat))),
+          3
+        )
+        val geometryPoint = new BufferGeometry().tap(_.addAttribute("position", aux))
+        new Points(geometryPoint, geo.SceneGraph.pointMat).asInstanceOf[Object3D]
 
       case box: geo.Box =>
         val obj = state.toObj3D(boxGeom)
@@ -364,9 +365,6 @@ object WorldImprovements {
         val obj = op.toObj3D(topSideGeometry)
         obj.add(op.toObj3D(innerSideGeometry))
         obj.add(op.toObj3D(outerSideGeometry))
-        // val geometryPoint = new BufferGeometry()
-        //   .tap(_.addAttribute("position", float2Float32BufferAttribute(pointsIt)))
-        //obj.add(new Points(geometryPoint, geo.SceneGraph.pointMat))
         obj
     }
 
