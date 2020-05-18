@@ -28,7 +28,6 @@ browserRemoteControl/console
 ```
 
 ## TODO LIST / Roadmap / Ideas
-- Update to scala.js to 1.1.0 [10m]
 - Add Shapes:
  - Frustum (Camera Helper) [2h]
  - Axis Helper [2h]
