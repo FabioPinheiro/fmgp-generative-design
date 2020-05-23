@@ -6,6 +6,7 @@ package app.fmgp.geo
   * BE
   */
 object BezierCurves {
+  def steps(n: Int) = (0 to n).map(_ / n.toDouble)
   @inline def fc0(t: Double) = math.pow(1 - t, 3)
   @inline def fc1(t: Double) = math.pow(1 - t, 2) * t * 3
   @inline def fc2(t: Double) = math.pow(t, 2) * (1 - t) * 3
@@ -150,5 +151,32 @@ object BezierCurves {
     val n22 = linear(t, p0.m22, p3.m22)
     aaa.copy(m00 = n00, m01 = n01, m02 = n02, m10 = n10, m11 = n11, m12 = n12, m20 = n20, m21 = n21, m22 = n22)
   }
+
+  def cubicLookAtNext(
+      t: Double,
+      p0: Matrix,
+      p1: Double,
+      p2: Vec,
+      p3: XYZ,
+      rotate: Double,
+      tInc: Double = 0.01
+  ): Matrix = {
+    if (t == 0) p0
+    else if (t == 1) {
+      println(s"${p3.asVec - p0.center.asVec} =  ${p3.asVec} - ${p0.center.asVec}")
+      p0.preTranslate(p3.asVec - p0.center.asVec).postRotate(rotate, Vec(0, 0, -1))
+    } else {
+      val p0c = p0.center
+      val p1c = p0.dot(Vec(0, 0, -p1))
+      val p2c = p3 - p2
+      val p3c = p3
+
+      val pa = cubic(t, p0c, p1c, p2c, p3c)
+      val pb = cubic(t + tInc, p0c, p1c, p2c, p3c)
+      val r = linear(t, 0, rotate) //FIXME replace '0' with the inicial rotation of p0
+      Matrix.lookAt(pa, pb).postRotate(r, Vec(0, 0, -1))
+    }
+  }
+
 }
 //we can make this fly on GPU!!

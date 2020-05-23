@@ -416,13 +416,13 @@ object WorldImprovements {
         obj.add(op.toObj3D(innerSideGeometry))
         obj.add(op.toObj3D(outerSideGeometry))
 
-        val p = XYZ(1, 0, -1)
-        obj.add(generateShape(geo.Sphere(0.1, p), state))
+        val to = XYZ(2, 0, -1)
+        obj.add(generateShape(geo.Sphere(0.2, to), state))
+        Seq(XYZ(3, 0, 0), XYZ(0, 0, -3), XYZ(0, 0, -2), XYZ(0, 0, -1), XYZ(0, 3, -1)).map { from =>
+          val m = geo.Matrix.lookAt(from, to)
+          obj.add(generateShape(geo.Axes(m), state))
+        }
 
-        obj.add(generateShape(geo.Axes(geo.Matrix().postTranslate(4, 0, 0)), state))
-        obj.add(generateShape(geo.Axes(geo.Matrix().postTranslate(4, 1, 0)), state))
-        obj.add(generateShape(geo.Axes(geo.Matrix().postTranslate(0, 0, -2)), state))
-        obj.add(generateShape(geo.Axes(geo.Matrix().postTranslate(0, 1, 0)), state))
         obj
     }
 

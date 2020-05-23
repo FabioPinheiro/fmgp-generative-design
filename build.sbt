@@ -141,6 +141,7 @@ lazy val browserRemoteControl = (project in file("browserRemoteControl"))
     ),
     initialCommands in console += """
     import scala.math._
+    import scala.util.chaining._
     app.fmgp.Main.start()
     val myAkkaServer = app.fmgp.Main.server.get
     import myAkkaServer.GeoSyntax._

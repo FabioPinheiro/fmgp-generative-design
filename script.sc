@@ -139,18 +139,20 @@ clear
 // )
 
 {
-  val m00 = Axes(m0.m.postTranslate(Vec(10, 5, -10)))
-  val aaa = m0.m.postTranslate(Vec(4, 0, 0)).postRotate(1, Vec(1, 0, 0)).postRotate(1, Vec(0, 1, 0))
-  val bbb = m00.m.postTranslate(Vec(-4, 0, 0)).postRotate(1, Vec(1, 0, 0)).postRotate(1, Vec(0, 1, 0))
-  addShape(Axes(aaa))
-  addShape(Axes(bbb))
-  draw(aux.map(t => BezierCurves.cubic(t, m0.m, aaa, bbb, m00.m)))
+  val m0 = Axes(Matrix().postTranslate(Vec(0, -3, 0)).postRotate(-1, Vec(-1, 0, 1)))
+  val v1 = Vec(0, 0, -20)
+  draw(
+    BezierCurves
+      .steps(30)
+      .tap(e => println(s"ssssss $e"))
+      .map(t => BezierCurves.cubicLookAtNext(t, m0.m, 10, Vec(0, 0, -10), v1.toXYZ, math.Pi / 4))
+  )
 
   def draw(mmm: Seq[Matrix]) = {
-    addShape(Axes(mmm.head))
-    addShape(Axes(mmm.last))
+    //addShape(Axes(mmm.head))
+    //addShape(Axes(mmm.last))
     addShape(ShapeSeq(mmm /*.drop(1).dropRight(1)*/.map(m => Axes(m))))
-    val ppp = mmm.map(m => (m.dot(Vec(0, 1, 0)).asVec, Seq(m.dot(Vec(0, 0, -1)), m.dot(Vec(0, 0, 1)))))
+    val ppp = mmm.map(m => (m.dot(Vec(0, 1, 0)).asVec, Seq(m.dot(Vec(-1, 0, 0)), m.dot(Vec(1, 0, 0)))))
     //addShape(Points(ppp.map(_._2).flatten))
     //addShape(Points(ppp.map(_._1.toXYZ)))
     addShape(ShapeSeq(ppp.zip(ppp.drop(1)).flatMap {

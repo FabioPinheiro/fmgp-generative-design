@@ -443,6 +443,21 @@ object Matrix {
     matrix
   }
 
+  def lookAt(from: XYZ, to: XYZ, tmp: Vec = Vec(0, 1, 0)): Matrix = {
+    val forward = (from.asVec.-(to.asVec)).norm
+    val tmpNorm = Vec(0, 1, 0).norm
+    val right = tmpNorm.cross(forward).norm
+    val up = forward.cross(right)
+    // format: off
+    Matrix(
+      right.x, up.x, forward.x, from.x,
+      right.y, up.y, forward.y, from.y,
+      right.z, up.z, forward.z, from.z,
+      0, 0, 0, 1 //TODO FIXME should this be '1' ?
+    )
+     // format: on
+  }
+
   def makePerspective(left: Double, right: Double, top: Double, bottom: Double, near: Double, far: Double) = {
     val x = 2 * near / (right - left)
     val y = 2 * near / (top - bottom)
