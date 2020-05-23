@@ -195,6 +195,8 @@ case class Circle(
     fill: Boolean = false
 ) extends Shape //MyPath
 
+case class TriangleShape(t: Triangle[XYZ], n: Triangle[Vec]) extends Shape
+
 case class Triangle[T <: Coordinate](a: T, b: T, c: T) {
   @inline def invert: Triangle[T] = Triangle(a, c, b)
   @inline def asTXYZ = Triangle[XYZ](a.toXYZ, b.toXYZ, c.toXYZ)
@@ -212,6 +214,32 @@ case class Triangle[T <: Coordinate](a: T, b: T, c: T) {
   )
   // format: on
   def map[W <: Coordinate](f: T => W): Triangle[W] = Triangle(f(a), f(b), f(c))
+}
+
+// ### Extras Shapes ###
+sealed trait ShapeExtras extends Shape
+
+case class Axes(m: Matrix) extends ShapeExtras
+
+/**
+  *
+  * @param position
+  * @param lookAt
+  * @param fov camera frustum vertical field of view.
+  * @param aspect camera frustum aspect ratio.
+  * @param near camera frustum near plane.
+  * @param far camera frustum far plane.
+  */
+case class Frustum(
+    position: XYZ,
+    lookAt: XYZ,
+    fov: Double,
+    aspect: Double,
+    near: Double,
+    far: Double
+) extends ShapeExtras {
+  def lootTo: Vec = ???
+
 }
 
 // ###################

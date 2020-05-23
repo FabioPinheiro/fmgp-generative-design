@@ -40,10 +40,15 @@ object WorldImprovements {
   val boxGeom = new BoxGeometry(1, 1, 1, ^, ^, ^) //c.width, c.height c.depth
   val sphereGeom = new SphereGeometry(1.0, 32, 32, ^, ^, ^, ^)
 
-  val parametersLine = js.Dynamic
-    .literal("color" -> 0x0000ff)
-    .asInstanceOf[LineBasicMaterialParameters]
-  val materialLine = new LineBasicMaterial(parametersLine)
+  def parametersLine(color: Double, width: Double) =
+    js.Dynamic
+      .literal("color" -> color, "linewidth" -> width)
+      .asInstanceOf[LineBasicMaterialParameters]
+
+  val materialLine = new LineBasicMaterial(parametersLine(0x999999, 1))
+  val materialLineRed = new LineBasicMaterial(parametersLine(0xff0000, 3))
+  val materialLineGreen = new LineBasicMaterial(parametersLine(0x00ff00, 3))
+  val materialLineBlue = new LineBasicMaterial(parametersLine(0x0000ff, 3))
 
   def generateObj3D(world: geo.WorldState): Object3D = world.dimensions match {
     case geo.Dimensions.D2 => generateObj3D(world.shapes)
@@ -184,7 +189,7 @@ object WorldImprovements {
           float2ArrayLike(points.flatMap(p => Seq(p.x.toFloat, p.y.toFloat, p.z.toFloat))),
           3
         )
-        val geometryPoint = new BufferGeometry().tap(_.addAttribute("position", aux))
+        val geometryPoint = new BufferGeometry().tap(_.setAttribute("position", aux))
         new Points(geometryPoint, geo.SceneGraph.pointMat).asInstanceOf[Object3D]
 
       case box: geo.Box =>
@@ -283,6 +288,81 @@ object WorldImprovements {
         obj.position.set(c.center.x, c.center.y, c.center.z)
         obj
 
+      case geo.TriangleShape(t: geo.Triangle[XYZ], n: geo.Triangle[Vec]) =>
+        val geometry = new BufferGeometry()
+          .tap(_.setAttribute("position", float2BufferAttribute(t.toSeqFloat)))
+          .tap(_.setAttribute("normal", float2BufferAttribute(n.toSeqFloat))) //or .tap(_.computeVertexNormals())
+
+        val op = state.withMaterial(geo.SceneGraph.surfaceNormalMat)
+        op.toObj3D(geometry)
+
+      case geo.Axes(m: geo.Matrix) =>
+        val ccc = {
+          val op = state.withMaterial(geo.SceneGraph.surfaceMat)
+          generateShape(geo.Sphere(0.1, XYZ.origin), op)
+        }
+        val arrowShape = geo.Cylinder(0.1, 0.3, 0)
+        val arrowBody = geo.Cylinder(0.03, 1)
+        val rrr = {
+          val m = geo.Matrix().postRotate(-math.Pi / 2, Vec(0, 0, 1))
+          val op = state.withMaterial(geo.SceneGraph.surfaceMatWithColor(0xff0000))
+          (
+            generateShape(geo.TransformationShape(arrowShape, geo.TransformMatrix(m.postTranslate(0, 0.95, 0))), op),
+            generateShape(geo.TransformationShape(arrowBody, geo.TransformMatrix(m.postTranslate(0, 0.5, 0))), op)
+          )
+        }
+        val ggg = {
+          val m = geo.Matrix()
+          val op = state.withMaterial(geo.SceneGraph.surfaceMatWithColor(0x00ff00))
+          (
+            generateShape(geo.TransformationShape(arrowShape, geo.TransformMatrix(m.postTranslate(0, 0.95, 0))), op),
+            generateShape(geo.TransformationShape(arrowBody, geo.TransformMatrix(m.postTranslate(0, 0.5, 0))), op)
+          )
+        }
+        val bbb = {
+          val m = geo.Matrix().postRotate(math.Pi / 2, Vec(1, 0, 0))
+          val op = state.withMaterial(geo.SceneGraph.surfaceMatWithColor(0x0000ff))
+          (
+            generateShape(geo.TransformationShape(arrowShape, geo.TransformMatrix(m.postTranslate(0, 0.95, 0))), op),
+            generateShape(geo.TransformationShape(arrowBody, geo.TransformMatrix(m.postTranslate(0, 0.5, 0))), op)
+          )
+        }
+
+        // // val c = m.center.pipe(e => new Vector3(e.x, e.y, e.z))
+        // // val r = m.dot(Vec(1, 0, 0)).pipe(e => new Vector3(e.x, e.y, e.z))
+        // // val g = m.dot(Vec(0, 1, 0)).pipe(e => new Vector3(e.x, e.y, e.z))
+        // // val b = m.dot(Vec(0, 0, 1)).pipe(e => new Vector3(e.x, e.y, e.z))
+        // val c = new Vector3(0, 0, 0)
+        // val r = Vec(1, 0, 0).pipe(e => new Vector3(e.x, e.y, e.z))
+        // val g = Vec(0, 1, 0).pipe(e => new Vector3(e.x, e.y, e.z))
+        // val b = Vec(0, 0, 1).pipe(e => new Vector3(e.x, e.y, e.z))
+        // val l1 = new Geometry()
+        //   .tap(_.vertices.push(c))
+        //   .tap(_.vertices.push(r))
+        //   .pipe(geometry => new Line(geometry, materialLineRed))
+        // val l2 = new Geometry()
+        //   .tap(_.vertices.push(c))
+        //   .tap(_.vertices.push(g))
+        //   .pipe(geometry => new Line(geometry, materialLineGreen))
+        // val l3 = new Geometry()
+        //   .tap(_.vertices.push(c))
+        //   .tap(_.vertices.push(b))
+        //   .pipe(geometry => new Line(geometry, materialLineBlue))
+        // obj.add(l1.asInstanceOf[Object3D])
+        // obj.add(l2.asInstanceOf[Object3D])
+        // obj.add(l3.asInstanceOf[Object3D])
+
+        val obj = new Object3D
+        obj.add(ccc)
+        obj.add(rrr._1)
+        obj.add(rrr._2)
+        obj.add(ggg._1)
+        obj.add(ggg._2)
+        obj.add(bbb._1)
+        obj.add(bbb._2)
+        obj.applyMatrix4(matrix2matrix(m))
+        obj
+
       case geo.TestShape() =>
         val line = geo.LinePath(vertices = (10 to 16).map(i => XYZ(i, 0, 0)))
 
@@ -341,22 +421,22 @@ object WorldImprovements {
           }
 
         val topSideGeometry = new BufferGeometry()
-          .tap(_.addAttribute("position", float2BufferAttribute(topSideVertices)))
+          .tap(_.setAttribute("position", float2BufferAttribute(topSideVertices)))
           .tap(_.computeVertexNormals())
 
         val innerSideGeometry = new BufferGeometry()
-          .tap(_.addAttribute("position", float2BufferAttribute(innerSideSurface.pipe {
+          .tap(_.setAttribute("position", float2BufferAttribute(innerSideSurface.pipe {
             _.flatMap(_.toSeqFloat)
           })))
-          .tap(_.addAttribute("normal", float2BufferAttribute(innerSideSurface.pipe {
+          .tap(_.setAttribute("normal", float2BufferAttribute(innerSideSurface.pipe {
             _.flatMap(_.map(_.forceX0Z).toSeqFloat)
           })))
 
         val outerSideGeometry = new BufferGeometry()
-          .tap(_.addAttribute("position", float2BufferAttribute(outerSideSurface.pipe {
+          .tap(_.setAttribute("position", float2BufferAttribute(outerSideSurface.pipe {
             _.flatMap(_.toSeqFloat)
           })))
-          .tap(_.addAttribute("normal", float2BufferAttribute(outerSideSurface.pipe {
+          .tap(_.setAttribute("normal", float2BufferAttribute(outerSideSurface.pipe {
             _.flatMap(_.map(_.forceX0Z).toSeqFloat)
           })))
 

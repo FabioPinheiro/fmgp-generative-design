@@ -100,12 +100,11 @@ object Main {
     val dimensions: Dimensions.D = Dimensions.D3
 
     Global.camera = Some(
-      Utils.newCamera(dom.window.innerWidth, dom.window.innerHeight)
+      Utils
+        .newCamera(dom.window.innerWidth, dom.window.innerHeight)
+        .tap(_.position.set(0, 0, 10))
+        .tap(_.lookAt(new Vector3(0, 0, 0)))
     )
-    Global.camera.foreach { c =>
-      c.position.set(0, 0, 10)
-      c.lookAt(new Vector3(0, 0, 0))
-    }
     Global.controls = Global.camera.map { c =>
       //val orbit = new OrbitControls(c, renderer.domElement)
       //orbit.keyPanSpeed = 30 //pixes

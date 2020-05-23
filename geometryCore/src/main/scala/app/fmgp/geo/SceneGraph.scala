@@ -35,6 +35,8 @@ trait DefaultMaterials {
   val solidMat = new MeshStandardMaterial()
   val surfaceMatOneSide = new MeshStandardMaterial()
   val surfaceMat = new MeshStandardMaterial().tap(_.side = DoubleSide)
+  def surfaceMatWithColor(color: Double) =
+    new MeshStandardMaterial().tap(_.side = DoubleSide).tap(_.color = new typings.three.colorMod.Color(color))
   val surfaceNormalMat = new MeshNormalMaterial()
   val basicMat = new MeshBasicMaterial(
     typings.three.meshBasicMaterialMod.MeshBasicMaterialParameters(

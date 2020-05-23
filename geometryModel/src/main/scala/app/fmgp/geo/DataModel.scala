@@ -167,6 +167,7 @@ final case class Vec(x: Double = 0, y: Double = 0, z: Double = 0) extends Coordi
 
   /** Returns the normalized vector. */
   @inline def normalized = this / magnitude
+  @inline def norm = this / magnitude
 }
 object Vec {
   def origin: Vec = Vec(0, 0, 0)
@@ -209,7 +210,7 @@ final case class Matrix(
   m20: Double = 0, m21: Double = 0, m22: Double = 1, m23: Double = 0,
   m30: Double = 0, m31: Double = 0, m32: Double = 0, m33: Double = 1
 ) {
-  // format: off
+  // format: on
   override def toString: String = {
     val a = Array(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33)
     (for {
@@ -218,7 +219,7 @@ final case class Matrix(
     } yield t.mkString("[", ", ", "]")).mkString("Matrix(", " ; ", ")")
   }
 
-  @inline def center: XYZ = XYZ(m03,m13,m23)//dot(Vex(0, 0, 0))
+  @inline def center: XYZ = XYZ(m03, m13, m23) //dot(Vex(0, 0, 0))
 
   @inline def *(v: Vec): XYZ = XYZ(
     x = m00 * v.x + m01 * v.y + m02 * v.z + /*w * v.w*/ m03,
@@ -233,17 +234,17 @@ final case class Matrix(
     m01 = b.m01 * m00 + b.m11 * m01 + b.m21 * m02 + b.m31 * m03,
     m02 = b.m02 * m00 + b.m12 * m01 + b.m22 * m02 + b.m32 * m03,
     m03 = b.m03 * m00 + b.m13 * m01 + b.m23 * m02 + b.m33 * m03,
-
+    /**/
     m10 = b.m00 * m10 + b.m10 * m11 + b.m20 * m12 + b.m30 * m13,
     m11 = b.m01 * m10 + b.m11 * m11 + b.m21 * m12 + b.m31 * m13,
     m12 = b.m02 * m10 + b.m12 * m11 + b.m22 * m12 + b.m32 * m13,
     m13 = b.m03 * m10 + b.m13 * m11 + b.m23 * m12 + b.m33 * m13,
-
+    /**/
     m20 = b.m00 * m20 + b.m10 * m21 + b.m20 * m22 + b.m30 * m23,
     m21 = b.m01 * m20 + b.m11 * m21 + b.m21 * m22 + b.m31 * m23,
     m22 = b.m02 * m20 + b.m12 * m21 + b.m22 * m22 + b.m32 * m23,
     m23 = b.m03 * m20 + b.m13 * m21 + b.m23 * m22 + b.m33 * m23,
-
+    /**/
     m30 = b.m00 * m30 + b.m10 * m31 + b.m20 * m32 + b.m30 * m33,
     m31 = b.m01 * m30 + b.m11 * m31 + b.m21 * m32 + b.m31 * m33,
     m32 = b.m02 * m30 + b.m12 * m31 + b.m22 * m32 + b.m32 * m33,
@@ -255,23 +256,22 @@ final case class Matrix(
     m01 = m01 * b.m00 + m11 * b.m01 + m21 * b.m02 + m31 * b.m03,
     m02 = m02 * b.m00 + m12 * b.m01 + m22 * b.m02 + m32 * b.m03,
     m03 = m03 * b.m00 + m13 * b.m01 + m23 * b.m02 + m33 * b.m03,
-
+    /**/
     m10 = m00 * b.m10 + m10 * b.m11 + m20 * b.m12 + m30 * b.m13,
     m11 = m01 * b.m10 + m11 * b.m11 + m21 * b.m12 + m31 * b.m13,
     m12 = m02 * b.m10 + m12 * b.m11 + m22 * b.m12 + m32 * b.m13,
     m13 = m03 * b.m10 + m13 * b.m11 + m23 * b.m12 + m33 * b.m13,
-
+    /**/
     m20 = m00 * b.m20 + m10 * b.m21 + m20 * b.m22 + m30 * b.m23,
     m21 = m01 * b.m20 + m11 * b.m21 + m21 * b.m22 + m31 * b.m23,
     m22 = m02 * b.m20 + m12 * b.m21 + m22 * b.m22 + m32 * b.m23,
     m23 = m03 * b.m20 + m13 * b.m21 + m23 * b.m22 + m33 * b.m23,
-
+    /**/
     m30 = m00 * b.m30 + m10 * b.m31 + m20 * b.m32 + m30 * b.m33,
     m31 = m01 * b.m30 + m11 * b.m31 + m21 * b.m32 + m31 * b.m33,
     m32 = m02 * b.m30 + m12 * b.m31 + m22 * b.m32 + m32 * b.m33,
     m33 = m03 * b.m30 + m13 * b.m31 + m23 * b.m32 + m33 * b.m33
   )
-  // format: on
 
   def preTranslate(x: Double, y: Double, z: Double): Matrix =
     preMultiply(Matrix.translate(x, y, z))
@@ -289,14 +289,15 @@ final case class Matrix(
   def postScale(xFactor: Double, yFactor: Double, zFactor: Double): Matrix =
     postMultiply(Matrix.scale(xFactor, yFactor, zFactor))
 
+  // format: off
   def transpose = Matrix(
-    // format: off
     m00, m10, m20, m30,
     m01, m11, m21, m31,
     m02, m12, m22, m32,
     m03, m13, m23, m33,
-    // format: on
   )
+  // format: on
+
   def inverse = {
 
     //        n23 * n34 * n42 - n24 * n33 * n42 + n24 * n32 * n43 - n22 * n34 * n43 - n23 * n32 * n44 + n22 * n33 * n44
@@ -338,7 +339,6 @@ final case class Matrix(
 
   }
 }
-
 object Matrix {
   // format: off
   @inline def translate(x: Double, y: Double, z: Double): Matrix = Matrix(
@@ -354,15 +354,26 @@ object Matrix {
     * Returns the rotation matrix about the given angle and axis.
     *
     * @param angle the angle to rotate, in radians.
-    * @param x the x-component of the axis vector to rotate around, must be normalized.
-    * @param y the y-component of the axis vector to rotate around, must be normalized.
-    * @param z the z-component of the axis vector to rotate around, must be normalized.
+    * @param x the x-component of the axis vector to rotate around
+    * @param y the y-component of the axis vector to rotate around
+    * @param z the z-component of the axis vector to rotate around
     */
-  @inline def rotate(angle: Double, x: Double, y: Double, z: Double): Matrix = {
-    assert(Vec(x, y, z) == Vec(x, y, z).normalized) //TODO
+  @inline def rotate(angle: Double, x: Double, y: Double, z: Double): Matrix = rotate(angle, Vec(x, y, z))
+
+  /**
+    * Returns the rotation matrix about the given angle and axis.
+    *
+    * @param angle the angle to rotate, in radians.
+    * @param axisVector the axis vector to rotate around.
+    */
+  @inline def rotate(angle: Double, axisVector: Vec): Matrix = {
     val s = Math.sin(angle)
     val c = Math.cos(angle)
     val t = 1 - c
+    val norm = axisVector.normalized //must be normalized.
+    val x = norm.x
+    val y = norm.y
+    val z = norm.z
     // format: off
     Matrix( 
       x*x*t + c   , x*y*t - z*s , x*z*t+y*s , 0,
@@ -372,22 +383,14 @@ object Matrix {
     ) // format: on
   }
 
-  /**
-    * Returns the rotation matrix about the given angle and axis.
-    *
-    * @param angle the angle to rotate, in radians.
-    * @param axisVector the axis vector to rotate around, must be normalized.
-    */
-  @inline def rotate(angle: Double, axisVector: Vec): Matrix =
-    rotate(angle, axisVector.x, axisVector.y, axisVector.z)
-
   // format: off
   @inline def scale(x: Double, y: Double, z: Double): Matrix = Matrix( 
     x, 0, 0, 0,
     0, y, 0, 0,
     0, 0, z, 0,
     0, 0, 0, 1
-  ) // format: on
+  )
+  // format: on
 
   //def multiply(m1: Matrix4, m2: Matrix4) = m1.clone().multiply(m2)
 //  def basis(xVector: Vector, yVector: Vector, zVector: Vector, origin: XYZ = XYZ.origin) = {
@@ -437,4 +440,22 @@ object Matrix {
     matrix
   }
 
+  def makePerspective(left: Double, right: Double, top: Double, bottom: Double, near: Double, far: Double) = {
+    val x = 2 * near / (right - left)
+    val y = 2 * near / (top - bottom)
+
+    val a = (right + left) / (right - left)
+    val b = (top + bottom) / (top - bottom)
+    val c = -(far + near) / (far - near)
+    val d = -2 * far * near / (far - near)
+
+    // format: off
+    new Matrix (
+      x, 0, a, 0,
+      0, y, b, 0,
+      0, 0, c, d,
+      0, 0,-1, 0
+    )
+    // format: on
+  }
 }

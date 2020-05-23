@@ -84,6 +84,9 @@ browserRemoteControl/console
   - Game idia: make an empty city or a shopping mall.
     Give each player's a place to remodel.
     Would be like an Architecture (algorithmic design) hackathon.
+  - Game idia:
+    - Make a 3d maze, where you can only choose between left and right paths and control the velocity.
+    - Then make a 3d sandbox with weird gravity.
   - Use Node.js as the JavaScript runtime system. (We can try also the [Electron](https://www.electronjs.org/)
   - Compile code on the backend as a module and dynamically load it on the FE.
   - Try WebGPU and try to implemente some machine learning algorithms!
