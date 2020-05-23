@@ -296,70 +296,40 @@ object WorldImprovements {
         val op = state.withMaterial(geo.SceneGraph.surfaceNormalMat)
         op.toObj3D(geometry)
 
+      case geo.Arrow(to: Vec, from: XYZ) =>
+        val obj = new Object3D
+        val mid = to.-(to.-(from.asVec).norm * 0.3).toXYZ
+        obj.add(generateShape(geo.Cylinder.fromVerticesRadius(from, mid, 0.03), state))
+        obj.add(
+          generateShape(
+            geo.Cylinder.fromVerticesRadius(mid.toXYZ, to.toXYZ, 0.1, Some(0)),
+            state
+          )
+        )
+        obj
       case geo.Axes(m: geo.Matrix) =>
         val ccc = {
           val op = state.withMaterial(geo.SceneGraph.surfaceMat)
           generateShape(geo.Sphere(0.1, XYZ.origin), op)
         }
-        val arrowShape = geo.Cylinder(0.1, 0.3, 0)
-        val arrowBody = geo.Cylinder(0.03, 1)
         val rrr = {
-          val m = geo.Matrix().postRotate(-math.Pi / 2, Vec(0, 0, 1))
           val op = state.withMaterial(geo.SceneGraph.surfaceMatWithColor(0xff0000))
-          (
-            generateShape(geo.TransformationShape(arrowShape, geo.TransformMatrix(m.postTranslate(0, 0.95, 0))), op),
-            generateShape(geo.TransformationShape(arrowBody, geo.TransformMatrix(m.postTranslate(0, 0.5, 0))), op)
-          )
+          generateShape(geo.Arrow(Vec(1, 0, 0)), op)
         }
         val ggg = {
-          val m = geo.Matrix()
           val op = state.withMaterial(geo.SceneGraph.surfaceMatWithColor(0x00ff00))
-          (
-            generateShape(geo.TransformationShape(arrowShape, geo.TransformMatrix(m.postTranslate(0, 0.95, 0))), op),
-            generateShape(geo.TransformationShape(arrowBody, geo.TransformMatrix(m.postTranslate(0, 0.5, 0))), op)
-          )
+          generateShape(geo.Arrow(Vec(0, 1, 0)), op)
         }
         val bbb = {
-          val m = geo.Matrix().postRotate(math.Pi / 2, Vec(1, 0, 0))
           val op = state.withMaterial(geo.SceneGraph.surfaceMatWithColor(0x0000ff))
-          (
-            generateShape(geo.TransformationShape(arrowShape, geo.TransformMatrix(m.postTranslate(0, 0.95, 0))), op),
-            generateShape(geo.TransformationShape(arrowBody, geo.TransformMatrix(m.postTranslate(0, 0.5, 0))), op)
-          )
+          generateShape(geo.Arrow(Vec(0, 0, 1)), op)
         }
-
-        // // val c = m.center.pipe(e => new Vector3(e.x, e.y, e.z))
-        // // val r = m.dot(Vec(1, 0, 0)).pipe(e => new Vector3(e.x, e.y, e.z))
-        // // val g = m.dot(Vec(0, 1, 0)).pipe(e => new Vector3(e.x, e.y, e.z))
-        // // val b = m.dot(Vec(0, 0, 1)).pipe(e => new Vector3(e.x, e.y, e.z))
-        // val c = new Vector3(0, 0, 0)
-        // val r = Vec(1, 0, 0).pipe(e => new Vector3(e.x, e.y, e.z))
-        // val g = Vec(0, 1, 0).pipe(e => new Vector3(e.x, e.y, e.z))
-        // val b = Vec(0, 0, 1).pipe(e => new Vector3(e.x, e.y, e.z))
-        // val l1 = new Geometry()
-        //   .tap(_.vertices.push(c))
-        //   .tap(_.vertices.push(r))
-        //   .pipe(geometry => new Line(geometry, materialLineRed))
-        // val l2 = new Geometry()
-        //   .tap(_.vertices.push(c))
-        //   .tap(_.vertices.push(g))
-        //   .pipe(geometry => new Line(geometry, materialLineGreen))
-        // val l3 = new Geometry()
-        //   .tap(_.vertices.push(c))
-        //   .tap(_.vertices.push(b))
-        //   .pipe(geometry => new Line(geometry, materialLineBlue))
-        // obj.add(l1.asInstanceOf[Object3D])
-        // obj.add(l2.asInstanceOf[Object3D])
-        // obj.add(l3.asInstanceOf[Object3D])
 
         val obj = new Object3D
         obj.add(ccc)
-        obj.add(rrr._1)
-        obj.add(rrr._2)
-        obj.add(ggg._1)
-        obj.add(ggg._2)
-        obj.add(bbb._1)
-        obj.add(bbb._2)
+        obj.add(rrr)
+        obj.add(ggg)
+        obj.add(bbb)
         obj.applyMatrix4(matrix2matrix(m))
         obj
 
@@ -445,6 +415,14 @@ object WorldImprovements {
         val obj = op.toObj3D(topSideGeometry)
         obj.add(op.toObj3D(innerSideGeometry))
         obj.add(op.toObj3D(outerSideGeometry))
+
+        val p = XYZ(1, 0, -1)
+        obj.add(generateShape(geo.Sphere(0.1, p), state))
+
+        obj.add(generateShape(geo.Axes(geo.Matrix().postTranslate(4, 0, 0)), state))
+        obj.add(generateShape(geo.Axes(geo.Matrix().postTranslate(4, 1, 0)), state))
+        obj.add(generateShape(geo.Axes(geo.Matrix().postTranslate(0, 0, -2)), state))
+        obj.add(generateShape(geo.Axes(geo.Matrix().postTranslate(0, 1, 0)), state))
         obj
     }
 

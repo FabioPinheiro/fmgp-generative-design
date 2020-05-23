@@ -135,6 +135,9 @@ final case class Vec(x: Double = 0, y: Double = 0, z: Double = 0) extends Coordi
   @inline def asXYZ: XYZ = toXYZ
   @inline def unary_- = Vec(-x, -y, -z)
 
+  def +(other: Vec) = Vec(x + other.x, y + other.y, z + other.z)
+  def -(other: Vec) = Vec(x - other.x, y - other.y, z - other.z)
+
   /** Returns the vector dividied by the given scalar. */
   @inline def /(s: Double): Vec = {
     val f = 1 / s

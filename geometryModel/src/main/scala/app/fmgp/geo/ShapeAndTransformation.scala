@@ -219,6 +219,7 @@ case class Triangle[T <: Coordinate](a: T, b: T, c: T) {
 // ### Extras Shapes ###
 sealed trait ShapeExtras extends Shape
 
+case class Arrow(to: Vec, from: XYZ = XYZ.origin) extends ShapeExtras
 case class Axes(m: Matrix) extends ShapeExtras
 
 /**
