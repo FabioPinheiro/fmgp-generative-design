@@ -224,6 +224,41 @@ final case class Matrix(
 
   @inline def center: XYZ = XYZ(m03, m13, m23) //dot(Vex(0, 0, 0))
 
+  def extractTranslation: XYZ = center
+  def extractScale: (Double, Double, Double) = {
+    val sx = Vec(m00, m10, m20).length
+    val sy = Vec(m01, m11, m21).length
+    val sz = Vec(m02, m12, m22).length
+    (sx, sy, sz)
+  }
+  def extractRotation: Matrix = {
+    val (sx, sy, sz) = extractScale
+    // format: off
+    Matrix(
+      m00/sx, m01/sy, m02/sz, 0,
+      m10/sx, m11/sy, m12/sz, 0,
+      m20/sx, m21/sy, m22/sz, 0,
+           0,      0,      0, 1
+    )
+    // format: on
+  }
+
+  /** @return the 'Yaw-z'; 'Pitch-y'; 'Roll-x' */
+  def extractYawPitchRoll: (Double, Double, Double) = {
+    val r = extractRotation
+    val sinPitch = -r.m20
+    val cosPitch = math.sqrt(1 - sinPitch * sinPitch);
+
+    val (sinRoll, cosRoll, sinYaw, cosYaw): (Double, Double, Double, Double) =
+      if (math.abs(cosPitch) > 0 /*EPSILON*/ ) (r.m21 / cosPitch, r.m22 / cosPitch, r.m10 / cosPitch, r.m00 / cosPitch)
+      else (-r.m12, r.m11, 0, 1)
+
+    val yaw = math.atan2(sinYaw, cosYaw) //* 180 / math.Pi
+    val pitch = math.atan2(sinPitch, cosPitch) //* 180 / math.Pi
+    val roll = math.atan2(sinRoll, cosRoll) //* 180 / math.Pi
+    (yaw, pitch, roll)
+  }
+
   @inline def *(v: Vec): XYZ = XYZ(
     x = m00 * v.x + m01 * v.y + m02 * v.z + /*w * v.w*/ m03,
     y = m10 * v.x + m11 * v.y + m12 * v.z + /*w * v.w*/ m13,

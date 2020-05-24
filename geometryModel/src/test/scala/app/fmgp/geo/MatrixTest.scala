@@ -1,8 +1,10 @@
 package app.fmgp.geo
 
+import app.fmgp.geo.TestUtils._
 import utest._
 
 object MatrixTest extends TestSuite {
+
   // This is necessary to find test methods in Scala.js
   //scalaJsSupport
 
@@ -67,6 +69,43 @@ object MatrixTest extends TestSuite {
         assert(m2.inverse.postMultiply(m2) == Matrix())
         assert(m3.inverse.postMultiply(m3) == Matrix())
         assert(m4.inverse.postMultiply(m4) == Matrix())
+      }
+    }
+
+    test("extract") {
+      val aux = Vec(111, 333, 555)
+      val (sx, sy, sz) = (0.2, 2, 10)
+      val (rx, ry, rz) = (0.3, 0.5, 1.4)
+      val m1 = Matrix
+        .translate(aux)
+        .postRotate(rz, Vec(0, 0, 1))
+        .postRotate(ry, Vec(0, 1, 0))
+        .postRotate(rx, Vec(1, 0, 0))
+        .postScale(sx, sy, sz)
+
+      test("Translation") {
+        assert(m1.extractTranslation == aux.asXYZ)
+      }
+      test("Scale") {
+        val (x, y, z) = m1.extractScale
+        assertClose(x, sx)
+        assertClose(y, sy)
+        assertClose(z, sz)
+      }
+      test("Rotation") {
+        val expected = Matrix()
+          .postRotate(rz, Vec(0, 0, 1))
+          .postRotate(ry, Vec(0, 1, 0))
+          .postRotate(rx, Vec(1, 0, 0))
+        val output = m1.extractRotation
+        assertCloseMatrix(output, expected)
+      }
+
+      test("Yaw & Pitch & Roll") {
+        val (yaw, pitch, roll) = m1.extractYawPitchRoll
+        assertClose(yaw, rz)
+        assertClose(pitch, ry)
+        assertClose(roll, rx)
       }
     }
   }

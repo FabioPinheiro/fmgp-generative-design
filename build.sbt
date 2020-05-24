@@ -95,6 +95,8 @@ lazy val geometryModel = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("geometryModel"))
   .settings(
+    libraryDependencies += "com.lihaoyi" %%% "utest" % "0.7.4" % "test",
+    testFrameworks += new TestFramework("utest.runner.Framework"),
     name := "fmgp-geometry-model",
     publishArtifact := false,
   )
@@ -117,8 +119,6 @@ lazy val geometryCore = (project in file("geometryCore"))
     npmDependencies in Compile += "three" -> threeVersion,
     npmDependencies in Compile += "stats.js" -> "0.17.0",
     npmDependencies in Compile += "@types/stats.js" -> "0.17.0", //https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
-    libraryDependencies += "com.lihaoyi" %%% "utest" % "0.7.4" % "test",
-    testFrameworks += new TestFramework("utest.runner.Framework"),
     scalaJSUseMainModuleInitializer := true,
     mainClass := Some("fmgp.Main"),
     //scalaJSMainModuleInitializer := Some(mainMethod("fmgp.Main", "main"))
