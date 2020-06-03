@@ -2,6 +2,7 @@ package app.fmgp
 
 import typings.three.loaderMod.Loader
 import typings.three.mod.{Shape => _, _}
+import typings.three.anon.{X => AnonX}
 import typings.three.webGLRendererMod.WebGLRendererParameters
 import typings.statsJs.mod.{^ => Stats}
 
@@ -46,7 +47,7 @@ object Global {
   }
 
   val raycaster = new Raycaster()
-  var uiEvent: Option[typings.three.AnonX] = None
+  var uiEvent: Option[AnonX] = None
 }
 
 object Log extends Logger {
@@ -61,12 +62,12 @@ object Main {
     // calculate mouse position in normalized device coordinates (-1 to +1) for both components
     val x = (event.clientX / dom.window.innerWidth) * 2 - 1
     val y = -(event.clientY / dom.window.innerHeight) * 2 + 1
-    Global.uiEvent = Some(typings.three.AnonX(x, y))
+    Global.uiEvent = Some(AnonX(x, y))
   }
   def onTouchEvent(event: dom.TouchEvent) = {
     val x = (event.touches(0).screenX / dom.window.innerWidth) * 2 - 1
     val y = -(event.touches(0).screenY / dom.window.innerHeight) * 2 + 1
-    Global.uiEvent = Some(typings.three.AnonX(x, y))
+    Global.uiEvent = Some(AnonX(x, y))
   }
   dom.window.addEventListener("click", onClickEvent, false)
   dom.window.addEventListener("ontouch", onTouchEvent, false) //TODO need to test this
