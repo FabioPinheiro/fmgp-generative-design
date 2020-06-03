@@ -161,10 +161,11 @@ object BezierCurves {
       rotate: Double,
       tInc: Double = 0.01
   ): Matrix = {
+    val (yaw, pitch, roll) = p0.extractYawPitchRoll
     if (t == 0) p0
-    else if (t == 1) {
+    else if (t == 2) {
       println(s"${p3.asVec - p0.center.asVec} =  ${p3.asVec} - ${p0.center.asVec}")
-      p0.preTranslate(p3.asVec - p0.center.asVec).postRotate(rotate, Vec(0, 0, -1))
+      p0.preTranslate(p3.asVec - p0.center.asVec).postRotate(yaw + rotate, Vec(0, 0, -1))
     } else {
       val p0c = p0.center
       val p1c = p0.dot(Vec(0, 0, -p1))
@@ -174,7 +175,7 @@ object BezierCurves {
       val pa = cubic(t, p0c, p1c, p2c, p3c)
       val pb = cubic(t + tInc, p0c, p1c, p2c, p3c)
       val r = linear(t, 0, rotate) //FIXME replace '0' with the inicial rotation of p0
-      Matrix.lookAt(pa, pb).postRotate(r, Vec(0, 0, -1))
+      Matrix.lookAt(pa, pb).postRotate(yaw + t * rotate, Vec(0, 0, 1))
     }
   }
 

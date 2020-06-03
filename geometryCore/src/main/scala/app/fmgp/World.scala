@@ -13,9 +13,11 @@ import scala.scalajs.js.UndefOrOps
 import app.fmgp.geo.LinePath
 import app.fmgp.geo.CubicBezierPath
 import app.fmgp.geo.MultiPath
-import scala.util.chaining._
 import app.fmgp.threejs.extras.FaceNormalsHelper
 import app.fmgp.geo.{Vec, XYZ}
+
+import scala.util.chaining._
+
 object WorldImprovements {
 
   def matrix2matrix(m: geo.Matrix): Matrix4 = {
@@ -291,10 +293,11 @@ object WorldImprovements {
       case geo.TriangleShape(t: geo.Triangle[XYZ], n: geo.Triangle[Vec]) =>
         val geometry = new BufferGeometry()
           .tap(_.setAttribute("position", float2BufferAttribute(t.toSeqFloat)))
-          .tap(_.setAttribute("normal", float2BufferAttribute(n.toSeqFloat))) //or .tap(_.computeVertexNormals())
+          .tap(_.setAttribute("normal", float2BufferAttribute(n.toSeqFloat)))
+        //.tap(_.computeVertexNormals())
 
-        val op = state.withMaterial(geo.SceneGraph.surfaceNormalMat)
-        op.toObj3D(geometry)
+        //val op = state.withMaterial(geo.SceneGraph.surfaceNormalMat)
+        state.toObj3D(geometry)
 
       case geo.Arrow(to: Vec, from: XYZ) =>
         val obj = new Object3D

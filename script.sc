@@ -139,26 +139,43 @@ clear
 // )
 
 {
-  val m0 = Axes(Matrix().postTranslate(Vec(0, -3, 0)).postRotate(-1, Vec(-1, 0, 1)))
+  val m0 = Axes(Matrix().postTranslate(Vec(0, 3, 0)).postRotate(-1, Vec(-1, 1, 1)))
+  //addShape(m0)
   val v1 = Vec(0, 0, -20)
-  draw(
-    BezierCurves
-      .steps(30)
-      .tap(e => println(s"ssssss $e"))
-      .map(t => BezierCurves.cubicLookAtNext(t, m0.m, 10, Vec(0, 0, -10), v1.toXYZ, math.Pi / 4))
-  )
-
+  val c1 = BezierCurves
+    .steps(30)
+    .map(t => BezierCurves.cubicLookAtNext(t, m0.m, 10, Vec(0, 0, -10), v1.toXYZ, math.Pi / 4))
+  val v2 = Vec(0, 10, -30)
+  val c2 = BezierCurves
+    .steps(20)
+    .map(t => BezierCurves.cubicLookAtNext(t, c1.last, 10, Vec(0, 5, -5), v2.toXYZ, -math.Pi))
+  draw(c1)
+  draw(c2)
   def draw(mmm: Seq[Matrix]) = {
     //addShape(Axes(mmm.head))
     //addShape(Axes(mmm.last))
-    addShape(ShapeSeq(mmm /*.drop(1).dropRight(1)*/.map(m => Axes(m))))
-    val ppp = mmm.map(m => (m.dot(Vec(0, 1, 0)).asVec, Seq(m.dot(Vec(-1, 0, 0)), m.dot(Vec(1, 0, 0)))))
+    addShape(ShapeSeq(mmm.map(_.preTranslate(0, 0, 30)) /*drop(1).dropRight(1)*/.map(m => Axes(m))))
+    val ppp = mmm
+      .map(_.preTranslate(0, 0, 30))
+      .map(m => (Seq(m.dot(Vec(-1, 1, 0)), m.dot(Vec(1, 1, 0))), Seq(m.dot(Vec(-1, 0, 0)), m.dot(Vec(1, 0, 0)))))
     //addShape(Points(ppp.map(_._2).flatten))
     //addShape(Points(ppp.map(_._1.toXYZ)))
     addShape(ShapeSeq(ppp.zip(ppp.drop(1)).flatMap {
       case (a, b) =>
-        val t1 = TriangleShape(Triangle(a._2(0), a._2(1), b._2(1)), Triangle(a._1, a._1, b._1))
-        val t2 = TriangleShape(Triangle(a._2(0), b._2(1), b._2(0)), Triangle(a._1, b._1, b._1))
+        //addShape(Arrow(a._1(0).asVec, a._2(0)))
+        //addShape(Arrow(a._1(1).asVec, a._2(1)))
+        //addShape(Arrow(b._1(0).asVec, b._2(0)))
+        //addShape(Arrow(b._1(1).asVec, b._2(1)))
+        val t1 =
+          TriangleShape(
+            Triangle(a._2(0), a._2(1), b._2(1)),
+            Triangle(a._1(0).asVec - a._2(0).asVec, a._1(1).asVec - a._2(1).asVec, b._1(1).asVec - b._2(1).asVec)
+          )
+        val t2 =
+          TriangleShape(
+            Triangle(a._2(0), b._2(1), b._2(0)),
+            Triangle(a._1(0).asVec - a._2(0).asVec, b._1(1).asVec - b._2(1).asVec, b._1(0).asVec - b._2(0).asVec)
+          )
         Seq(t1, t2)
     }))
   }
