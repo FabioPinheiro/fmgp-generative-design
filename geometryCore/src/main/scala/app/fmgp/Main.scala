@@ -55,7 +55,9 @@ object Log extends Logger {
   def trace(t: => Throwable): Unit = log(org.scalajs.logging.Level.Debug, t.toString)
 }
 
-case class InteractiveMesh(mesh: Mesh, onSelected: () => Unit = () => ()) { def id = mesh.id }
+case class InteractiveMesh(mesh: typings.three.meshMod.Mesh[_, _], onSelected: () => Unit = () => ()) {
+  def id = mesh.id
+}
 
 object Main {
   def onClickEvent(event: dom.MouseEvent) = {

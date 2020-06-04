@@ -80,7 +80,7 @@ trait PolygonSurface extends DefaultMaterials {
 
   private def toThreePolygonSurface(result: {
     def args: { def vertices: js.Array[Vector3] }
-  }): Mesh = {
+  }): Mesh[_, _] = {
     val vertices = result.args.vertices
     val geom = polygonSurfaceGeometry(vertices)
     new Mesh(geom, surfaceMat)
