@@ -48,6 +48,16 @@ object Global {
 
   val raycaster = new Raycaster()
   var uiEvent: Option[AnonX] = None
+
+  // Text
+  var textFont: typings.three.fontMod.Font = _
+  val loader = new FontLoader()
+  def init = Log.info(s"### Global.init ###") //FIXME
+  loader.load(
+    "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/gentilis_regular.typeface.json", //"fonts/helvetiker_bold.typeface.json",
+    (f: typings.three.fontMod.Font) => textFont = f
+  )
+
 }
 
 object Log extends Logger {
@@ -88,10 +98,10 @@ object Main {
   }
 
   def main(args: Array[String]): Unit = {
-    app.fmgp.Fabio.version()
+    Global.init
     dom.document.body.appendChild(renderer.domElement)
     renderer.domElement.style = "position: fixed; top: 0px; left: 0px;"
-    init
+    js.timers.setTimeout(1000)(init) //milliseconds FIXME
     ()
   }
 
@@ -162,23 +172,17 @@ object Main {
       Global.addUiElement(InteractiveMesh(mesh, () => material.color = new typings.three.colorMod.Color("blue")))
     }
     { //text WS URL
-      val loader = new FontLoader()
-      loader.load(
-        "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/gentilis_regular.typeface.json", //"fonts/helvetiker_bold.typeface.json",
-        (f: typings.three.fontMod.Font) => {
-          val textParameters = typings.three.textGeometryMod.TextGeometryParameters(
-            font = f,
-            size = 0.02,
-            height = 0,
-            curveSegments = 12,
-          )
-          val geometry = new TextBufferGeometry(Global.websocket.wsUrl, textParameters).translate(0.01, -0.02, 0)
-          val basicMarerial = new typings.three.meshBasicMaterialMod.MeshBasicMaterial()
-          basicMarerial.color = new typings.three.colorMod.Color(0x444444)
-          val mesh = new typings.three.mod.Mesh(geometry, basicMarerial)
-          Global.addUiElement(InteractiveMesh(mesh))
-        }
+      val textParameters = typings.three.textGeometryMod.TextGeometryParameters(
+        font = Global.textFont,
+        size = 0.02,
+        height = 0,
+        curveSegments = 12,
       )
+      val geometry = new TextBufferGeometry(Global.websocket.wsUrl, textParameters).translate(0.01, -0.02, 0)
+      val basicMarerial = new typings.three.meshBasicMaterialMod.MeshBasicMaterial()
+      basicMarerial.color = new typings.three.colorMod.Color(0x444444)
+      val mesh = new typings.three.mod.Mesh(geometry, basicMarerial)
+      Global.addUiElement(InteractiveMesh(mesh))
     }
     { //Examples
       val bottonGeometry = new PlaneBufferGeometry(0.05, 0.05).translate(0.025, -0.025, 0)
@@ -279,11 +283,6 @@ object Fabio {
   def f() = {
     println("F:")
     test
-  }
-
-  @JSExport
-  def version(): Unit = {
-    dom.console.log(s"The threejs version is 0.108.0")
   }
 
   @JSExport

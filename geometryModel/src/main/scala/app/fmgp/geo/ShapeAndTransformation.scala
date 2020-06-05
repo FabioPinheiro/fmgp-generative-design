@@ -43,8 +43,6 @@ object ShapeSeq {
   implicit def implicitConverter(s: Seq[Shape]): ShapeSeq = ShapeSeq(s)
 }
 
-case class TestShape() extends Shape
-
 case class Points(val c: Seq[Coordinate3D]) extends AnyVal with Shape
 
 case class Box(
@@ -219,8 +217,10 @@ case class Triangle[T <: Coordinate](a: T, b: T, c: T) {
 // ### Extras Shapes ###
 sealed trait ShapeExtras extends Shape
 
+case class TestShape() extends Shape
 case class Arrow(to: Vec, from: XYZ = XYZ.origin) extends ShapeExtras
 case class Axes(m: Matrix) extends ShapeExtras
+case class TextShape(text: String, size: Double) extends ShapeExtras
 
 /**
   *

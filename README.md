@@ -29,10 +29,9 @@ browserRemoteControl/console
 
 ## TODO LIST / Roadmap / Ideas
 - Add Shapes:
-  - Frustum (Camera Helper) [2h]
-  - Axis Helper [2h]
+  - Frustum (Camera Helper) [8h] (Do it later)
   - Axis Path [2d]
-  - Text [2w]
+  - Text [2w] (Use the text on threejs for now)
 - Make/Get nice algorithmic design examples [3w]
   - Scala logo (university stairs) [WIP]
   - Bamboo house?

@@ -336,6 +336,19 @@ object WorldImprovements {
         obj.applyMatrix4(matrix2matrix(m))
         obj
 
+      case geo.TextShape(text: String, size: Double) =>
+        val textParameters = typings.three.textGeometryMod.TextGeometryParameters(
+          font = Global.textFont,
+          size = size,
+          height = 0,
+          curveSegments = 12,
+        )
+        val geometry = new TextBufferGeometry(text, textParameters)
+        val basicMarerial = new typings.three.meshBasicMaterialMod.MeshBasicMaterial()
+        basicMarerial.color = new typings.three.colorMod.Color(0x444444)
+        val mesh = new typings.three.mod.Mesh(geometry, basicMarerial)
+        mesh.asInstanceOf[Object3D]
+
       case geo.TestShape() =>
         val line = geo.LinePath(vertices = (10 to 16).map(i => XYZ(i, 0, 0)))
 
