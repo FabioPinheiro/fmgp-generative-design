@@ -222,26 +222,25 @@ case class Arrow(to: Vec, from: XYZ = XYZ.origin) extends ShapeExtras
 case class Axes(m: Matrix) extends ShapeExtras
 case class TextShape(text: String, size: Double) extends ShapeExtras
 
-/**
-  *
-  * @param position
-  * @param lookAt
-  * @param fov camera frustum vertical field of view.
-  * @param aspect camera frustum aspect ratio.
-  * @param near camera frustum near plane.
-  * @param far camera frustum far plane.
-  */
-case class Frustum(
-    position: XYZ,
-    lookAt: XYZ,
-    fov: Double,
-    aspect: Double,
-    near: Double,
-    far: Double
-) extends ShapeExtras {
-  def lootTo: Vec = ???
-
-}
+// /**
+//   *
+//   * @param position
+//   * @param lookAt
+//   * @param fov camera frustum vertical field of view.
+//   * @param aspect camera frustum aspect ratio.
+//   * @param near camera frustum near plane.
+//   * @param far camera frustum far plane.
+//   */
+// case class Frustum(
+//     position: XYZ,
+//     lookAt: XYZ,
+//     fov: Double,
+//     aspect: Double,
+//     near: Double,
+//     far: Double
+// ) extends ShapeExtras {
+//   def lootTo: Vec = ???
+// }
 
 // ###################
 // ### $$$$$$$$$$$ ###

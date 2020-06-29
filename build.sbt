@@ -1,60 +1,76 @@
-ThisBuild / scalaVersion := "2.13.2"
-ThisBuild / version := "0.1-M2-SNAPSHOT"
-ThisBuild / organization := "app.fmgp"
-ThisBuild / organizationHomepage := Some(url("https://fmgp.app/"))
-
-ThisBuild / scalacOptions ++= Seq(
-  "-deprecation",
-  "-feature",
-  "-language:_",
-  "-unchecked"
-  //"-Wunused:_",
-  //"-Xfatal-warnings",
-  //"-Ymacro-annotations"
+inThisBuild(
+  Seq(
+    organization := "app.fmgp",
+    scalaVersion := "2.13.2",
+    updateOptions := updateOptions.value.withLatestSnapshots(false),
+  )
 )
 
+lazy val noPublishSettings = skip in publish := true
+lazy val publishSettings = Seq(
+  publishArtifact in Test := false,
+  pomIncludeRepository := (_ => false),
+  homepage := Some(url("https://github.com/FabioPinheiro/fmgp-threejs")),
+  licenses := Seq("MIT License" -> url("https://github.com/FabioPinheiro/fmgp-threejs/blob/master/LICENSE")),
+  scmInfo := Some(
+    ScmInfo(
+      url("https://github.com/FabioPinheiro/fmgp-threejs"),
+      "scm:git:git@github.com:FabioPinheiro/fmgp-threejs.git"
+    )
+  ),
+  developers := List(
+    Developer("FabioPinheiro", "Fabio Pinheiro", "fabiomgpinheiro@gmail.com", url("http://fmgp.app"))
+  )
+)
 // ### PUBLISH ###
-// must not have SNAPSHOT on the version
-//> project three
+//usePgpKeyHex("E1FC5E4D458BB2DB0B99B285F1CBAB1E3F257949") //This is just a reference of the key
+// must the version //in version := "0.1-M4",
 //> publishSigned
 //> sonatypePrepare
 //> sonatypeBundleUpload
 
-// format: off
-ThisBuild / sonatypeProfileName := "app.fmgp"
-ThisBuild / publishMavenStyle := true
-ThisBuild / licenses := Seq("MIT" -> url("https://github.com/FabioPinheiro/fmgp-threejs/blob/master/LICENSE"))
-ThisBuild / homepage := Some(url("http://threejs.fmgp.app/"))
-ThisBuild / scmInfo := Some(ScmInfo(url("https://github.com/FabioPinheiro/fmgp-threejs"), "scm:git@github.com:FabioPinheiro/fmgp-threejs.git"))
-ThisBuild / developers := List(Developer(id = "FabioPinheiro", name = "Fabio Pinheiro", email = "fabiomgpinheiro@gmail.com", url = url("https://fmgp.app")))
-usePgpKeyHex("E1FC5E4D458BB2DB0B99B285F1CBAB1E3F257949") //This is just a reference of the key
-// format: on
-ThisBuild / publishTo := sonatypePublishToBundle.value //FIXME
-// ThisBuild / publishTo := {
-//   val nexus = "https://oss.sonatype.org/"
-//   if (isSnapshot.value)
-//     Some("snapshots" at nexus + "content/repositories/snapshots")
-//   else Some("releases" at nexus + "service/local/staging/deploy/maven2")
-//}
+lazy val commonSettings: Seq[sbt.Def.SettingsDefinition] = Seq(
+  scalacOptions ++= Seq(
+    "-encoding",
+    "UTF-8", // source files are in UTF-8
+    "-deprecation", // warn about use of deprecated APIs
+    "-unchecked", // warn about unchecked type parameters
+    "-feature", // warn about misused language features
+    "-Xfatal-warnings",
+    "-language:implicitConversions",
+    "-language:reflectiveCalls",
+  ),
+  sources in (Compile, doc) := Nil,
+  libraryDependencies += "org.scalameta" %% "munit" % "0.7.9" % Test,
+  testFrameworks += new TestFramework("munit.Framework"),
+)
 
-name := "fmgp-generative-design"
-publishArtifact := false
+lazy val modules: List[ProjectReference] =
+  List(threeUtils, geometryModelJvm, geometryModelJs, geometryCore, controller)
+
+lazy val root = project
+  .in(file("."))
+  .aggregate(modules: _*)
+  .settings(commonSettings: _*)
+  .settings(noPublishSettings)
+
 val threeVersion = "0.117.1" // https://www.npmjs.com/package/three
 val circeVersion = "0.13.0"
+val scalajsDomVersion = "1.0.0"
+val scalajsLoggingVersion = "1.0.1"
+val akkaVersion = "2.6.4"
+val akkaHttpVersion = "10.1.11"
 
 lazy val baseSettings: Project => Project =
-  _.enablePlugins(ScalaJSPlugin)
+  _.settings(commonSettings: _*)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
-      //scalacOptions ++= ScalacOptions.flags,
-      //scalaJSUseMainModuleInitializer := true,
       scalaJSLinkerConfig ~= (_
       /* disabled because it somehow triggers many warnings */
         .withSourceMap(false)
         .withModuleKind(ModuleKind.CommonJSModule))
     )
-
-lazy val bundlerSettings: Project => Project =
-  _.enablePlugins(ScalablyTypedConverterPlugin)
+    .enablePlugins(ScalablyTypedConverterPlugin)
     .settings(
       Compile / fastOptJS / webpackExtraArgs += "--mode=development",
       Compile / fullOptJS / webpackExtraArgs += "--mode=production",
@@ -63,79 +79,56 @@ lazy val bundlerSettings: Project => Project =
       useYarn := true
     )
 
-lazy val three = (project in file("three"))
-  .configure(baseSettings, bundlerSettings)
+lazy val geometryModel = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("modules/01-model"))
+  .settings(name := "fmgp-geometry-model")
+  .settings(commonSettings: _*)
+  .settings(publishSettings)
+
+lazy val threeUtils = project
+  .in(file("modules/01-threejs-utils"))
+  .settings(name := "fmgp-geometry-threejs-utils")
+  .configure(baseSettings)
   .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
     useYarn := true,
     scalaJSUseMainModuleInitializer := false,
-    name := "fmgp-threejs",
-    sonatypeProfileName := "app.fmgp",
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.8",
     npmDependencies in Compile += "three" -> threeVersion,
     webpackBundlingMode := BundlingMode.LibraryOnly(),
   )
-
-// lazy val demo = (project in file("demo"))
-//   .configure(baseSettings, bundlerSettings)
-//   .settings(
-//     name := "fmgp-threejs-demo",
-//     publishArtifact := false,
-//     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.8",
-//     npmDependencies in Compile += "three" -> threeVersion,
-//     scalaJSUseMainModuleInitializer := true,
-//     mainClass := Some("fmgp.threejs.Demo"),
-//     //scalaJSMainModuleInitializer := Some(mainMethod("fmgp.Main", "main"))
-//     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
-//     webpackBundlingMode := BundlingMode.LibraryAndApplication()
-//   )
-//   .dependsOn(three)
-
-lazy val geometryModel = crossProject(JSPlatform, JVMPlatform)
-  .crossType(CrossType.Pure)
-  .in(file("geometryModel"))
-  .settings(
-    libraryDependencies += "com.lihaoyi" %%% "utest" % "0.7.4" % "test",
-    testFrameworks += new TestFramework("utest.runner.Framework"),
-    name := "fmgp-geometry-model",
-    publishArtifact := false,
-  )
+  .settings(noPublishSettings)
 
 lazy val geometryModelJs = geometryModel.js
 lazy val geometryModelJvm = geometryModel.jvm
 
-lazy val geometryCore = (project in file("geometryCore"))
-  .configure(baseSettings, bundlerSettings) //.enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
+lazy val geometryCore = project
+  .in(file("modules/02-core"))
+  .settings(name := "fmgp-geometry-core")
+  .configure(baseSettings)
   .settings(
-    name := "fmgp-geometry-core",
-    //publishArtifact := false,
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "1.0.0",
-    libraryDependencies += "org.scala-js" %%% "scalajs-logging" % "1.0.1",
-    libraryDependencies ++= Seq(
-      "io.circe" %%% "circe-core" % circeVersion,
-      "io.circe" %%% "circe-generic" % circeVersion,
-      "io.circe" %%% "circe-parser" % circeVersion
-    ),
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion,
+    libraryDependencies += "org.scala-js" %%% "scalajs-logging" % scalajsLoggingVersion,
+    libraryDependencies ++= Seq("core", "generic", "parser").map(e => "io.circe" %%% ("circe-" + e) % circeVersion),
     npmDependencies in Compile += "three" -> threeVersion,
     npmDependencies in Compile += "stats.js" -> "0.17.0",
     npmDependencies in Compile += "@types/stats.js" -> "0.17.0", //https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
     scalaJSUseMainModuleInitializer := true,
     mainClass := Some("fmgp.Main"),
-    //scalaJSMainModuleInitializer := Some(mainMethod("fmgp.Main", "main"))
     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
   )
-  .dependsOn(three, geometryModelJs)
+  .dependsOn(threeUtils, geometryModelJs)
+  .settings(publishSettings)
 
-lazy val browserRemoteControl = (project in file("browserRemoteControl"))
+lazy val controller = project
+  .in(file("modules/03-controller"))
+  .settings(commonSettings: _*)
   .settings(
-    name := "browserRemoteControl",
+    libraryDependencies ++= Seq("core", "generic", "parser").map(e => "io.circe" %%% ("circe-" + e) % circeVersion),
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-http" % "10.1.11",
-      "com.typesafe.akka" %% "akka-stream" % "2.6.4",
-      "io.circe" %% "circe-core" % circeVersion,
-      "io.circe" %% "circe-generic" % circeVersion,
-      "io.circe" %% "circe-parser" % circeVersion,
+      "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
+      "com.typesafe.akka" %% "akka-stream" % akkaVersion,
       "ch.qos.logback" % "logback-classic" % "1.2.3",
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
     ),
@@ -153,3 +146,21 @@ lazy val browserRemoteControl = (project in file("browserRemoteControl"))
     """,
   )
   .dependsOn(geometryModelJvm)
+  .settings(noPublishSettings)
+
+// lazy val demo = project
+//   .in(file("modules/03-demo"))
+//   .configure(baseSettings)
+//   .settings(
+//     name := "fmgp-threejs-demo",
+//     publishArtifact := false,
+//     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion,
+//     npmDependencies in Compile += "three" -> threeVersion,
+//     scalaJSUseMainModuleInitializer := true,
+//     mainClass := Some("fmgp.threejs.Demo"),
+//     //scalaJSMainModuleInitializer := Some(mainMethod("fmgp.Main", "main"))
+//     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
+//     webpackBundlingMode := BundlingMode.LibraryAndApplication()
+//   )
+//   .dependsOn(threeUtils)
+//   .settings(noPublishSettings)

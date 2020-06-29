@@ -22,7 +22,7 @@ libraryDependencies += "app.fmgp" % "fmgp-threejs_2.13" % "0.1-M1"
 ```
 fastOptJS::webpack
 
-browserRemoteControl/console
+controller/console
 
 > :load script.sc
 ```
@@ -31,12 +31,6 @@ browserRemoteControl/console
 - Add Shapes:
   - Frustum (Camera Helper) [8h] (Do it later)
   - Axis Path [2d]
-  - Text [2w] (Use the text on threejs for now)
-- Make/Get nice algorithmic design examples [3w]
-  - Scala logo (university stairs) [WIP]
-  - Bamboo house?
-  - Transformer house? Single room multi configurations
-- Fix Live Demo [8h]
 - Threejs:
   - Support for Terrain[16h]
   - Draft initial support for light[16h]
@@ -59,7 +53,7 @@ browserRemoteControl/console
     - Scala has really nice BigData libraries but is lack of libraries for Machine Learning, unlike python.
       I don't think the language is difficult, quite the opposite! IMO the problem is the lack of tools and libs for Data Visualization.
       I think scalaJS could feel that hole. So the plan here is the make a simples API.
-- 3 Dimensional Vector graphics
+      Could try to make some interative dashboard with scalajs and mdoc (mdoc is not working with scalajs 1.x)
 - Draft support for real-time collaborative work on algorithmic design.
   - The system has 3 Components:
     - FE - A browser here the models is viewed. Most of the mesh of the models are generated on the FE!
@@ -78,8 +72,16 @@ browserRemoteControl/console
     https://stemkoski.github.io/Three.js/CSG.html
     https://github.com/stemkoski/stemkoski.github.com/blob/master/Three.js/CSG.html
     https://github.com/chandlerprall/ThreeCSplatformG
+
+### TODO list that Probably never will happen
+- List
+  - TextShape [2w] (implement my own algorithm)
+- Algorithmic design examples
+  - Bamboo house
+  - Transformer house - Single room multi configurations
 - Experiments:
   - Input controller: GamePad; VR; Ray Tracing Pixel-select
+  - 3 Dimensional Vector graphics
   - Game idia: make an empty city or a shopping mall.
     Give each player's a place to remodel.
     Would be like an Architecture (algorithmic design) hackathon.
@@ -95,6 +97,8 @@ browserRemoteControl/console
   - Experiment with webgl shaders for optimizations.
     - Learn [WebGL Shaders](
       https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Getting_started_with_WebGL)
+
+
 
 ## Copyright and License
 
