@@ -1,12 +1,13 @@
 inThisBuild(
   Seq(
     organization := "app.fmgp",
-    scalaVersion := "2.13.5",
+    //scalaVersion := "2.13.5",
+    scalaVersion := "3.0.0", //"2.13.5",
     updateOptions := updateOptions.value.withLatestSnapshots(false),
   )
 )
 
-lazy val noPublishSettings = skip in publish := true
+lazy val noPublishSettings = skip / publish := true
 lazy val publishSettings = Seq(
   publishArtifact in Test := false,
   pomIncludeRepository := (_ => false),
@@ -40,6 +41,7 @@ lazy val commonSettings: Seq[sbt.Def.SettingsDefinition] = Seq(
     "-language:implicitConversions",
     "-language:reflectiveCalls",
     //"-Xsource:3", //https://scalacenter.github.io/scala-3-migration-guide/docs/tooling/migration-tools.html
+    //"-Ytasty-reader",
   ),
   sources in (Compile, doc) := Nil,
   libraryDependencies += "org.scalameta" %% "munit" % "0.7.26" % Test,
@@ -47,7 +49,7 @@ lazy val commonSettings: Seq[sbt.Def.SettingsDefinition] = Seq(
 )
 
 lazy val modules: List[ProjectReference] =
-  List(threeUtils, geometryModelJvm, geometryModelJs, geometryCore, controller)
+  List(threeUtils, geometryModelJvm, geometryModelJs, geometryCore) //, controller)
 
 lazy val root = project
   .in(file("."))
@@ -58,7 +60,7 @@ lazy val root = project
 val threeVersion = "0.117.1" // https://www.npmjs.com/package/three
 val circeVersion = "0.13.0"
 val scalajsDomVersion = "1.0.0"
-val scalajsLoggingVersion = "1.0.1"
+val scalajsLoggingVersion = "1.1.2" //-SNAPSHOT" //"1.1.2"
 val akkaVersion = "2.6.4"
 val akkaHttpVersion = "10.1.11"
 
@@ -109,9 +111,11 @@ lazy val geometryCore = project
   .configure(baseSettings)
   .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion,
+    libraryDependencies += ("org.scala-js" %%% "scalajs-dom" % scalajsDomVersion).cross(CrossVersion.for3Use2_13),
     libraryDependencies += "org.scala-js" %%% "scalajs-logging" % scalajsLoggingVersion,
-    libraryDependencies ++= Seq("core", "generic", "parser").map(e => "io.circe" %%% ("circe-" + e) % circeVersion),
+    libraryDependencies ++= Seq("core", "generic", "parser")
+      .map(e => "io.circe" %%% ("circe-" + e) % circeVersion)
+      .map(_.cross(CrossVersion.for3Use2_13)),
     npmDependencies in Compile ++= Seq(
       "three" -> threeVersion,
       "stats.js" -> "0.17.0",
@@ -129,12 +133,15 @@ lazy val controller = project
   .in(file("modules/03-controller"))
   .settings(commonSettings: _*)
   .settings(
-    libraryDependencies ++= Seq("core", "generic", "parser").map(e => "io.circe" %%% ("circe-" + e) % circeVersion),
+    scalaVersion := "2.13.5",
+    libraryDependencies ++= Seq("core", "generic", "parser")
+      .map(e => "io.circe" %%% ("circe-" + e) % circeVersion)
+      .map(_.cross(CrossVersion.for3Use2_13)),
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
-      "com.typesafe.akka" %% "akka-stream" % akkaVersion,
+      ("com.typesafe.akka" %% "akka-http" % akkaHttpVersion).cross(CrossVersion.for3Use2_13),
+      ("com.typesafe.akka" %% "akka-stream" % akkaVersion).cross(CrossVersion.for3Use2_13),
       "ch.qos.logback" % "logback-classic" % "1.2.3",
-      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
+      ("com.typesafe.scala-logging" %% "scala-logging" % "3.9.2").cross(CrossVersion.for3Use2_13),
     ),
     initialCommands in console += """
     import scala.math._
