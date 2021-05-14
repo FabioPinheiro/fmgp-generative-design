@@ -18,7 +18,7 @@ import scala.io._
 
 object Main extends Logger {
 
-  implicit lazy val actorSystem = ActorSystem("akka-system")
+  implicit lazy val actorSystem: ActorSystem = ActorSystem("akka-system")
   var server: Option[MyAkkaServer] = None
   def myAkkaServer: MyAkkaServer = server.get
 
