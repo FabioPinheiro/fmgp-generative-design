@@ -1,7 +1,7 @@
 inThisBuild(
   Seq(
     organization := "app.fmgp",
-    scalaVersion := "2.13.2",
+    scalaVersion := "2.13.5",
     updateOptions := updateOptions.value.withLatestSnapshots(false),
   )
 )
