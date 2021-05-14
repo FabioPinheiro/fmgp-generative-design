@@ -38,7 +38,7 @@ case class MyAkkaServer(interface: String, port: Int)(
   def start = binding
   def stop = binding.flatMap { s =>
     logger.info(s"Server unbinding")
-    s.unbind
+    s.unbind()
       .flatMap { _ =>
         logger.info(s"Server terminating")
         s.terminate(5.seconds)
@@ -72,7 +72,7 @@ case class MyAkkaServer(interface: String, port: Int)(
   //case class AddClient(ref: akka.actor.ActorRef) extends ChatServerEvent
   //case class RemoveClient(ref: akka.actor.ActorRef) extends ChatServerEvent
 
-  private val (chatSink, chatSource) = MergeHub.source[String].toMat(BroadcastHub.sink[String])(Keep.both).run
+  private val (chatSink, chatSource) = MergeHub.source[String].toMat(BroadcastHub.sink[String])(Keep.both).run()
 
   // Attach a BroadcastHub Sink to the producer. This will materialize to a corresponding Source.
   // (We need to use toMat and Keep.right since by default the materialized value to the left is used)
@@ -85,7 +85,7 @@ case class MyAkkaServer(interface: String, port: Int)(
     chatRooms.getOrElseUpdate(
       room, {
         // Easy enough to use merge hub / broadcast sink to create a dynamically joinable chat room
-        val (sink, source) = MergeHub.source[String].toMat(BroadcastHub.sink[String])(Keep.both).run
+        val (sink, source) = MergeHub.source[String].toMat(BroadcastHub.sink[String])(Keep.both).run()
         broadcastProducer.runWith(sink)
         (sink, source)
       }
@@ -156,7 +156,7 @@ case class MyAkkaServer(interface: String, port: Int)(
   //     }
   // }
 
-  val (geoSink, geoSource) = MergeHub.source[World].toMat(BroadcastHub.sink[World])(Keep.both).run
+  val (geoSink, geoSource) = MergeHub.source[World].toMat(BroadcastHub.sink[World])(Keep.both).run()
 
   // val geoRunnableGraph: RunnableGraph[Source[World, NotUsed]] = geoSource.toMat(BroadcastHub.sink)(Keep.right)
   // val geoConsoleProducer: Source[World, NotUsed] = geoRunnableGraph.run()

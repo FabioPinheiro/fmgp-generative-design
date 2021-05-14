@@ -1,4 +1,4 @@
-val scalaJSVersion = sys.env.getOrElse("SCALAJS_VERSION", "1.1.0")
+val scalaJSVersion = sys.env.getOrElse("SCALAJS_VERSION", "1.5.1")
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.0.0")
 
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % scalaJSVersion)
@@ -11,16 +11,16 @@ addSbtPlugin("com.vmunier" % "sbt-web-scalajs" % "1.1.0")
   *
   * You need to have npm installed on your system.
   */
-addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.18.0")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.20.0")
 
 //https://github.com/ScalablyTyped/Distribution
 resolvers += Resolver.bintrayRepo("oyvindberg", "ScalablyTyped")
-addSbtPlugin("org.scalablytyped" % "sbt-scalablytyped" % "202005220924")
+addSbtPlugin("org.scalablytyped" % "sbt-scalablytyped" % "202008250800")
 
 //https://scalablytyped.org/docs/plugin
 //https://github.com/ScalablyTyped/Converter/releases
 resolvers += Resolver.bintrayRepo("oyvindberg", "converter")
-addSbtPlugin("org.scalablytyped.converter" % "sbt-converter" % "1.0.0-beta13")
+addSbtPlugin("org.scalablytyped.converter" % "sbt-converter" % "1.0.0-beta32")
 
 // CI
 addSbtPlugin("com.geirsson" % "sbt-ci-release" % "1.5.3")

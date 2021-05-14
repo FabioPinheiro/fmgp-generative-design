@@ -39,9 +39,10 @@ lazy val commonSettings: Seq[sbt.Def.SettingsDefinition] = Seq(
     "-Xfatal-warnings",
     "-language:implicitConversions",
     "-language:reflectiveCalls",
+    //"-Xsource:3", //https://scalacenter.github.io/scala-3-migration-guide/docs/tooling/migration-tools.html
   ),
   sources in (Compile, doc) := Nil,
-  libraryDependencies += "org.scalameta" %% "munit" % "0.7.9" % Test,
+  libraryDependencies += "org.scalameta" %% "munit" % "0.7.26" % Test,
   testFrameworks += new TestFramework("munit.Framework"),
 )
 
@@ -95,7 +96,7 @@ lazy val threeUtils = project
     useYarn := true,
     scalaJSUseMainModuleInitializer := false,
     npmDependencies in Compile += "three" -> threeVersion,
-    webpackBundlingMode := BundlingMode.LibraryOnly(),
+    webpackBundlingMode := BundlingMode.LibraryOnly(), //LibraryAndApplication
   )
   .settings(noPublishSettings)
 
@@ -106,13 +107,16 @@ lazy val geometryCore = project
   .in(file("modules/02-core"))
   .settings(name := "fmgp-geometry-core")
   .configure(baseSettings)
+  .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion,
     libraryDependencies += "org.scala-js" %%% "scalajs-logging" % scalajsLoggingVersion,
     libraryDependencies ++= Seq("core", "generic", "parser").map(e => "io.circe" %%% ("circe-" + e) % circeVersion),
-    npmDependencies in Compile += "three" -> threeVersion,
-    npmDependencies in Compile += "stats.js" -> "0.17.0",
-    npmDependencies in Compile += "@types/stats.js" -> "0.17.0", //https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
+    npmDependencies in Compile ++= Seq(
+      "three" -> threeVersion,
+      "stats.js" -> "0.17.0",
+      "@types/stats.js" -> "0.17.0", //https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
+    ),
     scalaJSUseMainModuleInitializer := true,
     mainClass := Some("fmgp.Main"),
     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
@@ -139,7 +143,6 @@ lazy val controller = project
     val myAkkaServer = app.fmgp.Main.server.get
     import myAkkaServer.GeoSyntax._
     import app.fmgp.geo._
-    
     """,
     cleanupCommands += """
     app.fmgp.Main.stop

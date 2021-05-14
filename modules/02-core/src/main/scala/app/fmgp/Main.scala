@@ -86,11 +86,12 @@ object Main {
 
   lazy val renderer: WebGLRenderer = {
     val aux = new WebGLRenderer(
-      WebGLRendererParameters(
-        antialias = true,
-        alpha = true,
-        //context = org.scalajs.dom.raw.WebGLRenderingContext.WEBGL2
-      )
+      js.Dynamic.literal().asInstanceOf[WebGLRendererParameters].pipe { o =>
+        o.antialias = true
+        o.alpha = true
+        //o.context = org.scalajs.dom.raw.WebGLRenderingContext.WEBGL2
+        o
+      }
     )
     aux.setSize(dom.window.innerWidth, dom.window.innerHeight)
     aux.autoClear = false //For multi scene
@@ -172,12 +173,12 @@ object Main {
       Global.addUiElement(InteractiveMesh(mesh, () => material.color = new typings.three.colorMod.Color("blue")))
     }
     { //text WS URL
-      val textParameters = typings.three.textGeometryMod.TextGeometryParameters(
-        font = Global.textFont,
-        size = 0.02,
-        height = 0,
-        curveSegments = 12,
-      )
+      val textParameters = js.Dynamic.literal().asInstanceOf[typings.three.textGeometryMod.TextGeometryParameters]
+      textParameters.font = Global.textFont
+      textParameters.size = 0.02
+      textParameters.height = 0
+      textParameters.curveSegments = 12
+
       val geometry = new TextBufferGeometry(Global.websocket.wsUrl, textParameters).translate(0.01, -0.02, 0)
       val basicMarerial = new typings.three.meshBasicMaterialMod.MeshBasicMaterial()
       basicMarerial.color = new typings.three.colorMod.Color(0x444444)

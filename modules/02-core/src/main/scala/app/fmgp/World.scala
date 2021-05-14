@@ -235,17 +235,17 @@ object WorldImprovements {
       case geo.Extrude(multiPath: MultiPath, holes: Seq[MultiPath], options: Option[geo.Extrude.Options]) =>
         val ooo = options
           .map { o =>
-            typings.three.extrudeGeometryMod.ExtrudeGeometryOptions(
-              bevelEnabled = if (o.bevelEnabled.isDefined) o.bevelEnabled.get else null,
-              bevelOffset = if (o.bevelOffset.isDefined) o.bevelOffset.get else null,
-              bevelSegments = if (o.bevelSegments.isDefined) o.bevelSegments.get else null,
-              bevelSize = if (o.bevelSize.isDefined) o.bevelSize.get else null,
-              bevelThickness = if (o.bevelThickness.isDefined) o.bevelThickness.get else null,
-              curveSegments = if (o.curveSegments.isDefined) o.curveSegments.get else null,
-              depth = if (o.depth.isDefined) o.depth.get else null,
-              extrudePath = o.extrudePath.map(e => multiPath2Curve(e)).orNull,
-              steps = if (o.steps.isDefined) o.steps.get else null,
-            )
+            val aux = js.Dynamic.literal().asInstanceOf[typings.three.extrudeGeometryMod.ExtrudeGeometryOptions]
+            if (o.bevelEnabled.isDefined) aux.bevelEnabled = o.bevelEnabled.get
+            if (o.bevelOffset.isDefined) aux.bevelOffset = o.bevelOffset.get
+            if (o.bevelSegments.isDefined) aux.bevelSegments = o.bevelSegments.get
+            if (o.bevelSize.isDefined) aux.bevelSize = o.bevelSize.get
+            if (o.bevelThickness.isDefined) aux.bevelThickness = o.bevelThickness.get
+            if (o.curveSegments.isDefined) aux.curveSegments = o.curveSegments.get
+            if (o.depth.isDefined) aux.depth = o.depth.get
+            o.extrudePath.map(e => multiPath2Curve(e)).map(e => aux.extrudePath = e)
+            if (o.steps.isDefined) aux.steps = o.steps.get
+            aux
           }
           .getOrElse(typings.three.extrudeGeometryMod.ExtrudeGeometryOptions())
 
@@ -337,12 +337,11 @@ object WorldImprovements {
         obj
 
       case geo.TextShape(text: String, size: Double) =>
-        val textParameters = typings.three.textGeometryMod.TextGeometryParameters(
-          font = Global.textFont,
-          size = size,
-          height = 0,
-          curveSegments = 12,
-        )
+        val textParameters = js.Dynamic.literal().asInstanceOf[typings.three.textGeometryMod.TextGeometryParameters]
+        textParameters.font = Global.textFont
+        textParameters.size = size
+        textParameters.height = 0
+        textParameters.curveSegments = 12
         val geometry = new TextBufferGeometry(text, textParameters)
         val basicMarerial = new typings.three.meshBasicMaterialMod.MeshBasicMaterial()
         basicMarerial.color = new typings.three.colorMod.Color(0x444444)

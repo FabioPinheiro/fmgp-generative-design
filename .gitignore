@@ -1,8 +1,10 @@
 .bloop/
 .metals/
+.bsp/
+.vscode/
 project/metals.sbt
+project/project/
 target/
-
 
 ## igone the demo (generated code)
 docs/demo-fastopt-bundle.js
