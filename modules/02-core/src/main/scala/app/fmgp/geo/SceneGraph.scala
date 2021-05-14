@@ -39,16 +39,18 @@ trait DefaultMaterials {
     new MeshStandardMaterial().tap(_.side = DoubleSide).tap(_.color = new typings.three.colorMod.Color(color))
   val surfaceNormalMat = new MeshNormalMaterial()
   val basicMat = new MeshBasicMaterial(
-    typings.three.meshBasicMaterialMod.MeshBasicMaterialParameters(
-      color = 0x00ff00,
-      side = DoubleSide
-    )
+    js.Dynamic.literal().asInstanceOf[typings.three.meshBasicMaterialMod.MeshBasicMaterialParameters].pipe { o =>
+      o.color = 0x00ff00
+      o.side = DoubleSide
+      o
+    }
   )
   val pointMat = new typings.three.materialsMod.PointsMaterial(
-    typings.three.pointsMaterialMod.PointsMaterialParameters(
-      color = 0x5416b4,
-      size = 0.3
-    )
+    js.Dynamic.literal().asInstanceOf[typings.three.pointsMaterialMod.PointsMaterialParameters].pipe { o =>
+      o.color = 0x5416b4
+      o.size = 0.3
+      o
+    }
   )
 }
 

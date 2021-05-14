@@ -1,8 +1,8 @@
-The project is a scalajs facade for threejs
+# The project is a scalajs facade for threejs
+
 https://threejs.org/
 
 [![Build Status](https://travis-ci.com/FabioPinheiro/fmgp-threejs.svg?branch=master)](https://travis-ci.com/FabioPinheiro/fmgp-threejs)
-
 
 ## Doc & Demo
 
@@ -11,15 +11,18 @@ https://threejs.org/
 [Live Demo](docs/index.html)
 
 ## Use
+
 https://repo1.maven.org/maven2/app/fmgp/scala-threejs_sjs1.0-RC2_2.13/
 
-```
+```scala
 libraryDependencies += "app.fmgp" % "fmgp-threejs_2.13" % "0.1-M1"
 ```
 
+## Run on sbt
 
-## Run on sbt:
-```
+Open file ./modules/02-core/index-dev.html
+
+```scala
 fastOptJS::webpack
 
 controller/console
@@ -28,6 +31,7 @@ controller/console
 ```
 
 ## TODO LIST / Roadmap / Ideas
+
 - Add Shapes:
   - Frustum (Camera Helper) [8h] (Do it later)
   - Axis Path [2d]
@@ -74,6 +78,7 @@ controller/console
     https://github.com/chandlerprall/ThreeCSplatformG
 
 ### TODO list that Probably never will happen
+
 - List
   - TextShape [2w] (implement my own algorithm)
 - Algorithmic design examples
@@ -97,8 +102,6 @@ controller/console
   - Experiment with webgl shaders for optimizations.
     - Learn [WebGL Shaders](
       https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Getting_started_with_WebGL)
-
-
 
 ## Copyright and License
 
