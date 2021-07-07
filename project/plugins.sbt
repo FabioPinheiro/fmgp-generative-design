@@ -1,9 +1,15 @@
-val scalaJSVersion = sys.env.getOrElse("SCALAJS_VERSION", "1.5.1")
+val scalaJSVersion = sys.env.getOrElse("SCALAJS_VERSION", "1.6.0")
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.0.0")
 
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % scalaJSVersion)
 addSbtPlugin("org.scala-js" % "sbt-jsdependencies" % "1.0.1")
-addSbtPlugin("com.vmunier" % "sbt-web-scalajs" % "1.1.0")
+// addSbtPlugin("com.vmunier" % "sbt-web-scalajs" % "1.1.0")
+// FIXME
+// [error] (update) found version conflict(s) in library dependencies; some are suspected to be binary incompatible:
+// [error]
+// [error] 	* org.scala-lang.modules:scala-java8-compat_2.12:1.0.0 (early-semver) is selected over 0.8.0
+// [error] 	    +- org.scalablytyped.converter:sbt-converter:1.0.0-beta34 (sbtVersion=1.0, scalaVersion=2.12) (depends on 1.0.0)
+// [error] 	    +- com.typesafe.akka:akka-actor_2.12:2.5.17           (depends on 0.8.0)
 
 /** scalajs-bundler
   * https://scalacenter.github.io/scalajs-bundler/getting-started.html
@@ -22,7 +28,7 @@ addSbtPlugin(
 //https://scalablytyped.org/docs/plugin
 //https://github.com/ScalablyTyped/Converter/releases
 resolvers += Resolver.bintrayRepo("oyvindberg", "converter")
-addSbtPlugin("org.scalablytyped.converter" % "sbt-converter" % "1.0.0-beta32")
+addSbtPlugin("org.scalablytyped.converter" % "sbt-converter" % "1.0.0-beta34")
 
 // CI
 addSbtPlugin("com.geirsson" % "sbt-ci-release" % "1.5.3")
