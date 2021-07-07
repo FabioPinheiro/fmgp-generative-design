@@ -130,13 +130,13 @@ lazy val geometryCore = project
 
 lazy val controller = project
   .in(file("modules/03-controller"))
+  //.settings(scalaVersion := "3.0.2-RC1-bin-20210706-6011847-NIGHTLY")
   .settings(commonSettings: _*)
   .settings(
-    // libraryDependencies ++= Seq("core", "generic", "parser")
-    //   .map(e => "io.circe" %%% ("circe-" + e) % circeVersion),
+    scalaVersion := "2.13.5",
     libraryDependencies ++= Seq(
       "io.circe" %%% "circe-core" % circeVersion,
-      "io.circe" %%% "circe-generic" % circeVersion,
+      "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
       "io.circe" %%% "circe-parser" % circeVersion,
     ),
     libraryDependencies ++= Seq(
