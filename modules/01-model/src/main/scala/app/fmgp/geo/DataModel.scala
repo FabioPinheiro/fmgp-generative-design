@@ -1,17 +1,22 @@
 package app.fmgp.geo
 
-object Dimensions {
-  sealed trait D {
-    def isD3: Boolean = false
-    def isD2: Boolean = false
-  }
-  object D2 extends D {
-    override def isD2: Boolean = true
-  }
-  object D3 extends D {
-    override def isD3: Boolean = true
-  }
-  //case class Unrecognized(i: Int) extends D
+// object Dimensions {
+//   sealed trait D {
+//     def isD3: Boolean = false
+//     def isD2: Boolean = false
+//   }
+//   object D2 extends D {
+//     override def isD2: Boolean = true
+//   }
+//   object D3 extends D {
+//     override def isD3: Boolean = true
+//   }
+//   //case class Unrecognized(i: Int) extends D
+// }
+
+enum Dimensions{
+  case D2 extends Dimensions
+  case D3 extends Dimensions
 }
 
 sealed trait World {
@@ -20,7 +25,7 @@ sealed trait World {
 
 //final case class WorldReset(shapes: ShapeSeq = Seq.empty) extends World
 final case class WorldAddition(shapes: ShapeSeq) extends World
-final case class WorldState(shapes: ShapeSeq, dimensions: Dimensions.D) extends World
+final case class WorldState(shapes: ShapeSeq, dimensions: Dimensions) extends World
 
 object World {
   def addition(shapes: ShapeSeq): WorldAddition = WorldAddition(shapes)
