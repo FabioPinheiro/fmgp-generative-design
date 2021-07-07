@@ -214,8 +214,8 @@ object WorldImprovements {
           radiusTop = cylinder.topRadius,
           radiusBottom = cylinder.bottomRadius,
           height = cylinder.height,
-          radiusSegments = cylinder.radialSegments.orUndefined,
-          heightSegments = cylinder.heightSegments.orUndefined,
+          radiusSegments = cylinder.radialSegments.map(_.toDouble).orUndefined,
+          heightSegments = cylinder.heightSegments.map(_.toDouble).orUndefined,
           openEnded = cylinder.openEnded.orUndefined,
           thetaStart = cylinder.thetaStart.orUndefined,
           thetaLength = cylinder.thetaLength.orUndefined

@@ -1,13 +1,13 @@
 package app.fmgp
 
 import org.scalajs.dom.raw.{CloseEvent, Event, MessageEvent, WebSocket}
-import org.scalajs.logging.Logger
+//import org.scalajs.logging.Logger
 
 import io.circe.generic.auto._
 import io.circe.parser._
 import io.circe.syntax._
 import io.circe._
-import app.fmgp.geo.World
+import app.fmgp.geo._
 
 import scala.scalajs.js
 
@@ -31,7 +31,7 @@ object Websocket {
     val CLOSED = Value(3)
   }
 
-  val decoder = implicitly[Decoder[World]]
+  val decoder: Decoder[World] = ??? //summon[Decoder[World]]
 
   case class AutoReconnect(
       wsUrl: String,
@@ -52,23 +52,23 @@ object Websocket {
         onStateChange(getState)
         val tmpWS = new WebSocket(wsUrl) //TODO Add a timeout here
         ws = tmpWS
-        tmpWS.onopen = { ev: Event =>
+        tmpWS.onopen = { (ev: Event) =>
           log.info(s"WS Connected '${ev.`type`}'")
           onStateChange(getState)
         }
-        tmpWS.onclose = { ev: CloseEvent =>
+        tmpWS.onclose = { (ev: CloseEvent) =>
           log.warn(s"WS Closed because '${ev.reason}'")
           connect(defualtReconnectDelay)
           onStateChange(getState)
         }
-        tmpWS.onmessage = { ev: MessageEvent =>
+        tmpWS.onmessage = { (ev: MessageEvent) =>
           log.info(ev.data.toString)
-          decode[World](ev.data.toString) match {
+          decode[World](ev.data.toString)(decoder) match {
             case Left(ex)     => log.error(s"Error parsing the obj World: $ex")
             case Right(value) => dynamicWorld.update(value)
           }
         }
-        tmpWS.onerror = { ev: Event =>
+        tmpWS.onerror = { (ev: Event) =>
           log.error(
             ev.asInstanceOf[js.Dynamic] //TODO ErrorEvent
               .message

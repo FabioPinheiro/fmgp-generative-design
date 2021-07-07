@@ -18,6 +18,7 @@ import scala.scalajs.js.annotation.JSImport
   "FaceNormalsHelper",
   "Three.FaceNormalsHelper"
 )
-class FaceNormalsHelper(`object`: Geometry, size: Double, color: Color, linewidth: Double) extends LineSegments {
+class FaceNormalsHelper(`object`: Geometry, size: Double, color: Color, linewidth: Double)
+    extends LineSegments[typings.three.geometryMod.Geometry, typings.three.materialMod.Material] {
   def update(): Unit = js.native
 }

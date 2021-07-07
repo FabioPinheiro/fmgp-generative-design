@@ -18,7 +18,7 @@ import app.fmgp.{Object3DWarp, GeoWarp, WorldWarp, DynamicWorldWarp}
 import org.scalajs.dom.raw.{Event, Element}
 
 import js.{undefined => ^}
-import org.scalajs.logging.Logger
+//import org.scalajs.logging.Logger
 
 import scala.util.chaining._
 
@@ -52,7 +52,7 @@ object Global {
   // Text
   var textFont: typings.three.fontMod.Font = _
   val loader = new FontLoader()
-  def init = Log.info(s"### Global.init ###") //FIXME
+  def init = Log.info(s"### Global.init ###")
   loader.load(
     "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/gentilis_regular.typeface.json", //"fonts/helvetiker_bold.typeface.json",
     (f: typings.three.fontMod.Font) => textFont = f
@@ -60,9 +60,32 @@ object Global {
 
 }
 
+import scala.math.Ordered
+
+abstract sealed class Level extends Ordered[Level] { x =>
+  protected val order: Int
+  def compare(y: Level): Int = x.order - y.order
+}
+
+object Level {
+  case object Error extends Level { protected val order = 4 }
+  case object Warn extends Level { protected val order = 3 }
+  case object Info extends Level { protected val order = 2 }
+  case object Debug extends Level { protected val order = 1 }
+}
+
+trait Logger {
+  def log(level: Level, message: => String): Unit
+  def trace(t: => Throwable): Unit
+
+  final def error(message: => String): Unit = log(Level.Error, message)
+  final def warn(message: => String): Unit = log(Level.Warn, message)
+  final def info(message: => String): Unit = log(Level.Info, message)
+  final def debug(message: => String): Unit = log(Level.Debug, message)
+}
 object Log extends Logger {
-  def log(level: org.scalajs.logging.Level, message: => String): Unit = println(s"[$level] $message")
-  def trace(t: => Throwable): Unit = log(org.scalajs.logging.Level.Debug, t.toString)
+  def log(level: /*org.scalajs.logging.*/ Level, message: => String): Unit = println(s"[$level] $message")
+  def trace(t: => Throwable): Unit = log( /*org.scalajs.logging.*/ Level.Debug, t.toString)
 }
 
 case class InteractiveMesh(mesh: typings.three.meshMod.Mesh[_, _], onSelected: () => Unit = () => ()) {
@@ -233,7 +256,7 @@ object Main {
         .map(_.`object`.id.toInt)
         .toSet
         .tap(e => println(s"click on: $e"))
-        .map { id: Int => Global.uiElements.get(id).map(_.onSelected()) }
+        .map { (id: Int) => Global.uiElements.get(id).map(_.onSelected()) }
     }
     Global.uiEvent = None
 

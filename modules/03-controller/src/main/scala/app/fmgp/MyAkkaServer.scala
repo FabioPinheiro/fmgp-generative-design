@@ -55,7 +55,14 @@ case class MyAkkaServer(interface: String, port: Int)(
         handleWebSocketMessages(broadcastFlow)
       }
     } ~ path("room") {
-      parameters(Symbol("room") ? "A") { room => handleWebSocketMessages(roomFlow(room)) }
+      parameters(Symbol("room") ? "A") { (room: Option[String] | "A") =>
+        val roomName = room match {
+          case "A"        => "A"
+          case Some(data) => data
+          case None       => "A" //... error
+        }
+        handleWebSocketMessages(roomFlow(roomName))
+      }
     } ~ path("solo") {
       handleWebSocketMessages(soloFlow)
     } ~ path("broadcast") {
