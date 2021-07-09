@@ -48,7 +48,7 @@ lazy val commonSettings: Seq[sbt.Def.SettingsDefinition] = Seq(
 )
 
 lazy val modules: List[ProjectReference] =
-  List(threeUtils, geometryModelJvm, geometryModelJs, geometryCore) //, controller)
+  List(threeUtils, geometryModelJvm, geometryModelJs, geometryCore) //FIXME , controller)
 
 lazy val root = project
   .in(file("."))
@@ -62,6 +62,10 @@ val scalajsDomVersion = "1.0.0"
 //FIXME val scalajsLoggingVersion = "1.1.2-SNAPSHOT" //"1.1.2"
 val akkaVersion = "2.6.4"
 val akkaHttpVersion = "10.1.11"
+val munitVersion = "0.7.26"
+
+val setupTestConfig: Def.SettingsDefinition =
+  Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
 
 lazy val baseSettings: Project => Project =
   _.settings(commonSettings: _*)
@@ -81,11 +85,13 @@ lazy val baseSettings: Project => Project =
       useYarn := true
     )
 
+/* For munit https://scalameta.org/munit/docs/getting-started.html#scalajs-setup */
 lazy val geometryModel = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("modules/01-model"))
   .settings(name := "fmgp-geometry-model")
   .settings(commonSettings: _*)
+  .settings(setupTestConfig, libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test)
   .settings(publishSettings)
 
 lazy val threeUtils = project
@@ -133,7 +139,6 @@ lazy val controller = project
   //.settings(scalaVersion := "3.0.2-RC1-bin-20210706-6011847-NIGHTLY")
   .settings(commonSettings: _*)
   .settings(
-    scalaVersion := "2.13.5",
     libraryDependencies ++= Seq(
       "io.circe" %%% "circe-core" % circeVersion,
       "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
