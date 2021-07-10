@@ -43,7 +43,7 @@ object ShapeSeq {
   implicit def implicitConverter(s: Seq[Shape]): ShapeSeq = ShapeSeq(s)
 }
 
-case class Points(val c: Seq[Coordinate3D]) extends AnyVal with Shape
+case class Points(val c: Seq[Coordinate3D]) extends Shape //AnyVal with
 
 case class Box(
     width: Double,

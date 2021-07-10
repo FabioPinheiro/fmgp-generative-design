@@ -8,7 +8,7 @@ inThisBuild(
 
 lazy val noPublishSettings = skip / publish := true
 lazy val publishSettings = Seq(
-  publishArtifact in Test := false,
+  Test / publishArtifact := false,
   pomIncludeRepository := (_ => false),
   homepage := Some(url("https://github.com/FabioPinheiro/fmgp-threejs")),
   licenses := Seq("MIT License" -> url("https://github.com/FabioPinheiro/fmgp-threejs/blob/master/LICENSE")),
@@ -42,13 +42,13 @@ lazy val commonSettings: Seq[sbt.Def.SettingsDefinition] = Seq(
     //"-Xsource:3", //https://scalacenter.github.io/scala-3-migration-guide/docs/tooling/migration-tools.html
     //"-Ytasty-reader",
   ),
-  sources in (Compile, doc) := Nil,
+  Compile / doc / sources := Nil,
   libraryDependencies += "org.scalameta" %% "munit" % "0.7.26" % Test,
   testFrameworks += new TestFramework("munit.Framework"),
 )
 
 lazy val modules: List[ProjectReference] =
-  List(threeUtils, geometryModelJvm, geometryModelJs, geometryCore) //FIXME , controller)
+  List(threeUtils, geometryModelJvm, geometryModelJs, geometryCore, controller)
 
 lazy val root = project
   .in(file("."))
@@ -60,8 +60,8 @@ val threeVersion = "0.117.1" // https://www.npmjs.com/package/three
 val circeVersion = "0.14.1"
 val scalajsDomVersion = "1.0.0"
 //FIXME val scalajsLoggingVersion = "1.1.2-SNAPSHOT" //"1.1.2"
-val akkaVersion = "2.6.4"
-val akkaHttpVersion = "10.1.11"
+val akkaVersion = "2.6.15"
+val akkaHttpVersion = "10.2.4"
 val munitVersion = "0.7.26"
 
 val setupTestConfig: Def.SettingsDefinition =
@@ -91,6 +91,13 @@ lazy val geometryModel = crossProject(JSPlatform, JVMPlatform)
   .in(file("modules/01-model"))
   .settings(name := "fmgp-geometry-model")
   .settings(commonSettings: _*)
+  .settings(
+    libraryDependencies ++= Seq(
+      "io.circe" %%% "circe-core" % circeVersion,
+      "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
+      "io.circe" %%% "circe-parser" % circeVersion % Test,
+    )
+  )
   .settings(setupTestConfig, libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test)
   .settings(publishSettings)
 
@@ -102,7 +109,7 @@ lazy val threeUtils = project
   .settings(
     useYarn := true,
     scalaJSUseMainModuleInitializer := false,
-    npmDependencies in Compile += "three" -> threeVersion,
+    Compile / npmDependencies += "three" -> threeVersion,
     webpackBundlingMode := BundlingMode.LibraryOnly(), //LibraryAndApplication
   )
   .settings(noPublishSettings)
@@ -121,7 +128,7 @@ lazy val geometryCore = project
     //  .cross(CrossVersion.for3Use2_13),
     libraryDependencies ++= Seq("core", "generic", "parser")
       .map(e => "io.circe" %%% ("circe-" + e) % circeVersion),
-    npmDependencies in Compile ++= Seq(
+    Compile / npmDependencies ++= Seq(
       "three" -> threeVersion,
       "stats.js" -> "0.17.0",
       "@types/stats.js" -> "0.17.0", //https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
@@ -149,8 +156,9 @@ lazy val controller = project
       ("com.typesafe.akka" %% "akka-stream" % akkaVersion).cross(CrossVersion.for3Use2_13),
       "ch.qos.logback" % "logback-classic" % "1.2.3",
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
+      ("com.typesafe.akka" %% "akka-slf4j" % "2.6.15").cross(CrossVersion.for3Use2_13),
     ),
-    initialCommands in console += """
+    console / initialCommands += """
     import scala.math._
     import scala.util.chaining._
     app.fmgp.Main.start()

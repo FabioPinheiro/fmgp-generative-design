@@ -1,23 +1,10 @@
 package app.fmgp.geo
 
-// object Dimensions {
-//   sealed trait D {
-//     def isD3: Boolean = false
-//     def isD2: Boolean = false
-//   }
-//   object D2 extends D {
-//     override def isD2: Boolean = true
-//   }
-//   object D3 extends D {
-//     override def isD3: Boolean = true
-//   }
-//   //case class Unrecognized(i: Int) extends D
-// }
-
-enum Dimensions{
+enum Dimensions:
+  def isD3 = this == D3
+  def isD2 = this == D2
   case D2 extends Dimensions
   case D3 extends Dimensions
-}
 
 sealed trait World {
   def shapes: ShapeSeq

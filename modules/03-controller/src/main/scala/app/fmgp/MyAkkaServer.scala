@@ -9,10 +9,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.stream.{Materializer, Graph, OverflowStrategy, SinkShape}
 import akka.stream.scaladsl.{Broadcast, BroadcastHub, Flow, Keep, MergeHub, RunnableGraph, Sink, Source}
 import akka.util.ByteString
-import io.circe.generic.auto._
-import io.circe.parser._
-import io.circe.syntax._
-import io.circe._
+import io.circe._, io.circe.syntax._, io.circe.generic.semiauto._, io.circe.parser._
 
 import scala.collection.concurrent.TrieMap
 import scala.collection.immutable
@@ -22,6 +19,7 @@ import akka.actor._
 import scala.concurrent.ExecutionContext
 import app.fmgp.geo.{World, WorldAddition}
 import app.fmgp.geo.Shape
+import app.fmgp.geo.EncoderDecoder.{given}
 
 case class MyAkkaServer(interface: String, port: Int)(
     implicit ex: ExecutionContext,
@@ -30,9 +28,9 @@ case class MyAkkaServer(interface: String, port: Int)(
 ) extends Logger {
 
   lazy val binding: Future[Http.ServerBinding] = {
-    val aux = Http().bindAndHandle(route, interface, port)
+    val aux = Http().newServerAt(interface, port) //.bindAndHandle(route, interface, port)
     logger.info(s"Server is now online at [$interface:$port]\nPress RETURN to stop...")
-    aux
+    aux.bind(route)
   }
 
   def start = binding
@@ -55,13 +53,14 @@ case class MyAkkaServer(interface: String, port: Int)(
         handleWebSocketMessages(broadcastFlow)
       }
     } ~ path("room") {
-      parameters(Symbol("room") ? "A") { (room: Option[String] | "A") =>
-        val roomName = room match {
-          case "A"        => "A"
-          case Some(data) => data
-          case None       => "A" //... error
-        }
-        handleWebSocketMessages(roomFlow(roomName))
+      // parameters(Symbol("room") ? "A") { (room: Option[String] | "A") =>
+      //   val roomName = room match {
+      //     case "A"        => "A"
+      //     case Some(data) => data
+      //     case None       => "A" //... error
+      //   }
+      parameters(Symbol("room") ? "A") { (room: String) =>
+        handleWebSocketMessages(roomFlow(room))
       }
     } ~ path("solo") {
       handleWebSocketMessages(soloFlow)
@@ -72,6 +71,9 @@ case class MyAkkaServer(interface: String, port: Int)(
     } ~ path("browser") {
       handleWebSocketMessages(browserFlow)
     }
+
+  given Encoder[AkkaChatMessage] = deriveEncoder[AkkaChatMessage]
+  given Decoder[AkkaChatMessage] = deriveDecoder[AkkaChatMessage]
 
   case class AkkaChatMessage(msg: String, oUser: Option[String])
   //trait ChatServerEvent

@@ -5,7 +5,7 @@ import app.fmgp.geo._
 
 sealed trait GeoWarp {
   def generateObj3D: Object3D
-  def dimensions: Dimensions.D
+  def dimensions: Dimensions
 }
 
 object GeoWarp {
@@ -16,11 +16,11 @@ object GeoWarp {
 case class WorldWarp(world: WorldState) extends GeoWarp {
   lazy private val aux = WorldImprovements.generateObj3D(world)
   def generateObj3D: Object3D = aux
-  def dimensions: Dimensions.D = world.dimensions
+  def dimensions: Dimensions = world.dimensions
 }
 
 class DynamicWorldWarp extends GeoWarp {
-  override def dimensions: Dimensions.D = Dimensions.D3
+  override def dimensions: Dimensions = Dimensions.D3
   override def generateObj3D: Object3D = obj
 
   private var multiBodyWorld: Seq[World] = Seq(World.w3DEmpty)
@@ -45,7 +45,7 @@ object DynamicWorldWarp {
 }
 
 case class Object3DWarp(
-    dimensions: Dimensions.D,
+    dimensions: Dimensions,
     parent: Object3D = new Object3D
 ) extends GeoWarp {
   def generateObj3D: Object3D = parent
