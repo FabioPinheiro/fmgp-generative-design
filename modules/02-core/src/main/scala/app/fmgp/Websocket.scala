@@ -8,6 +8,7 @@ import io.circe.parser._
 import io.circe.syntax._
 import io.circe._
 import app.fmgp.geo._
+import app.fmgp.geo.EncoderDecoder.given_Decoder_World
 
 import scala.scalajs.js
 
@@ -30,8 +31,6 @@ object Websocket {
     /**	The connection is closed or couldn't be opened. */
     val CLOSED = Value(3)
   }
-
-  val decoder: Decoder[World] = ??? //summon[Decoder[World]]
 
   case class AutoReconnect(
       wsUrl: String,
@@ -63,7 +62,7 @@ object Websocket {
         }
         tmpWS.onmessage = { (ev: MessageEvent) =>
           log.info(ev.data.toString)
-          decode[World](ev.data.toString)(decoder) match {
+          decode[World](ev.data.toString) match {
             case Left(ex)     => log.error(s"Error parsing the obj World: $ex")
             case Right(value) => dynamicWorld.update(value)
           }

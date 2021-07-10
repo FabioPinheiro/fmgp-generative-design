@@ -134,7 +134,7 @@ object Main {
     Global.sceneUI = new Scene()
     Global.scene = new Scene()
 
-    val dimensions: Dimensions.D = Dimensions.D3
+    val dimensions: Dimensions = Dimensions.D3
 
     Global.camera = Some(
       Utils

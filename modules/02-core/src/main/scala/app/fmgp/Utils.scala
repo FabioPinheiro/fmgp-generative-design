@@ -20,7 +20,7 @@ object Utils {
     // create global coordinates helpers
     val axisHelper = new AxesHelper(8)
     val gridHelper = new GridHelper(100, 100)
-    (Dimensions.D3: Dimensions.D) match {
+    (Dimensions.D3: Dimensions) match {
       case Dimensions.D2 => gridHelper.rotateX(Math.PI / 2.0)
       case Dimensions.D3 => //ok as it is
       // case Dimensions.Unrecognized(d) =>
@@ -35,7 +35,7 @@ object Utils {
   def newCamera(
       width: Double,
       height: Double,
-      dimensions: Dimensions.D = Dimensions.D3,
+      dimensions: Dimensions = Dimensions.D3,
       size: Double = 30,
       near: Double = 1,
       far: Double = 500
