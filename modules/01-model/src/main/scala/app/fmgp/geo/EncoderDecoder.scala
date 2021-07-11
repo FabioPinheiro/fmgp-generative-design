@@ -174,6 +174,7 @@ object EncoderDecoder {
     case e: Arrow => JsonObject(("Arrow", e.asJson)).asJson
     case e: Axes => JsonObject(("Axes", e.asJson)).asJson
     case e: TestShape => JsonObject(("TestShape", e.asJson)).asJson
+    case e: TextShape => JsonObject(("TextShape", e.asJson)).asJson
   }
   
   
@@ -199,6 +200,7 @@ object EncoderDecoder {
         case Some("Arrow" :: Nil) => c.downField("Arrow").as[Arrow]
         case Some("Axes" :: Nil) => c.downField("Axes").as[Axes]
         case Some("TestShape" :: Nil) => c.downField("TestShape").as[TestShape]
+        case Some("TextShape" :: Nil) => c.downField("TextShape").as[TextShape]
 
         case Some(e) => Left(DecodingFailure(s"'$e' is not a Shape type", c.history))
         case e => Left(DecodingFailure(s"Attempt to decode a Shape on failed missing type $e", c.history))
