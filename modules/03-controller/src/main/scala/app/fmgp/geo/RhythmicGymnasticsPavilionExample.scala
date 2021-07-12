@@ -2,15 +2,18 @@ package app.fmgp.geo
 
 import scala.math._
 
-/**
-  * @see [[http://web.ist.utl.pt/renata.castelo.branco/RCB/programming/gymnastics/GymPav_Pluto.jl.html]]
+/** @see
+  *   [[http://web.ist.utl.pt/renata.castelo.branco/RCB/programming/gymnastics/GymPav_Pluto.jl.html]]
   */
 trait RhythmicGymnasticsPavilionUtils extends Syntax {
 
   /** sinusoidal funtion
-    * @param a is the amplitude
-    * @param omega is the frequency
-    * @param fi is the phase
+    * @param a
+    *   is the amplitude
+    * @param omega
+    *   is the frequency
+    * @param fi
+    *   is the phase
     */
   def sinusoidal(a: Double, omega: Double, fi: Double, x: Double) =
     a * sin(omega * x + fi)
@@ -19,9 +22,12 @@ trait RhythmicGymnasticsPavilionUtils extends Syntax {
     division(0, dist, n).map(i => p + vxyz(i, sinusoidal(a, omega, fi, i), 0))
 
   /** damped_sin_wave
-    * @param a is the initial amplitude (the highest peak)
-    * @param d is the decay constant
-    * @param omega is the angular frequency
+    * @param a
+    *   is the initial amplitude (the highest peak)
+    * @param d
+    *   is the decay constant
+    * @param omega
+    *   is the angular frequency
     */
   def damped_sin_wave(a: Double, d: Double, omega: Double, x: Double) = a * exp(-(d * x)) * sin(omega * x)
 
@@ -66,4 +72,8 @@ trait RhythmicGymnasticsPavilionUtils extends Syntax {
   }
 }
 
-trait RhythmicGymnasticsPavilionExample extends Syntax with RhythmicGymnasticsPavilionUtils {}
+trait RhythmicGymnasticsPavilionExample extends Syntax with RhythmicGymnasticsPavilionUtils {
+
+  //surface_grid(damped_sin_roof_pts(u0(), 20, 3, 10, 15, pi, 0.03, pi/50, pi/10, 60, 100, 120, 800))
+
+}
