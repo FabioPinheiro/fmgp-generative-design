@@ -40,6 +40,7 @@ case class ShapeSeq(shapes: Seq[Shape]) extends Shape with Seq[Shape] {
 }
 object ShapeSeq {
   def apply(shape: Shape): ShapeSeq = ShapeSeq(Seq(shape))
+  import scala.language.implicitConversions
   implicit def implicitConverter(s: Seq[Shape]): ShapeSeq = ShapeSeq(s)
 }
 

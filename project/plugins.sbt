@@ -3,6 +3,9 @@ addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.0.0")
 
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % scalaJSVersion)
 addSbtPlugin("org.scala-js" % "sbt-jsdependencies" % "1.0.1")
+
+libraryDependencies += "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.1.0"
+
 // addSbtPlugin("com.vmunier" % "sbt-web-scalajs" % "1.1.0")
 // FIXME
 // [error] (update) found version conflict(s) in library dependencies; some are suspected to be binary incompatible:
