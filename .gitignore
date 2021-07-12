@@ -8,3 +8,15 @@ target/
 
 ## igone the demo (generated code)
 docs/demo-fastopt-bundle.js
+
+## igone(generated files)
+.*.swn
+.*.swo
+.*.swp
+.~*
+*.bak
+*.log
+*.pid
+*.semanticdb
+*.tmp
+~*
