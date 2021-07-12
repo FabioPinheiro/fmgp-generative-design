@@ -22,12 +22,6 @@ libraryDependencies += "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.1.0"
   */
 addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.20.0")
 
-//https://github.com/ScalablyTyped/Distribution
-resolvers += Resolver.bintrayRepo("oyvindberg", "ScalablyTyped")
-addSbtPlugin(
-  "org.scalablytyped" % "sbt-scalablytyped" % "202008250800"
-) //FIXME BLOCKBY https://github.com/ScalablyTyped/Converter/pull/202
-
 //https://scalablytyped.org/docs/plugin
 //https://github.com/ScalablyTyped/Converter/releases
 resolvers += Resolver.bintrayRepo("oyvindberg", "converter")
