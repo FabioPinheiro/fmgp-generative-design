@@ -30,6 +30,8 @@ controller/console
 > :load script.sc
 ```
 
+open `file:///.../fmgp-threejs/modules/02-core/index-dev.html`
+
 ## TODO LIST / Roadmap / Ideas
 
 - Add Shapes:
