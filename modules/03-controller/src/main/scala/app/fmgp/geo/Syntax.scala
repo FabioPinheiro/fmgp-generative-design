@@ -14,7 +14,8 @@ object Syntax extends Syntax {
 trait Syntax extends BaseSyntax with KhepriUtils with KhepriSolidPrimitives
 
 /** Khepri's defined functions
-  * @see [[https://github.com/aptmcl/Khepri.jl/blob/master/src/Utils.jl]]
+  * @see
+  *   [[https://github.com/aptmcl/Khepri.jl/blob/master/src/Utils.jl]]
   */
 trait KhepriUtils {
   def division(t0: Double, t1: Double, n: Int, include_last: Boolean = true): Seq[Double] =
@@ -60,6 +61,7 @@ trait BaseSyntax {
   def line(vertices: Seq[XYZ], closeLine: Boolean = false): LinePath =
     addShape(LinePath(if (closeLine) vertices ++ vertices.headOption else vertices))
   def circle(radius: Double, center: XYZ = XYZ.origin): Circle = addShape(Circle(radius, center))
+  def surface_grid(points: Seq[Seq[XYZ]]) = addShape(SurfaceGridShape(points.map(_.toArray).toArray))
 }
 
 trait KhepriSolidPrimitives extends BaseSyntax {

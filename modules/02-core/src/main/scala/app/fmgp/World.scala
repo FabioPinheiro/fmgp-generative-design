@@ -259,6 +259,26 @@ object WorldImprovements {
         val geometry = new ShapeBufferGeometry(shape)
         new Mesh(geometry, geo.SceneGraph.basicMat).asInstanceOf[Object3D]
 
+      case geo.SurfaceGridShape(points: Array[Array[XYZ]]) =>
+        def xyzMatrix2Triangles(a: Array[Array[XYZ]]) = {
+          val yLength = a.length - 1
+          val xLength = a.head.length - 1
+          for (y <- 0 until yLength; x <- 0 until xLength)
+            //println(s"${(y,x)}${(y,x+1)}${(y+1,x)}  ${(y,x+1)}${(y+1,x)}${(y+1,x+1)}")
+            yield {
+              geo.Triangle.toSeqFloat(a(y)(x), a(y)(x + 1), a(y + 1)(x)) ++
+                geo.Triangle.toSeqFloat(a(y)(x + 1), a(y + 1)(x + 1), a(y + 1)(x))
+            }
+        }.flatten
+        val t = xyzMatrix2Triangles(points)
+        val geometry = new BufferGeometry()
+          .tap(_.setAttribute("position", float2BufferAttribute(t)))
+          //.tap(_.setAttribute("normal", float2BufferAttribute(n.toSeqFloat)))
+          .tap(_.computeVertexNormals())
+
+        //val op = state.withMaterial(geo.SceneGraph.surfaceNormalMat)
+        state.toObj3D(geometry)
+
       case path: geo.MyPath =>
         path match {
           case multiPath: geo.MultiPath =>

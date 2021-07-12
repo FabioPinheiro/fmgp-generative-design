@@ -114,6 +114,8 @@ object EncoderDecoder {
   given Decoder[Extrude] = deriveDecoder[Extrude]
   given Encoder[PlaneShape] = deriveEncoder[PlaneShape] 
   given Decoder[PlaneShape] = deriveDecoder[PlaneShape]
+  given Encoder[SurfaceGridShape] = deriveEncoder[SurfaceGridShape]
+  given Decoder[SurfaceGridShape] = deriveDecoder[SurfaceGridShape]
   given Encoder[LinePath] = deriveEncoder[LinePath] 
   given Decoder[LinePath] = deriveDecoder[LinePath]
   given Encoder[CubicBezierPath] = deriveEncoder[CubicBezierPath] 
@@ -166,6 +168,7 @@ object EncoderDecoder {
     case e: Torus => JsonObject(("Torus", e.asJson)).asJson
     case e: Extrude => JsonObject(("Extrude", e.asJson)).asJson
     case e: PlaneShape => JsonObject(("PlaneShape", e.asJson)).asJson
+    case e: SurfaceGridShape => JsonObject(("SurfaceGridShape", e.asJson)).asJson
     case e: LinePath => JsonObject(("LinePath", e.asJson)).asJson
     case e: MultiPath => JsonObject(("MultiPath", e.asJson)).asJson
     case e: CubicBezierPath => JsonObject(("CubicBezierPath", e.asJson)).asJson
@@ -191,6 +194,7 @@ object EncoderDecoder {
         case Some("Torus" :: Nil) => c.downField("Torus").as[Torus]
         case Some("Extrude" :: Nil) => c.downField("Extrude").as[Extrude]
         case Some("PlaneShape" :: Nil) => c.downField("PlaneShape").as[PlaneShape]
+        case Some("SurfaceGridShape" :: Nil) => c.downField("SurfaceGridShape").as[SurfaceGridShape]
         case Some("LinePath" :: Nil) => c.downField("LinePath").as[LinePath]
         case Some("MultiPath" :: Nil) => c.downField("MultiPath").as[MultiPath]
         case Some("CubicBezierPath" :: Nil) => c.downField("CubicBezierPath").as[CubicBezierPath]

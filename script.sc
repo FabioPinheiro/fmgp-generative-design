@@ -1,7 +1,11 @@
 /** Run this scipt.sc
+  *
   * sbt> browserRemoteControl/console
+  *
   * :load script.sc
+  *
   * app.fmgp.Main.start()
+  *
   * val iii = app.fmgp.Main.server.get; import iii.GeoSyntax._
   */
 clear
@@ -159,19 +163,18 @@ clear
       .map(m => (Seq(m.dot(Vec(-1, 1, 0)), m.dot(Vec(1, 1, 0))), Seq(m.dot(Vec(-1, 0, 0)), m.dot(Vec(1, 0, 0)))))
     //addShape(Points(ppp.map(_._2).flatten))
     //addShape(Points(ppp.map(_._1.toXYZ)))
-    addShape(ShapeSeq(ppp.zip(ppp.drop(1)).flatMap {
-      case (a, b) =>
-        val t1 =
-          TriangleShape(
-            Triangle(a._2(0), a._2(1), b._2(1)),
-            Triangle(a._1(0).asVec - a._2(0).asVec, a._1(1).asVec - a._2(1).asVec, b._1(1).asVec - b._2(1).asVec)
-          )
-        val t2 =
-          TriangleShape(
-            Triangle(a._2(0), b._2(1), b._2(0)),
-            Triangle(a._1(0).asVec - a._2(0).asVec, b._1(1).asVec - b._2(1).asVec, b._1(0).asVec - b._2(0).asVec)
-          )
-        Seq(t1, t2)
+    addShape(ShapeSeq(ppp.zip(ppp.drop(1)).flatMap { case (a, b) =>
+      val t1 =
+        TriangleShape(
+          Triangle(a._2(0), a._2(1), b._2(1)),
+          Triangle(a._1(0).asVec - a._2(0).asVec, a._1(1).asVec - a._2(1).asVec, b._1(1).asVec - b._2(1).asVec)
+        )
+      val t2 =
+        TriangleShape(
+          Triangle(a._2(0), b._2(1), b._2(0)),
+          Triangle(a._1(0).asVec - a._2(0).asVec, b._1(1).asVec - b._2(1).asVec, b._1(0).asVec - b._2(0).asVec)
+        )
+      Seq(t1, t2)
     }))
   }
   //addShape(LinePath(mmm.map(_.center)))
@@ -181,3 +184,7 @@ clear
 
 //addShape(TestShape())
 addShape(TextShape("Olaaaa", 3))
+
+//val a = damped_sin_roof_pts(u0(), 20, 3, 10, 15, Pi, 0.03, Pi / 50, Pi / 10, 60, 100, 120, 800, 1)
+val a = damped_sin_roof_pts(u0(), 20, 3, 10, 15, Pi, 0.03, Pi / 50, Pi / 10, 60, 100, 24, 100, 1)
+addShape(PlanesShape(a.map(_.toArray).toArray).transformWith(Matrix.rotate(Pi / 2, Vec(1, 0, 0))))
