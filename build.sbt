@@ -29,7 +29,7 @@ lazy val publishSettings = Seq(
 //> sonatypePrepare
 //> sonatypeBundleUpload
 
-lazy val commonSettings: Seq[sbt.Def.SettingsDefinition] = Seq(
+lazy val settingsFlags: Seq[sbt.Def.SettingsDefinition] = Seq(
   scalacOptions ++= Seq(
     "-encoding",
     "UTF-8", // source files are in UTF-8
@@ -41,11 +41,39 @@ lazy val commonSettings: Seq[sbt.Def.SettingsDefinition] = Seq(
     "-language:reflectiveCalls",
     //"-Xsource:3", //https://scalacenter.github.io/scala-3-migration-guide/docs/tooling/migration-tools.html
     //"-Ytasty-reader",
-  ),
-  Compile / doc / sources := Nil,
-  libraryDependencies += "org.scalameta" %% "munit" % "0.7.26" % Test,
-  testFrameworks += new TestFramework("munit.Framework"),
+  )
 )
+
+val setupTestConfig: Seq[sbt.Def.SettingsDefinition] = Seq(
+  Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+  libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test,
+)
+
+lazy val commonSettings: Seq[sbt.Def.SettingsDefinition] = settingsFlags ++ Seq(
+  Compile / doc / sources := Nil,
+)
+
+lazy val scalaJSBundlerConfigure: Project => Project =
+  _.settings(commonSettings: _*)
+    .enablePlugins(ScalaJSPlugin)
+    .enablePlugins(ScalaJSBundlerPlugin)
+    .settings(setupTestConfig: _*)
+    .settings(
+      /* disabled because it somehow triggers many warnings */
+      scalaJSLinkerConfig ~= (_.withSourceMap(false).withModuleKind(ModuleKind.CommonJSModule)),
+    )
+    // .settings( //TODO https://scalacenter.github.io/scalajs-bundler/reference.html#jsdom
+    //   //jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
+    //   //Test / requireJsDomEnv := true)
+    // )
+    .enablePlugins(ScalablyTypedConverterPlugin)
+    .settings(
+      // Compile / fastOptJS / webpackExtraArgs += "--mode=development",
+      // Compile / fullOptJS / webpackExtraArgs += "--mode=production",
+      Compile / fastOptJS / webpackDevServerExtraArgs += "--mode=development",
+      Compile / fullOptJS / webpackDevServerExtraArgs += "--mode=production",
+      useYarn := true
+    )
 
 lazy val modules: List[ProjectReference] =
   List(threeUtils, geometryModelJvm, geometryModelJs, geometryCore, controller)
@@ -64,33 +92,14 @@ val akkaVersion = "2.6.15"
 val akkaHttpVersion = "10.2.4"
 val munitVersion = "0.7.26"
 
-val setupTestConfig: Def.SettingsDefinition =
-  Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
-
-lazy val baseSettings: Project => Project =
-  _.settings(commonSettings: _*)
-    .enablePlugins(ScalaJSPlugin)
-    .settings(
-      scalaJSLinkerConfig ~= (_
-      /* disabled because it somehow triggers many warnings */
-        .withSourceMap(false)
-        .withModuleKind(ModuleKind.CommonJSModule))
-    )
-    .enablePlugins(ScalablyTypedConverterPlugin)
-    .settings(
-      Compile / fastOptJS / webpackExtraArgs += "--mode=development",
-      Compile / fullOptJS / webpackExtraArgs += "--mode=production",
-      Compile / fastOptJS / webpackDevServerExtraArgs += "--mode=development",
-      Compile / fullOptJS / webpackDevServerExtraArgs += "--mode=production",
-      useYarn := true
-    )
-
 /* For munit https://scalameta.org/munit/docs/getting-started.html#scalajs-setup */
 lazy val geometryModel = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("modules/01-model"))
   .settings(name := "fmgp-geometry-model")
+  .enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
+  .settings(setupTestConfig: _*)
   .settings(
     libraryDependencies ++= Seq(
       "io.circe" %%% "circe-core" % circeVersion,
@@ -98,16 +107,14 @@ lazy val geometryModel = crossProject(JSPlatform, JVMPlatform)
       "io.circe" %%% "circe-parser" % circeVersion % Test,
     )
   )
-  .settings(setupTestConfig, libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test)
+  // /.settings(setupTestConfig, libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test)
   .settings(publishSettings)
 
 lazy val threeUtils = project
   .in(file("modules/01-threejs-utils"))
   .settings(name := "fmgp-geometry-threejs-utils")
-  .configure(baseSettings)
-  .enablePlugins(ScalaJSBundlerPlugin)
+  .configure(scalaJSBundlerConfigure)
   .settings(
-    useYarn := true,
     scalaJSUseMainModuleInitializer := false,
     Compile / npmDependencies += "three" -> threeVersion,
     webpackBundlingMode := BundlingMode.LibraryOnly(), //LibraryAndApplication
@@ -120,21 +127,23 @@ lazy val geometryModelJvm = geometryModel.jvm
 lazy val geometryCore = project
   .in(file("modules/02-core"))
   .settings(name := "fmgp-geometry-core")
-  .configure(baseSettings)
-  .enablePlugins(ScalaJSBundlerPlugin)
+  .configure(scalaJSBundlerConfigure)
   .settings(
     libraryDependencies += ("org.scala-js" %%% "scalajs-dom" % scalajsDomVersion).cross(CrossVersion.for3Use2_13),
     //libraryDependencies += ("org.scala-js" %% "scalajs-logging" % scalajsLoggingVersion), //jsDependencies FIXME
     //  .cross(CrossVersion.for3Use2_13),
-    libraryDependencies ++= Seq("core", "generic", "parser")
-      .map(e => "io.circe" %%% ("circe-" + e) % circeVersion),
+    libraryDependencies ++= Seq(
+      "io.circe" %%% "circe-core" % circeVersion,
+      "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
+      "io.circe" %%% "circe-parser" % circeVersion,
+    ),
     Compile / npmDependencies ++= Seq(
       "three" -> threeVersion,
       "stats.js" -> "0.17.0",
       "@types/stats.js" -> "0.17.0", //https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
     ),
     scalaJSUseMainModuleInitializer := true,
-    mainClass := Some("fmgp.Main"),
+    //mainClass := Some("fmgp.Main"),
     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
   )

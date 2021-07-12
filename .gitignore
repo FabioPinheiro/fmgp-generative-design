@@ -5,6 +5,7 @@
 project/metals.sbt
 project/project/
 target/
+node_modules/
 
 ## igone the demo (generated code)
 docs/demo-fastopt-bundle.js
