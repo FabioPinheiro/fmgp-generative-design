@@ -182,9 +182,12 @@ clear
 
 }
 
-//addShape(TestShape())
-addShape(TextShape("Olaaaa", 3))
+addShape(TestShape())
+addShape(TextShape("Hello World!", 3))
 
 //val a = damped_sin_roof_pts(u0(), 20, 3, 10, 15, Pi, 0.03, Pi / 50, Pi / 10, 60, 100, 120, 800, 1)
 val a = damped_sin_roof_pts(u0(), 20, 3, 10, 15, Pi, 0.03, Pi / 50, Pi / 10, 60, 100, 24, 100, 1)
-addShape(PlanesShape(a.map(_.toArray).toArray).transformWith(Matrix.rotate(Pi / 2, Vec(1, 0, 0))))
+addShape(
+  SurfaceGridShape(a.map(_.toArray).toArray)
+    .transformWith(Matrix.rotate(Pi / 2, Vec(1, 0, 0)).postTranslate(0, -100, 0))
+)
