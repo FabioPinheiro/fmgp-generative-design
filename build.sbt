@@ -10,12 +10,12 @@ lazy val noPublishSettings = skip / publish := true
 lazy val publishSettings = Seq(
   Test / publishArtifact := false,
   pomIncludeRepository := (_ => false),
-  homepage := Some(url("https://github.com/FabioPinheiro/fmgp-threejs")),
-  licenses := Seq("MIT License" -> url("https://github.com/FabioPinheiro/fmgp-threejs/blob/master/LICENSE")),
+  homepage := Some(url("https://github.com/FabioPinheiro/fmgp-generative-design")),
+  licenses := Seq("MIT License" -> url("https://github.com/FabioPinheiro/fmgp-generative-design/blob/master/LICENSE")),
   scmInfo := Some(
     ScmInfo(
-      url("https://github.com/FabioPinheiro/fmgp-threejs"),
-      "scm:git:git@github.com:FabioPinheiro/fmgp-threejs.git"
+      url("https://github.com/FabioPinheiro/fmgp-generative-design"),
+      "scm:git:git@github.com:FabioPinheiro/fmgp-generative-design.git"
     )
   ),
   developers := List(
@@ -186,7 +186,7 @@ lazy val controller = project
 //   .in(file("modules/03-demo"))
 //   .configure(baseSettings)
 //   .settings(
-//     name := "fmgp-threejs-demo",
+//     name := "fmgp-generative-design-demo",
 //     publishArtifact := false,
 //     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion,
 //     npmDependencies in Compile += "three" -> threeVersion,

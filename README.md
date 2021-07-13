@@ -1,26 +1,33 @@
-# The project is a scalajs facade for threejs
+# fmgp-generative-design
 
-https://threejs.org/
+Is a Scala/ScalaJS library for Generative Design.
+The visualizer run on any Browser with JS.
+Scala's RELP can be used to interact with the visualizer via WS to develop your designs.
+
+The project is also a ScalaJs facade for [threejs](https://threejs.org/)
 
 [![Build Status](https://travis-ci.com/FabioPinheiro/fmgp-threejs.svg?branch=master)](https://travis-ci.com/FabioPinheiro/fmgp-threejs)
 
 ## Doc & Demo
 
-[README](https://fabiopinheiro.github.io/fmgp-threejs/)
+[README](https://fabiopinheiro.github.io/fmgp-generative-design/)
 
 [Live Demo](docs/index.html)
 
 ## Use
 
+If you want to try I recommend to checkout this repository and run it yourself with SBT.
+
+In the future I will publish the Scala3 version and with a lot more stuff!
+
+The old version in publish on:
 https://repo1.maven.org/maven2/app/fmgp/scala-threejs_sjs1.0-RC2_2.13/
 
 ```scala
 libraryDependencies += "app.fmgp" % "fmgp-threejs_2.13" % "0.1-M1"
 ```
 
-## Run on sbt
-
-Open file ./modules/02-core/index-dev.html
+## Run via sbt
 
 ```scala
 fastOptJS::webpack
@@ -30,15 +37,11 @@ controller/console
 > :load script.sc
 ```
 
-open `file:///.../fmgp-threejs/modules/02-core/index-dev.html`
+Open `file:///.../modules/02-core/index-dev.html` on your browser.
 
 ## TODO LIST / Roadmap / Ideas
 
-- Add Shapes:
-  - Frustum (Camera Helper) [8h] (Do it later)
-  - Axis Path [2d]
 - Threejs:
-  - Support for Terrain[16h]
   - Draft initial support for light[16h]
   - Draft initial support for materials [1w]
 - Interface improvements:
@@ -55,11 +58,6 @@ open `file:///.../fmgp-threejs/modules/02-core/index-dev.html`
   - Make a Docker Container with everything ready to use.
     - Serve the FE's javascript file via HTTP from the BE. [4h]
     - Draft DocketFile [16h]
-  - Selling points ideas:
-    - Scala has really nice BigData libraries but is lack of libraries for Machine Learning, unlike python.
-      I don't think the language is difficult, quite the opposite! IMO the problem is the lack of tools and libs for Data Visualization.
-      I think scalaJS could feel that hole. So the plan here is the make a simples API.
-      Could try to make some interative dashboard with scalajs and mdoc (mdoc is not working with scalajs 1.x)
 - Draft support for real-time collaborative work on algorithmic design.
   - The system has 3 Components:
     - FE - A browser here the models is viewed. Most of the mesh of the models are generated on the FE!
@@ -81,8 +79,6 @@ open `file:///.../fmgp-threejs/modules/02-core/index-dev.html`
 
 ### TODO list that Probably never will happen
 
-- List
-  - TextShape [2w] (implement my own algorithm)
 - Algorithmic design examples
   - Bamboo house
   - Transformer house - Single room multi configurations
@@ -90,7 +86,7 @@ open `file:///.../fmgp-threejs/modules/02-core/index-dev.html`
   - Input controller: GamePad; VR; Ray Tracing Pixel-select
   - 3 Dimensional Vector graphics
   - Game idia: make an empty city or a shopping mall.
-    Give each player's a place to remodel.
+    Give each team of players a place to remodel.
     Would be like an Architecture (algorithmic design) hackathon.
   - Game idia:
     - Make a 3d maze, where you can only choose between left and right paths and control the velocity.
@@ -100,7 +96,6 @@ open `file:///.../fmgp-threejs/modules/02-core/index-dev.html`
   - Try WebGPU and try to implemente some machine learning algorithms!
   - FPV Drone Simulator! How hard can it be?
 - Optimizations: 
-  - Config circe entity encoder json to drop null values vs Encode text on binary vs Use protobuf
   - Experiment with webgl shaders for optimizations.
     - Learn [WebGL Shaders](
       https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Getting_started_with_WebGL)
@@ -111,7 +106,7 @@ This project is licensed under the MIT license, available at
 [http://opensource.org/licenses/mit-license.php](http://opensource.org/licenses/mit-license.php)
 and also in the [LICENSE](LICENSE) file.
 
-Copyright the Fabio Pinheiro, 2020.
+Copyright the Fabio Pinheiro, 2021.
 
 [cats-badge]: https://typelevel.org/cats/img/cats-badge-tiny.png
 [cats-infographic]: https://github.com/tpolecat/cats-infographic
