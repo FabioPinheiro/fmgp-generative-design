@@ -8,4 +8,4 @@ val avoidWarn2 = """
 [warn]   |Some errors like unused import referring to a non-existent class might not be reported.
 """
 
-extension (i: Int) def extensionMethod: String = "hello"
+// extension (i: Int) def extensionMethod: String = "hello"
