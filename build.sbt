@@ -105,7 +105,8 @@ lazy val geometryModel = crossProject(JSPlatform, JVMPlatform)
       "io.circe" %%% "circe-core" % circeVersion,
       "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
       "io.circe" %%% "circe-parser" % circeVersion % Test,
-    )
+    ),
+    libraryDependencies += "dev.zio" %% "zio" % "1.0.9",
   )
   // /.settings(setupTestConfig, libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test)
   .settings(publishSettings)
