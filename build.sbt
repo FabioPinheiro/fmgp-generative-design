@@ -41,6 +41,8 @@ lazy val settingsFlags: Seq[sbt.Def.SettingsDefinition] = Seq(
     "-language:reflectiveCalls",
     //"-Xsource:3", //https://scalacenter.github.io/scala-3-migration-guide/docs/tooling/migration-tools.html
     //"-Ytasty-reader",
+    "-Xprint-diff-del", //"-Xprint-diff",
+    "-Xprint-inline",
   )
 )
 
