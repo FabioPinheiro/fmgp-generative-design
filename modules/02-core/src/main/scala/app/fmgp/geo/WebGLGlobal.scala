@@ -1,4 +1,4 @@
-package app.fmgp
+package app.fmgp.geo
 
 import typings.three.loaderMod.Loader
 import typings.three.mod.{Shape => _, _}
@@ -6,6 +6,9 @@ import typings.three.anon.{X => AnonX}
 import typings.three.webGLRendererMod.WebGLRendererParameters
 import typings.statsJs.mod.{^ => Stats}
 import app.fmgp.threejs.extras.{FirstPersonControls, FlyControls, OrbitControls}
+import app.fmgp.Websocket
+
+import app.fmgp.Log
 
 object WebGLGlobal {
   val masterWorld = DynamicWorldWarp()

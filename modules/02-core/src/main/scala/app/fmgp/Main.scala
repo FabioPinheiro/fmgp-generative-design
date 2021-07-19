@@ -12,7 +12,7 @@ import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import java.awt.geom.Dimension2D
-import app.fmgp.{Object3DWarp, GeoWarp, WorldWarp, DynamicWorldWarp}
+import app.fmgp.geo.{Object3DWarp, GeoWarp, WorldWarp, DynamicWorldWarp}
 import org.scalajs.dom.raw.{Event, Element}
 
 //import js.{undefined => ^}

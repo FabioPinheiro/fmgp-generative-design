@@ -1,4 +1,4 @@
-package app.fmgp
+package app.fmgp.geo
 
 import typings.three.loaderMod.Loader
 import typings.three.mod._

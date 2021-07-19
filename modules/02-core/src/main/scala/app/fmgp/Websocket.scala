@@ -19,7 +19,7 @@ object Websocket {
   object State extends Enumeration {
     type State = Value
 
-    /**	Socket has been created. The connection is not yet open. */
+    /** Socket has been created. The connection is not yet open. */
     val CONNECTING = Value(0)
 
     /** The connection is open and ready to communicate. */
@@ -28,7 +28,7 @@ object Websocket {
     /** The connection is in the process of closing. */
     val CLOSING = Value(2)
 
-    /**	The connection is closed or couldn't be opened. */
+    /** The connection is closed or couldn't be opened. */
     val CLOSED = Value(3)
   }
 

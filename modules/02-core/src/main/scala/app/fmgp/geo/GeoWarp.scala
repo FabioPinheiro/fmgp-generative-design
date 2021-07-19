@@ -1,7 +1,6 @@
-package app.fmgp
+package app.fmgp.geo
 
 import typings.three.mod._
-import app.fmgp.geo._
 
 sealed trait GeoWarp {
   def generateObj3D: Object3D
