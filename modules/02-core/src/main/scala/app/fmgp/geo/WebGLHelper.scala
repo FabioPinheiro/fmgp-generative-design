@@ -1,6 +1,7 @@
-package app.fmgp
+package app.fmgp.geo
 
 import scala.util.chaining._
+// /import scala.math.Ordered
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import org.scalajs.dom
@@ -13,9 +14,9 @@ import typings.statsJs.mod.{^ => Stats}
 
 import app.fmgp.threejs._
 import app.fmgp.threejs.extras.{FirstPersonControls, FlyControls, OrbitControls}
-import app.fmgp.geo._
+import app.fmgp.{Log, Websocket, Utils}
 
-import scala.math.Ordered
+import _root_.app.fmgp.Websocket
 case class InteractiveMesh(mesh: typings.three.meshMod.Mesh[_, _], onSelected: () => Unit = () => ()) {
   def id = mesh.id
 }

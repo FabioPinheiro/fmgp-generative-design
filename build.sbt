@@ -37,15 +37,15 @@ lazy val settingsFlags: Seq[sbt.Def.SettingsDefinition] = Seq(
     "-unchecked", // warn about unchecked type parameters
     "-feature", // warn about misused language features
     "-Xfatal-warnings",
-    // "-Yexplicit-nulls",
-    // "-Ysafe-init",
+    //"-Yexplicit-nulls",
+    //TODO "-Ysafe-init",
     "-language:implicitConversions",
     "-language:reflectiveCalls",
     //"-Xsource:3", //https://scalacenter.github.io/scala-3-migration-guide/docs/tooling/migration-tools.html
     //"-Ytasty-reader",
     "-Xprint-diff-del", //"-Xprint-diff",
     "-Xprint-inline",
-  ) //++ Seq("-rewrite", "-indent") ++ Seq("-source", "future")
+  ) //++ Seq("-rewrite", "-indent", "-source", "future-migration") //++ Seq("-source", "future")
 )
 
 val setupTestConfig: Seq[sbt.Def.SettingsDefinition] = Seq(
@@ -80,7 +80,7 @@ lazy val scalaJSBundlerConfigure: Project => Project =
     )
 
 lazy val modules: List[ProjectReference] =
-  List(threeUtils, geometryModelJvm, geometryModelJs, geometryCore, controller)
+  List(threeUtils, geometryModelJvm, geometryModelJs, geometryCore, geometryWebapp, controller)
 
 lazy val root = project
   .in(file("."))
