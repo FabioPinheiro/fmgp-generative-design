@@ -358,7 +358,7 @@ object WorldImprovements {
 
       case geo.TextShape(text: String, size: Double) =>
         val textParameters = js.Dynamic.literal().asInstanceOf[typings.three.textGeometryMod.TextGeometryParameters]
-        textParameters.font = Global.textFont
+        textParameters.font = WebGLGlobal.textFont
         textParameters.size = size
         textParameters.height = 0
         textParameters.curveSegments = 12
@@ -413,13 +413,12 @@ object WorldImprovements {
                 .pipe(aux =>
                   aux
                     .zip(aux.drop(1))
-                    .flatMap {
-                      case (a, b) =>
-                        Seq(
-                          geo.Triangle(a._1, a._2, b._1),
-                          geo.Triangle(b._2, b._1, a._2),
-                          geo.Triangle(a._2, a._3, b._2)
-                        )
+                    .flatMap { case (a, b) =>
+                      Seq(
+                        geo.Triangle(a._1, a._2, b._1),
+                        geo.Triangle(b._2, b._1, a._2),
+                        geo.Triangle(a._2, a._3, b._2)
+                      )
                     }
                 )
             (topSide, sideTriangles(line.vertices.head.asVec), sideTriangles(line.vertices.last.asVec).map(_.invert))
@@ -430,20 +429,40 @@ object WorldImprovements {
           .tap(_.computeVertexNormals())
 
         val innerSideGeometry = new BufferGeometry()
-          .tap(_.setAttribute("position", float2BufferAttribute(innerSideSurface.pipe {
-            _.flatMap(_.toSeqFloat)
-          })))
-          .tap(_.setAttribute("normal", float2BufferAttribute(innerSideSurface.pipe {
-            _.flatMap(_.map(_.forceX0Z).toSeqFloat)
-          })))
+          .tap(
+            _.setAttribute(
+              "position",
+              float2BufferAttribute(innerSideSurface.pipe {
+                _.flatMap(_.toSeqFloat)
+              })
+            )
+          )
+          .tap(
+            _.setAttribute(
+              "normal",
+              float2BufferAttribute(innerSideSurface.pipe {
+                _.flatMap(_.map(_.forceX0Z).toSeqFloat)
+              })
+            )
+          )
 
         val outerSideGeometry = new BufferGeometry()
-          .tap(_.setAttribute("position", float2BufferAttribute(outerSideSurface.pipe {
-            _.flatMap(_.toSeqFloat)
-          })))
-          .tap(_.setAttribute("normal", float2BufferAttribute(outerSideSurface.pipe {
-            _.flatMap(_.map(_.forceX0Z).toSeqFloat)
-          })))
+          .tap(
+            _.setAttribute(
+              "position",
+              float2BufferAttribute(outerSideSurface.pipe {
+                _.flatMap(_.toSeqFloat)
+              })
+            )
+          )
+          .tap(
+            _.setAttribute(
+              "normal",
+              float2BufferAttribute(outerSideSurface.pipe {
+                _.flatMap(_.map(_.forceX0Z).toSeqFloat)
+              })
+            )
+          )
 
         // ### OBJ ###
         val op = state.withMaterial(geo.SceneGraph.surfaceNormalMat)

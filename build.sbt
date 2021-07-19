@@ -37,13 +37,15 @@ lazy val settingsFlags: Seq[sbt.Def.SettingsDefinition] = Seq(
     "-unchecked", // warn about unchecked type parameters
     "-feature", // warn about misused language features
     "-Xfatal-warnings",
+    // "-Yexplicit-nulls",
+    // "-Ysafe-init",
     "-language:implicitConversions",
     "-language:reflectiveCalls",
     //"-Xsource:3", //https://scalacenter.github.io/scala-3-migration-guide/docs/tooling/migration-tools.html
     //"-Ytasty-reader",
     "-Xprint-diff-del", //"-Xprint-diff",
     "-Xprint-inline",
-  )
+  ) //++ Seq("-rewrite", "-indent") ++ Seq("-source", "future")
 )
 
 val setupTestConfig: Seq[sbt.Def.SettingsDefinition] = Seq(
@@ -148,7 +150,7 @@ lazy val geometryCore = project
     scalaJSUseMainModuleInitializer := true,
     //mainClass := Some("fmgp.Main"),
     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
-    webpackBundlingMode := BundlingMode.LibraryAndApplication(),
+    //webpackBundlingMode := BundlingMode.LibraryAndApplication(),
   )
   .dependsOn(threeUtils, geometryModelJs)
   .settings(publishSettings)
@@ -183,6 +185,39 @@ lazy val controller = project
     """,
   )
   .dependsOn(geometryModelJvm)
+  .settings(noPublishSettings)
+
+lazy val geometryWebapp = project
+  .in(file("modules/03-webapp"))
+  .settings(name := "fmgp-geometry-webapp")
+  .configure(scalaJSBundlerConfigure)
+  // .settings(commonSettings: _*)
+  // .enablePlugins(ScalaJSPlugin)
+  // .enablePlugins(ScalaJSBundlerPlugin)
+  // .settings(setupTestConfig: _*)
+  .settings(
+    libraryDependencies += ("org.scala-js" %%% "scalajs-dom" % scalajsDomVersion).cross(CrossVersion.for3Use2_13),
+    libraryDependencies += "com.raquo" %%% "laminar" % "0.13.1",
+    libraryDependencies += "com.raquo" %%% "waypoint" % "0.4.1",
+    libraryDependencies += "com.lihaoyi" %%% "upickle" % "1.3.13",
+    libraryDependencies ++= Seq(
+      "io.circe" %%% "circe-core" % circeVersion,
+      "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
+      "io.circe" %%% "circe-parser" % circeVersion,
+    ),
+    Compile / npmDependencies ++= Seq(
+      "three" -> threeVersion,
+      "stats.js" -> "0.17.0",
+      "@types/stats.js" -> "0.17.0", //https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
+    ),
+  )
+  .settings(
+    scalaJSUseMainModuleInitializer := true,
+    webpackBundlingMode := BundlingMode.LibraryAndApplication(),
+    Compile / fastOptJS / scalaJSLinkerConfig ~= { _.withSourceMap(false) },
+    Compile / fullOptJS / scalaJSLinkerConfig ~= { _.withSourceMap(false) },
+  )
+  .dependsOn(threeUtils, geometryModelJs, geometryCore)
   .settings(noPublishSettings)
 
 // lazy val demo = project
