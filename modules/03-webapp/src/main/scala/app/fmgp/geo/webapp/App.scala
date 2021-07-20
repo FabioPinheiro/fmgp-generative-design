@@ -31,6 +31,8 @@ object App {
     .collectStatic(HomePage)(renderHomePage())
     .collectStatic(HelloPage)(HelloWorld())
     .collectStatic(GeoPage)(GeoApp())
+    .collectStatic(ShowGeoJsonPage)(ShowGeo(true))
+    .collectStatic(ShowGeoHtmlPage)(ShowGeo(false))
 
   private def renderHomePage(): HtmlElement = {
     div(
@@ -49,7 +51,9 @@ object App {
 
   val linkPages: List[Page] = List(
     HelloPage,
-    GeoPage
+    GeoPage,
+    ShowGeoJsonPage,
+    ShowGeoHtmlPage,
   )
 
 }

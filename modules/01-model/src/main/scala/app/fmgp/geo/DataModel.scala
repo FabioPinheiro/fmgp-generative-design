@@ -37,11 +37,10 @@ sealed trait Coordinate2D extends Coordinate {
 }
 sealed trait Coordinate3D extends Coordinate2D
 
-/**
-  * XYZ
+/** XYZ
   *
   * @param x
-  * @param y
+  *   @param y
   * @param z
   */
 final case class XYZ(x: Double, y: Double, z: Double = 0) extends Coordinate3D {
@@ -72,11 +71,12 @@ object XYZ {
     XYZ((p1.x + p2.x) / 2, (p1.y + p2.y) / 2, (p1.z + p2.z) / 2)
 }
 
-/**
-  * ### 2D ###
+/** ### 2D ###
   *
-  * @param module 'ρ' (Rho) - module*size is also called the radius vector
-  * @param argument 'ϕ' (Phi) - argument is also called the polar angle
+  * @param module
+  *   'ρ' (Rho) - module*size is also called the radius vector
+  * @param argument
+  *   'ϕ' (Phi) - argument is also called the polar angle
   */
 final case class Polar(rho: Double, phi: Double) extends Coordinate2D {
   def argument = rho
@@ -191,12 +191,7 @@ object Vec {
 //   def scale(x: Double, y: Double, z: Double): Matrix = ???
 // }
 
-/**
-  * Matrix:
-  * 00 | 01| 02| 03
-  * 10 | 11| 12| 13
-  * 20 | 21| 22| 23
-  * 30 | 31| 32| 33
+/** Matrix: 00 | 01| 02| 03 10 | 11| 12| 13 20 | 21| 22| 23 30 | 31| 32| 33
   */
 // format: off
 final case class Matrix(
@@ -380,21 +375,25 @@ object Matrix {
   // format: on
   @inline def translate(v: Vec): Matrix = translate(v.x, v.y, v.z)
 
-  /**
-    * Returns the rotation matrix about the given angle and axis.
+  /** Returns the rotation matrix about the given angle and axis.
     *
-    * @param angle the angle to rotate, in radians.
-    * @param x the x-component of the axis vector to rotate around
-    * @param y the y-component of the axis vector to rotate around
-    * @param z the z-component of the axis vector to rotate around
+    * @param angle
+    *   the angle to rotate, in radians.
+    * @param x
+    *   the x-component of the axis vector to rotate around
+    * @param y
+    *   the y-component of the axis vector to rotate around
+    * @param z
+    *   the z-component of the axis vector to rotate around
     */
   @inline def rotate(angle: Double, x: Double, y: Double, z: Double): Matrix = rotate(angle, Vec(x, y, z))
 
-  /**
-    * Returns the rotation matrix about the given angle and axis.
+  /** Returns the rotation matrix about the given angle and axis.
     *
-    * @param angle the angle to rotate, in radians.
-    * @param axisVector the axis vector to rotate around.
+    * @param angle
+    *   the angle to rotate, in radians.
+    * @param axisVector
+    *   the axis vector to rotate around.
     */
   @inline def rotate(angle: Double, axisVector: Vec): Matrix = {
     val s = Math.sin(angle)
@@ -430,8 +429,7 @@ object Matrix {
 //    Matrix(tmp)
 //  }
 
-  /**
-    * Based on http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToMatrix/index.htm
+  /** Based on http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToMatrix/index.htm
     */
   def axisCosSinAngle(axisVector: Vec, cosAngle: Double, sinAngle: Double) = {
     val (a, c, s) = (axisVector, cosAngle, sinAngle)
