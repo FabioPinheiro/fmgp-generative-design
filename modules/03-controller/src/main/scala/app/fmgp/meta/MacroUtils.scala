@@ -4,7 +4,7 @@ import scala.quoted.*
 
 object MacroUtils {
 
-  /** MyPosition
+  /** Meta
     *
     * @param start
     *   The start offset in the source file
@@ -23,7 +23,7 @@ object MacroUtils {
     * @param sourceCode
     *   Source code within the position
     */
-  case class MyPosition[T](
+  case class Meta[+T](
       start: Int,
       end: Int,
       sourceFile: String,
@@ -50,10 +50,10 @@ object MacroUtils {
           |---------------------""".stripMargin
   }
 
-  inline def getMyPosition[T](inline expr: T) =
-    ${ getMyPositionImpl('expr) }
+  inline def getMeta[T](inline expr: T) =
+    ${ getMetaImpl('expr) }
 
-  def getMyPositionImpl[T](expr: Expr[T])(using Quotes, Type[T]): Expr[MyPosition[T]] = {
+  def getMetaImpl[T](expr: Expr[T])(using Quotes, Type[T]): Expr[Meta[T]] = {
     import quotes.reflect.*
 
     val tree: Term = expr.asTerm
@@ -65,11 +65,11 @@ object MacroUtils {
     //     report.info("Parameter must be a known boolean constant")
     //     '{ false }
 
-    val pos = tree.pos
+    val pos: Position = tree.pos
     //val pos = Position.ofMacroExpansion
 
     '{
-      MyPosition(
+      Meta(
         start = ${ Expr(pos.start) },
         end = ${ Expr(pos.end) },
         sourceFile = ${ Expr(pos.sourceFile.jpath.toString) },
@@ -87,5 +87,42 @@ object MacroUtils {
   def showExpr[T](expr: Expr[T])(using Quotes): Expr[String] =
     val code: String = expr.show
     Expr(code)
+
+  //TEST
+
+  import app.fmgp.geo.{Shape, Box}
+  import zio._
+
+  given Conversion[Meta[Shape], Shape] = _.value
+
+  inline def mBox(inline width: Double, inline height: Double, inline depth: Double) =
+    ${ myBoxImpl('width, 'height, 'depth) }
+
+  def myBoxImpl(
+      widthExpr: Expr[Double],
+      heightExpr: Expr[Double],
+      depthExpr: Expr[Double]
+  )(using Quotes): Expr[UIO[Meta[Box]]] =
+    def aux: Expr[Box] = '{ Box($widthExpr, $heightExpr, $depthExpr) }
+    '{ ZIO.succeed(${ getMacroMetaImpl[Box](aux) }) }
+
+  def getMacroMetaImpl[T](expr: Expr[T])(using Quotes, Type[T]): Expr[Meta[T]] = {
+    import quotes.reflect.*
+    val pos = Position.ofMacroExpansion
+    '{
+      Meta[T](
+        start = ${ Expr(pos.start) },
+        end = ${ Expr(pos.end) },
+        sourceFile = ${ Expr(pos.sourceFile.jpath.toString) },
+        startLine = ${ Expr(pos.startLine) },
+        endLine = ${ Expr(pos.endLine) },
+        startColumn = ${ Expr(pos.startColumn) },
+        endColumn = ${ Expr(pos.endColumn) },
+        sourceCode = ${ Expr(pos.sourceCode) },
+        showExpr = ${ showExpr(expr) },
+        value = $expr
+      )
+    }
+  }
 
 }
