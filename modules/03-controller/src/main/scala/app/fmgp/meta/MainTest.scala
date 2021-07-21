@@ -3,7 +3,7 @@ package app.fmgp.meta
 import MacroUtils._
 @main def MainMeta() = {
   //inline def a = true
-  val mp = getMyPosition {
+  val mp = getMeta {
     val b = "asdasd"
     val a = 0x999
     a
