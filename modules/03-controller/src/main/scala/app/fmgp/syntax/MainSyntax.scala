@@ -27,6 +27,7 @@ object ZioApp extends zio.App {
   // ] =
   def program = for {
     //_ <- console.putStrLn("-")
+    _ <- clearWorld
     b1 <- _box(1, 1, 1)
     _ <- log("Ola")
     b2 <- box(2, 2, 2)
