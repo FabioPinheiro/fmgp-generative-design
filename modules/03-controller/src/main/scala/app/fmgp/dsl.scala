@@ -21,6 +21,15 @@ object dsl extends CoordinatesDsl {
         ZIO.succeed(Sphere(radius, center))
       def shapes(shapes: Shape*): UIO[Shape] =
         ZIO.succeed(ShapeSeq(shapes))
+
+      def cylinder(radius: Double, height: Double): UIO[Cylinder] =
+        ZIO.succeed(Cylinder(radius, height))
+      def line(vertices: Seq[XYZ], closeLine: Boolean = false): UIO[LinePath] =
+        ZIO.succeed(LinePath(if (closeLine) vertices ++ vertices.headOption else vertices))
+      def circle(radius: Double, center: XYZ = XYZ.origin): UIO[Circle] =
+        ZIO.succeed(Circle(radius, center))
+      def surface_grid(points: Seq[Seq[XYZ]]): UIO[SurfaceGridShape] =
+        ZIO.succeed(SurfaceGridShape(points.map(_.toArray).toArray))
     }
 
     val live: URLayer[Logging, Dsl] =
@@ -41,6 +50,18 @@ object dsl extends CoordinatesDsl {
 
   def shapes(shapes: Shape*): RIO[Dsl, Shape] =
     ZIO.accessM(_.get.shapes(shapes: _*))
+
+  def cylinder(radius: Double, height: Double): RIO[Dsl, Cylinder] =
+    ZIO.accessM(_.get.cylinder(radius, height))
+
+  def line(vertices: Seq[XYZ], closeLine: Boolean = false): RIO[Dsl, LinePath] =
+    ZIO.accessM(_.get.line(vertices, closeLine))
+
+  def circle(radius: Double, center: XYZ = XYZ.origin): RIO[Dsl, Circle] =
+    ZIO.accessM(_.get.circle(radius, center))
+
+  def surface_grid(points: Seq[Seq[XYZ]]): RIO[Dsl, SurfaceGridShape] =
+    ZIO.accessM(_.get.surface_grid(points))
 
   // def world(shapes: Shape*) = ZIO.succeed(WorldAddition(shapes))
   // def worldConsole(shapes: Shape*) = console.putStrLn(WorldAddition(shapes).toString)
