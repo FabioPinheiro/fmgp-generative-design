@@ -17,11 +17,20 @@ object EncoderDecoder {
   given Encoder[WorldState] = deriveEncoder[WorldState]
   given Decoder[WorldState] = deriveDecoder[WorldState]
   
-  given Encoder[World] =  Encoder.instance {
-    case e: WorldAddition => e.asJson
-    case e: WorldState => e.asJson
+  given Encoder[World] = Encoder.instance {
+    case e: WorldState    => JsonObject(("WorldState", e.asJson)).asJson
+    case e: WorldAddition => JsonObject(("WorldAddition", e.asJson)).asJson
   }
-  given Decoder[World] = List[Decoder[World]](Decoder[WorldAddition].widen, Decoder[WorldState].widen).reduceLeft(_ or _)
+  //given Decoder[World] = List[Decoder[World]](Decoder[WorldAddition].widen, Decoder[WorldState].widen).reduceLeft(_ or _)
+  given Decoder[World] = new Decoder[World]:
+    override def apply(c: io.circe.HCursor): io.circe.Decoder.Result[World] = {
+      c.keys.map(_.toSeq) match {
+        case Some("WorldState" :: Nil)    => c.downField("WorldState").as[WorldState]
+        case Some("WorldAddition" :: Nil) => c.downField("WorldAddition").as[WorldAddition]
+        case Some(e)                      => Left(DecodingFailure(s"'$e' is not a World type", c.history))
+        case e => Left(DecodingFailure(s"Attempt to decode a World on failed missing type $e", c.history))
+      }
+    }
   
   given Encoder[Vec] = deriveEncoder[Vec]
   given Decoder[Vec] = deriveDecoder[Vec]
