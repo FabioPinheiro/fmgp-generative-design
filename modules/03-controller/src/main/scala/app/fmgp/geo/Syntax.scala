@@ -1,5 +1,6 @@
 package app.fmgp.geo
 
+import app.fmgp.syntax.CoordinatesDsl
 object Syntax extends Syntax {
   override def addShape[T <: Shape](t: T, wireframeMode: Boolean): T = {
     println(s"wireframeMode=$wireframeMode: $t")
@@ -11,7 +12,7 @@ object Syntax extends Syntax {
   }
 }
 
-trait Syntax extends BaseSyntax with KhepriUtils with KhepriSolidPrimitives
+trait Syntax extends CoordinatesDsl with BaseSyntax with KhepriUtils with KhepriSolidPrimitives
 
 /** Khepri's defined functions
   * @see
@@ -43,16 +44,6 @@ trait BaseSyntax {
   def addShape[T <: Shape](t: T): T = addShape(t = t, wireframeMode = wireframeMode)
   def addShape[T <: Shape](t: T, wireframeMode: Boolean): T
   def clear: Unit = { wireframeMode = false }
-
-  def u0() = XYZ.origin
-  def xyz(x: Double = 0, y: Double = 0, z: Double = 0): XYZ = XYZ(x, y, z)
-  def vxyz(x: Double = 0, y: Double = 0, z: Double = 0): Vec = Vec(x, y, z)
-  def pol = polar _
-  def polar(module: Double, argument: Double): XYZ = Polar(rho = argument, phi = module).toXYZ
-  def cyl = cylindrical _
-  def cylindrical(rho: Double, phi: Double, y: Double) = Cylindrical(rho = rho, phi = phi, y = y)
-  def sph = spherical _
-  def spherical(rho: Double, phi: Double, psi: Double) = Spherical(rho = rho, phi = phi, psi = psi)
 
   def box(width: Double, height: Double, depth: Double): Box = addShape(Box(width, height, depth))
   def sphere(radius: Double, center: XYZ = XYZ.origin): Sphere = addShape(Sphere(radius, center))
