@@ -113,11 +113,9 @@ trait ContestSpecificDslImp extends ContestSpecificDsl {
       case ctxW: Warp =>
         ctxW.push
         val extra = init match {
-          case s: Shape => println("1111111111111"); Seq(s)
-          case _: Unit  => println("222222222222"); Seq.empty
-          // case s: Seq[Shape] => println("3333333333333"); s
+          case s: Shape => Seq(s)
+          case _: Unit  => Seq.empty
         }
-        println(s"extra: $extra               ----    ctxW.v: ${ctxW.v} ")
         val seq = ShapeSeq(ctxW.v)
         val fixme = ctxW.pop
         println(s"fixme: $fixme")
@@ -125,12 +123,10 @@ trait ContestSpecificDslImp extends ContestSpecificDsl {
         seq
       case e: Dummy =>
         val extra = init match {
-          case s: Shape => println("3333333333"); Seq(s)
-          case _: Unit  => println("4444444444"); Seq.empty
-          // case s: Seq[Shape] => println("3333333333333"); s
+          case s: Shape => Seq(s)
+          case _: Unit  => Seq.empty
         }
-        val seq = ShapeSeq(extra)
-        seq
+        ShapeSeq(extra)
 
 }
 
