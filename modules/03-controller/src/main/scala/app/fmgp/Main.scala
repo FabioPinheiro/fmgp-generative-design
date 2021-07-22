@@ -24,6 +24,7 @@ object Main extends Logger {
     classLoader = Some(this.getClass.getClassLoader),
     defaultExecutionContext = None
   )
+
   var server: Option[MyAkkaServer] = None
   def myAkkaServer: MyAkkaServer = server.get
 
