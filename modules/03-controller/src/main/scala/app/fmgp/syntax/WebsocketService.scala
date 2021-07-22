@@ -10,6 +10,8 @@ object websocket {
   type Websocket = Has[Websocket.Service]
 
   // Accessor Methods
+  def clearWorld: ZIO[Websocket, Throwable, Unit] =
+    ZIO.accessM(_.get.clearWorld)
   def send[T <: app.fmgp.geo.Shape](shape: => T): ZIO[Websocket, Throwable, T] =
     ZIO.accessM(_.get.send(shape))
   def stopWebsocket: URIO[Websocket, Unit] =
@@ -17,11 +19,13 @@ object websocket {
 
   object Websocket {
     trait Service(val interface: String, val port: Int) {
-      def send[T <: app.fmgp.geo.Shape](t: T): Task[T]
       def start: URIO[Any, Service]
       def isStoped: UIO[Boolean]
       def stop: URIO[Any, Unit]
       def stopAfterKeystroke: URIO[zio.console.Console, Unit]
+
+      def send[T <: app.fmgp.geo.Shape](t: T): Task[T]
+      def clearWorld: ZIO[Websocket, Throwable, Unit]
     }
 
     private def makeService(using ExecutionContext) = new Service("127.0.0.1", 8888) {
@@ -36,6 +40,8 @@ object websocket {
 
       override def send[T <: app.fmgp.geo.Shape](t: T): Task[T] =
         ZIO.effect(server.GeoSyntax.addShape(t)) //TODO make this beter
+      override def clearWorld: ZIO[Websocket, Throwable, Unit] =
+        ZIO.effect(server.GeoSyntax.clear)
 
       override def start: URIO[Any, Service] = ZIO.fromFuture(ex => server.start).map(_ => this).orDie
 
