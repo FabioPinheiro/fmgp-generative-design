@@ -21,8 +21,8 @@ import app.fmgp.geo.{World, WorldAddition}
 import app.fmgp.geo.Shape
 import app.fmgp.geo.EncoderDecoder.{given}
 
-case class MyAkkaServer(interface: String, port: Int)(
-    implicit ex: ExecutionContext,
+case class MyAkkaServer(interface: String, port: Int)(using
+    ex: ExecutionContext,
     system: ActorSystem,
     mat: Materializer
 ) extends Logger {
@@ -107,9 +107,8 @@ case class MyAkkaServer(interface: String, port: Int)(
     case TextMessage.Strict(text) =>
       Future.successful(decode[T](text))
     case streamed: TextMessage.Streamed =>
-      streamed.toStrict(FiniteDuration(5, TimeUnit.SECONDS)).map {
-        case TextMessage.Strict(text) =>
-          decode[T](text)
+      streamed.toStrict(FiniteDuration(5, TimeUnit.SECONDS)).map { case TextMessage.Strict(text) =>
+        decode[T](text)
       }
     case bm: BinaryMessage =>
       /*ignore binary messages but drain content to avoid the stream being clogged*/
@@ -130,8 +129,8 @@ case class MyAkkaServer(interface: String, port: Int)(
     echoFlow.via(Flow.fromSinkAndSourceCoupled(sink, source)).map[Message](s => TextMessage(s"Room($room): $s"))
   }
 
-  /**
-    * @see https://doc.akka.io/docs/akka/2.5/stream/stream-dynamic.html
+  /** @see
+    *   https://doc.akka.io/docs/akka/2.5/stream/stream-dynamic.html
     */
   def broadcastFlow: Flow[Message, Message, NotUsed] = {
     //chatRooms.values.map(e => e._1 : Graph[SinkShape[String], _] ).toSeq.foldLeft(aaa){(a,b) => a.alsoTo(b)}
@@ -169,7 +168,7 @@ case class MyAkkaServer(interface: String, port: Int)(
 
   // val geoRunnableGraph: RunnableGraph[Source[World, NotUsed]] = geoSource.toMat(BroadcastHub.sink)(Keep.right)
   // val geoConsoleProducer: Source[World, NotUsed] = geoRunnableGraph.run()
-  object GeoSyntax extends app.fmgp.geo.Syntax with geo.KhepriExamples with geo.RhythmicGymnasticsPavilionExample{
+  object GeoSyntax extends app.fmgp.geo.Syntax with geo.KhepriExamples with geo.RhythmicGymnasticsPavilionExample {
     override def addShape[T <: app.fmgp.geo.Shape](t: T, wireframeMode: Boolean): T = {
       val s: app.fmgp.geo.Shape = if (wireframeMode) app.fmgp.geo.Wireframe(t) else t
       val w = WorldAddition(shapes = Seq(s))
@@ -212,10 +211,9 @@ case class MyAkkaServer(interface: String, port: Int)(
         case streamed: TextMessage.Streamed =>
           streamed
             .toStrict(FiniteDuration(5, TimeUnit.SECONDS))
-            .map {
-              case TextMessage.Strict(text) =>
-                logger.info(s"BrowserFlow(Streamed): $text")
-                Future.successful(())
+            .map { case TextMessage.Strict(text) =>
+              logger.info(s"BrowserFlow(Streamed): $text")
+              Future.successful(())
             }
         case bm: BinaryMessage =>
           logger.warn(s"BrowserFlow(Binary): ${bm.toString}")
