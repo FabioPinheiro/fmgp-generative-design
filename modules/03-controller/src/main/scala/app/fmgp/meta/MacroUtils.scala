@@ -23,7 +23,7 @@ object MacroUtils {
     * @param sourceCode
     *   Source code within the position
     */
-  case class Meta[+T](
+  trait MetaBase(
       start: Int,
       end: Int,
       sourceFile: String,
@@ -32,9 +32,20 @@ object MacroUtils {
       startColumn: Int,
       endColumn: Int,
       sourceCode: Option[String],
-      showExpr: String,
+  )
+
+  case class MetaValue[+T](
+      start: Int,
+      end: Int,
+      sourceFile: String,
+      startLine: Int,
+      endLine: Int,
+      startColumn: Int,
+      endColumn: Int,
+      sourceCode: Option[String],
+      //showExpr: String,
       value: T
-  ) {
+  ) extends MetaBase(start, end, sourceFile, startLine, endLine, startColumn, endColumn, sourceCode) {
     def prettyPrint =
       s"""#####################
           | sourceFile:  $sourceFile
@@ -45,15 +56,40 @@ object MacroUtils {
           | startColumn: $startColumn
           | endColumn:   $endColumn
           | sourceCode:  $sourceCode
-          | showExpr:    $showExpr
           | value:       $value
+          |---------------------""".stripMargin
+  }
+
+  case class Meta(
+      start: Int,
+      end: Int,
+      sourceFile: String,
+      startLine: Int,
+      endLine: Int,
+      startColumn: Int,
+      endColumn: Int,
+      sourceCode: Option[String],
+  ) extends MetaBase(start, end, sourceFile, startLine, endLine, startColumn, endColumn, sourceCode) {
+    def withValue[T](value: T): MetaValue[T] =
+      MetaValue(start, end, sourceFile, startLine, endLine, startColumn, endColumn, sourceCode, value)
+
+    def prettyPrint =
+      s"""#####################
+          | sourceFile:  $sourceFile
+          | start:       $start
+          | end:         $end
+          | startLine:   $startLine
+          | endLine:     $endLine
+          | startColumn: $startColumn
+          | endColumn:   $endColumn
+          | sourceCode:  $sourceCode
           |---------------------""".stripMargin
   }
 
   inline def getMeta[T](inline expr: T) =
     ${ getMetaImpl('expr) }
 
-  def getMetaImpl[T](expr: Expr[T])(using Quotes, Type[T]): Expr[Meta[T]] = {
+  def getMetaImpl[T](expr: Expr[T])(using Quotes, Type[T]): Expr[MetaValue[T]] = {
     import quotes.reflect.*
 
     val tree: Term = expr.asTerm
@@ -69,7 +105,7 @@ object MacroUtils {
     //val pos = Position.ofMacroExpansion
 
     '{
-      Meta(
+      MetaValue(
         start = ${ Expr(pos.start) },
         end = ${ Expr(pos.end) },
         sourceFile = ${ Expr(pos.sourceFile.jpath.toString) },
@@ -78,7 +114,7 @@ object MacroUtils {
         startColumn = ${ Expr(pos.startColumn) },
         endColumn = ${ Expr(pos.endColumn) },
         sourceCode = ${ Expr(pos.sourceCode) },
-        showExpr = ${ showExpr(expr) },
+        //showExpr = ${ showExpr(expr) },
         value = $expr
       )
     }
@@ -93,24 +129,24 @@ object MacroUtils {
   import app.fmgp.geo.{Shape, Box}
   import zio._
 
-  given Conversion[Meta[Shape], Shape] = _.value
+  given Conversion[MetaValue[Shape], Shape] = _.value
 
-  inline def mBox(inline width: Double, inline height: Double, inline depth: Double) =
-    ${ myBoxImpl('width, 'height, 'depth) }
+  // inline def mBox(inline width: Double, inline height: Double, inline depth: Double) =
+  //   ${ myBoxImpl('width, 'height, 'depth) }
 
   def myBoxImpl(
       widthExpr: Expr[Double],
       heightExpr: Expr[Double],
       depthExpr: Expr[Double]
-  )(using Quotes): Expr[UIO[Meta[Box]]] =
+  )(using Quotes): Expr[UIO[MetaValue[Box]]] =
     def aux: Expr[Box] = '{ Box($widthExpr, $heightExpr, $depthExpr) }
     '{ ZIO.succeed(${ getMacroMetaImpl[Box](aux) }) }
 
-  def getMacroMetaImpl[T](expr: Expr[T])(using Quotes, Type[T]): Expr[Meta[T]] = {
+  def getMacroMetaImpl[T](expr: Expr[T])(using Quotes, Type[T]): Expr[MetaValue[T]] = {
     import quotes.reflect.*
     val pos = Position.ofMacroExpansion
     '{
-      Meta[T](
+      MetaValue[T](
         start = ${ Expr(pos.start) },
         end = ${ Expr(pos.end) },
         sourceFile = ${ Expr(pos.sourceFile.jpath.toString) },
@@ -119,8 +155,24 @@ object MacroUtils {
         startColumn = ${ Expr(pos.startColumn) },
         endColumn = ${ Expr(pos.endColumn) },
         sourceCode = ${ Expr(pos.sourceCode) },
-        showExpr = ${ showExpr(expr) },
+        //showExpr = ${ showExpr(expr) },
         value = $expr
+      )
+    }
+  }
+
+  def getMetaImpl()(using Quotes): Expr[Meta] = {
+    val pos = quotes.reflect.Position.ofMacroExpansion
+    '{
+      Meta(
+        start = ${ Expr(pos.start) },
+        end = ${ Expr(pos.end) },
+        sourceFile = ${ Expr(pos.sourceFile.jpath.toString) },
+        startLine = ${ Expr(pos.startLine) },
+        endLine = ${ Expr(pos.endLine) },
+        startColumn = ${ Expr(pos.startColumn) },
+        endColumn = ${ Expr(pos.endColumn) },
+        sourceCode = ${ Expr(pos.sourceCode) },
       )
     }
   }
