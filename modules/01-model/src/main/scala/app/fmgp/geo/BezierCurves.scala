@@ -1,9 +1,6 @@
 package app.fmgp.geo
 
-/**
-  * BezierCurves
-  * I would love to see the BezierCurves of matrix fly on GPU
-  * BE
+/** BezierCurves I would love to see the BezierCurves of matrix fly on GPU BE
   */
 object BezierCurves {
   def steps(n: Int) = (0 to n).map(_ / n.toDouble)
@@ -12,8 +9,8 @@ object BezierCurves {
   @inline def fc2(t: Double) = math.pow(t, 2) * (1 - t) * 3
   @inline def fc3(t: Double) = math.pow(t, 3)
 
-  /**
-    * @param t must be between 0 and 1
+  /** @param t
+    *   must be between 0 and 1
     */
   @inline def cubic(t: Double, p0: Double, p1: Double, p2: Double, p3: Double): Double =
     p0 * fc0(t) + p1 * fc1(t) + p2 * fc2(t) + p3 * fc3(t)
@@ -41,8 +38,8 @@ object BezierCurves {
   // ### Matrix ###
   def linear(t: Double, m0: Matrix, m1: Matrix): Matrix = (m0, m1) match {
     case (
-        Matrix(a00, a01, a02, a03, a10, a11, a12, a13, a20, a21, a22, a23, a30, a31, a32, a33),
-        Matrix(b00, b01, b02, b03, b10, b11, b12, b13, b20, b21, b22, b23, b30, b31, b32, b33)
+          Matrix(a00, a01, a02, a03, a10, a11, a12, a13, a20, a21, a22, a23, a30, a31, a32, a33),
+          Matrix(b00, b01, b02, b03, b10, b11, b12, b13, b20, b21, b22, b23, b30, b31, b32, b33)
         ) =>
       Matrix(
         linear(t, a00, b00),
@@ -66,9 +63,9 @@ object BezierCurves {
 
   def quadratic(t: Double, m0: Matrix, m1: Matrix, m2: Matrix): Matrix = (m0, m1, m2) match {
     case (
-        Matrix(a00, a01, a02, a03, a10, a11, a12, a13, a20, a21, a22, a23, a30, a31, a32, a33),
-        Matrix(b00, b01, b02, b03, b10, b11, b12, b13, b20, b21, b22, b23, b30, b31, b32, b33),
-        Matrix(c00, c01, c02, c03, c10, c11, c12, c13, c20, c21, c22, c23, c30, c31, c32, c33)
+          Matrix(a00, a01, a02, a03, a10, a11, a12, a13, a20, a21, a22, a23, a30, a31, a32, a33),
+          Matrix(b00, b01, b02, b03, b10, b11, b12, b13, b20, b21, b22, b23, b30, b31, b32, b33),
+          Matrix(c00, c01, c02, c03, c10, c11, c12, c13, c20, c21, c22, c23, c30, c31, c32, c33)
         ) =>
       Matrix(
         quadratic(t, a00, b00, c00),
@@ -92,10 +89,10 @@ object BezierCurves {
 
   def cubic(t: Double, m0: Matrix, m1: Matrix, m2: Matrix, m3: Matrix): Matrix = (m0, m1, m2, m3) match {
     case (
-        Matrix(a00, a01, a02, a03, a10, a11, a12, a13, a20, a21, a22, a23, a30, a31, a32, a33),
-        Matrix(b00, b01, b02, b03, b10, b11, b12, b13, b20, b21, b22, b23, b30, b31, b32, b33),
-        Matrix(c00, c01, c02, c03, c10, c11, c12, c13, c20, c21, c22, c23, c30, c31, c32, c33),
-        Matrix(d00, d01, d02, d03, d10, d11, d12, d13, d20, d21, d22, d23, d30, d31, d32, d33)
+          Matrix(a00, a01, a02, a03, a10, a11, a12, a13, a20, a21, a22, a23, a30, a31, a32, a33),
+          Matrix(b00, b01, b02, b03, b10, b11, b12, b13, b20, b21, b22, b23, b30, b31, b32, b33),
+          Matrix(c00, c01, c02, c03, c10, c11, c12, c13, c20, c21, c22, c23, c30, c31, c32, c33),
+          Matrix(d00, d01, d02, d03, d10, d11, d12, d13, d20, d21, d22, d23, d30, d31, d32, d33)
         ) =>
       val fff = cubic(t)
       Matrix(
