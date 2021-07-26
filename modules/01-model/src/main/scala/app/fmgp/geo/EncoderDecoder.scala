@@ -33,6 +33,25 @@ object EncoderDecoder {
       }
     }
 
+  given Encoder[MyFile] = deriveEncoder[MyFile]
+  given Decoder[MyFile] = deriveDecoder[MyFile]
+
+  type WorldOrFile = World | MyFile
+  given Encoder[WorldOrFile] = Encoder.instance {
+    case e: WorldState    => JsonObject(("WorldState", e.asJson)).asJson
+    case e: WorldAddition => JsonObject(("WorldAddition", e.asJson)).asJson
+    case e: MyFile        => JsonObject(("MyFile", e.asJson)).asJson
+  }
+  given Decoder[WorldOrFile] = new Decoder[WorldOrFile]:
+    override def apply(c: io.circe.HCursor): io.circe.Decoder.Result[WorldOrFile] =
+      c.keys.map(_.toSeq) match {
+        case Some("WorldState" :: Nil)    => c.downField("WorldState").as[WorldState]
+        case Some("WorldAddition" :: Nil) => c.downField("WorldAddition").as[WorldAddition]
+        case Some("MyFile" :: Nil)        => c.downField("MyFile").as[MyFile]
+        case Some(e)                      => Left(DecodingFailure(s"'$e' is not a World Or File type", c.history))
+        case e => Left(DecodingFailure(s"Attempt to decode a World ou a File on failed missing type $e", c.history))
+      }
+
   given Encoder[Vec] = deriveEncoder[Vec]
   given Decoder[Vec] = deriveDecoder[Vec]
   given Encoder[Matrix] = new Encoder[Matrix]:

@@ -19,7 +19,8 @@ import akka.actor._
 import scala.concurrent.ExecutionContext
 import app.fmgp.geo.{World, WorldAddition}
 import app.fmgp.geo.Shape
-import app.fmgp.geo.EncoderDecoder.{given}
+import app.fmgp.geo.EncoderDecoder.{WorldOrFile, given}
+import app.fmgp.geo.MyFile
 
 case class MyAkkaServer(interface: String, port: Int)(using
     ex: ExecutionContext,
@@ -164,7 +165,7 @@ case class MyAkkaServer(interface: String, port: Int)(using
   //     }
   // }
 
-  val (geoSink, geoSource) = MergeHub.source[World].toMat(BroadcastHub.sink[World])(Keep.both).run()
+  val (geoSink, geoSource) = MergeHub.source[WorldOrFile].toMat(BroadcastHub.sink[WorldOrFile])(Keep.both).run()
 
   // val geoRunnableGraph: RunnableGraph[Source[World, NotUsed]] = geoSource.toMat(BroadcastHub.sink)(Keep.right)
   // val geoConsoleProducer: Source[World, NotUsed] = geoRunnableGraph.run()
@@ -175,28 +176,34 @@ case class MyAkkaServer(interface: String, port: Int)(using
       geoSink.runWith(Source(Seq(w)))
       t
     }
-
     override def clear: Unit = {
       geoSink.runWith(Source(Seq(World.w3DEmpty)))
       super.clear
     }
+    override def sendFile(file: MyFile): MyFile = {
+      geoSink.runWith(Source.single(file))
+      file
+    }
   }
 
-  val sourceDumy = Source.maybe[World]
+  val sourceDumy = Source.maybe[WorldOrFile]
   val sinkDumy = Sink.onComplete {
     case scala.util.Success(done) => println(s"Completed: $done")
     case scala.util.Failure(ex)   => println(s"Failed: ${ex.getMessage}")
   }
 
   def adaFlow = {
-    flowParse[World]
+    flowParse[WorldOrFile]
       .map {
         case Right(w: World) =>
           logger.debug(s"Sending World: ${w.asJson.noSpaces}")
-          w
+          w: WorldOrFile
+        case Right(f: MyFile) =>
+          logger.debug(s"Sending MyFile: ${f.asJson.noSpaces}")
+          f: WorldOrFile
         case Left(error) =>
           logger.error("Failed to decode World", error)
-          World.w2D(Seq.empty)
+          World.w2D(Seq.empty): WorldOrFile
       }
       .via(Flow.fromSinkAndSource(geoSink, sourceDumy))
       .map { world => TextMessage(world.asJson.noSpaces) }
