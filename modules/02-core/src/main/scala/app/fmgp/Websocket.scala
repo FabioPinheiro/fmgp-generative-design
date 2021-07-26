@@ -8,7 +8,7 @@ import io.circe.parser._
 import io.circe.syntax._
 import io.circe._
 import app.fmgp.geo._
-import app.fmgp.geo.EncoderDecoder.given_Decoder_World
+import app.fmgp.geo.EncoderDecoder.{WorldOrFile, given_Decoder_WorldOrFile}
 
 import scala.scalajs.js
 
@@ -62,9 +62,10 @@ object Websocket {
         }
         tmpWS.onmessage = { (ev: MessageEvent) =>
           log.info(ev.data.toString)
-          decode[World](ev.data.toString) match {
-            case Left(ex)     => log.error(s"Error parsing the obj World: $ex")
-            case Right(value) => dynamicWorld.update(value)
+          decode[WorldOrFile](ev.data.toString) match {
+            case Left(ex)             => log.error(s"Error parsing the obj World: $ex")
+            case Right(value: World)  => dynamicWorld.update(value)
+            case Right(value: MyFile) => log.warn(s"MyFile: $value")
           }
         }
         tmpWS.onerror = { (ev: Event) =>

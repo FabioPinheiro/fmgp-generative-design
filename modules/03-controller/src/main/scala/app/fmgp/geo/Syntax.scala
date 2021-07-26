@@ -6,6 +6,12 @@ object Syntax extends Syntax {
     println(s"wireframeMode=$wireframeMode: $t")
     t
   }
+
+  override def sendFile(file: MyFile): MyFile = {
+    println(s"file: $file")
+    file
+  }
+
   override def clear: Unit = {
     println("Clear all Shapes!")
     super.clear
@@ -42,6 +48,7 @@ trait KhepriUtils {
 trait BaseSyntax {
   var wireframeMode: Boolean = false
   def addShape[T <: Shape](t: T): T = addShape(t = t, wireframeMode = wireframeMode)
+  def sendFile(file: MyFile): MyFile
   def addShape[T <: Shape](t: T, wireframeMode: Boolean): T
   def clear: Unit = { wireframeMode = false }
 

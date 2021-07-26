@@ -5,6 +5,7 @@ import akka.actor.ActorSystem
 import app.fmgp.MyAkkaServer
 import zio._
 import scala.concurrent.Future
+import app.fmgp.geo.MyFile
 
 object websocket {
   type Websocket = Has[Websocket.Service]
@@ -14,6 +15,8 @@ object websocket {
     ZIO.accessM(_.get.clearWorld)
   def send[T <: app.fmgp.geo.Shape](shape: => T): ZIO[Websocket, Throwable, T] =
     ZIO.accessM(_.get.send(shape))
+  def sendFile(file: => MyFile): ZIO[Websocket, Throwable, MyFile] =
+    ZIO.accessM(_.get.sendFile(file))
   def stopWebsocket: URIO[Websocket, Unit] =
     ZIO.accessM(_.get.stop)
 
@@ -25,6 +28,7 @@ object websocket {
       def stopAfterKeystroke: URIO[zio.console.Console, Unit]
 
       def send[T <: app.fmgp.geo.Shape](t: T): Task[T]
+      def sendFile(file: MyFile): Task[MyFile]
       def clearWorld: ZIO[Websocket, Throwable, Unit]
     }
 
@@ -40,6 +44,8 @@ object websocket {
 
       override def send[T <: app.fmgp.geo.Shape](t: T): Task[T] =
         ZIO.effect(server.GeoSyntax.addShape(t)) //TODO make this beter
+      override def sendFile(file: MyFile): Task[MyFile] =
+        ZIO.effect(server.GeoSyntax.sendFile(file))
       override def clearWorld: ZIO[Websocket, Throwable, Unit] =
         ZIO.effect(server.GeoSyntax.clear)
 
