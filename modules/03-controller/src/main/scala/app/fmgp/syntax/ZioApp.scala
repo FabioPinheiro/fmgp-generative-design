@@ -12,23 +12,21 @@ import app.fmgp.syntax.websocket._
 import app.fmgp.geo.{Box, Shape}
 import app.fmgp.geo.MyFile
 
-// @main def ZioApp = {
-//   val runtime = Runtime(env, zio.internal.Platform.default)
-//   runtime.unsafeRun(program)
-// }
+extension (m: MetaBase) //{ def sourceFile: String })
+  def getFile: zio.Task[app.fmgp.geo.MyFile] =
+    //import reflect.Selectable.reflectiveSelectable
+    app.fmgp.geo.MyFile.readFile(m.sourceFile)
 
 object ZioApp extends zio.App {
+  //Config
+  val (interface: String, port: Int) = ("127.0.0.1", 8888)
+
   lazy val envLog = Console.live ++ Clock.live >>> app.fmgp.syntax.logging.Logging.live
   lazy val envDsl = envLog >>> Dsl.live
-  lazy val envWS = Console.live >>> Websocket.websocketServiceLive
+  lazy val envWS = Console.live >>> Websocket.websocketServiceLive(interface, port)
   lazy val env = Console.live ++ Clock.live ++ envLog ++ envDsl ++ envWS
 
   def run(args: List[String]) = program.provideLayer(env).exitCode
-
-  extension (m: MetaBase) //{ def sourceFile: String })
-    def getFile: zio.Task[app.fmgp.geo.MyFile] =
-      //import reflect.Selectable.reflectiveSelectable
-      app.fmgp.geo.MyFile.readFile(m.sourceFile)
 
   def program = for {
     _ <- console.putStrLn("-")

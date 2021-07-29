@@ -21,7 +21,9 @@ object websocket {
     ZIO.accessM(_.get.stop)
 
   object Websocket {
-    trait Service(val interface: String, val port: Int) {
+    trait Service {
+      // def interface: String
+      // def port: Int
       def start: URIO[Any, Service]
       def isStoped: UIO[Boolean]
       def stop: URIO[Any, Unit]
@@ -32,7 +34,7 @@ object websocket {
       def clearWorld: ZIO[Websocket, Throwable, Unit]
     }
 
-    private def makeService(using ExecutionContext) = new Service("127.0.0.1", 8888) {
+    private def makeService(interface: String, port: Int)(using ExecutionContext) = new Service {
       given actorSystem: ActorSystem = ActorSystem(
         "websocketServiceLive",
         config = None,
@@ -78,9 +80,9 @@ object websocket {
         }
     }
 
-    lazy val websocketServiceLive: ZLayer[zio.console.Console, Throwable, Has[Service]] =
+    def websocketServiceLive(interface: String, port: Int): ZLayer[zio.console.Console, Throwable, Has[Service]] =
       ZLayer.fromAcquireRelease(
-        makeService(using ExecutionContext.Implicits.global).start //FIXME ExecutionContext
+        makeService(interface, port)(using ExecutionContext.Implicits.global).start //FIXME ExecutionContext
       )(s => s.stopAfterKeystroke)
   }
 
