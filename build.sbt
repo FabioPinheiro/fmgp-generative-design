@@ -159,6 +159,7 @@ lazy val controller = project
   .in(file("modules/03-controller"))
   //.settings(scalaVersion := "3.0.2-RC1-bin-20210706-6011847-NIGHTLY")
   .settings(commonSettings: _*)
+  .settings(setupTestConfig: _*)
   .settings(
     libraryDependencies ++= Seq(
       "io.circe" %%% "circe-core" % circeVersion,
