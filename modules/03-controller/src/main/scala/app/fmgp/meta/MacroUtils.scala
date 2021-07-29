@@ -4,6 +4,8 @@ import scala.quoted.*
 
 object MacroUtils {
 
+  given Conversion[MetaValue[app.fmgp.geo.Shape], app.fmgp.geo.Shape] = _.value
+
   /** Meta
     *
     * @param start
@@ -23,10 +25,10 @@ object MacroUtils {
     * @param sourceCode
     *   Source code within the position
     */
-  trait MetaBase(
+  sealed trait MetaBase(
       start: Int,
       end: Int,
-      sourceFile: String,
+      val sourceFile: String,
       startLine: Int,
       endLine: Int,
       startColumn: Int,
@@ -37,7 +39,7 @@ object MacroUtils {
   case class MetaValue[+T](
       start: Int,
       end: Int,
-      sourceFile: String,
+      override val sourceFile: String,
       startLine: Int,
       endLine: Int,
       startColumn: Int,
@@ -63,7 +65,7 @@ object MacroUtils {
   case class Meta(
       start: Int,
       end: Int,
-      sourceFile: String,
+      override val sourceFile: String,
       startLine: Int,
       endLine: Int,
       startColumn: Int,
@@ -101,8 +103,7 @@ object MacroUtils {
     //     report.info("Parameter must be a known boolean constant")
     //     '{ false }
 
-    val pos: Position = tree.pos
-    //val pos = Position.ofMacroExpansion
+    val pos: Position = tree.pos //Position.ofMacroExpansion
 
     '{
       MetaValue(
@@ -114,7 +115,6 @@ object MacroUtils {
         startColumn = ${ Expr(pos.startColumn) },
         endColumn = ${ Expr(pos.endColumn) },
         sourceCode = ${ Expr(pos.sourceCode) },
-        //showExpr = ${ showExpr(expr) },
         value = $expr
       )
     }
@@ -123,43 +123,6 @@ object MacroUtils {
   def showExpr[T](expr: Expr[T])(using Quotes): Expr[String] =
     val code: String = expr.show
     Expr(code)
-
-  //TEST
-
-  import app.fmgp.geo.{Shape, Box}
-  import zio._
-
-  given Conversion[MetaValue[Shape], Shape] = _.value
-
-  // inline def mBox(inline width: Double, inline height: Double, inline depth: Double) =
-  //   ${ myBoxImpl('width, 'height, 'depth) }
-
-  def myBoxImpl(
-      widthExpr: Expr[Double],
-      heightExpr: Expr[Double],
-      depthExpr: Expr[Double]
-  )(using Quotes): Expr[UIO[MetaValue[Box]]] =
-    def aux: Expr[Box] = '{ Box($widthExpr, $heightExpr, $depthExpr) }
-    '{ ZIO.succeed(${ getMacroMetaImpl[Box](aux) }) }
-
-  def getMacroMetaImpl[T](expr: Expr[T])(using Quotes, Type[T]): Expr[MetaValue[T]] = {
-    import quotes.reflect.*
-    val pos = Position.ofMacroExpansion
-    '{
-      MetaValue[T](
-        start = ${ Expr(pos.start) },
-        end = ${ Expr(pos.end) },
-        sourceFile = ${ Expr(pos.sourceFile.jpath.toString) },
-        startLine = ${ Expr(pos.startLine) },
-        endLine = ${ Expr(pos.endLine) },
-        startColumn = ${ Expr(pos.startColumn) },
-        endColumn = ${ Expr(pos.endColumn) },
-        sourceCode = ${ Expr(pos.sourceCode) },
-        //showExpr = ${ showExpr(expr) },
-        value = $expr
-      )
-    }
-  }
 
   def getMetaImpl()(using Quotes): Expr[Meta] = {
     val pos = quotes.reflect.Position.ofMacroExpansion
