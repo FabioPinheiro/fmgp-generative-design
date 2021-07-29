@@ -1,4 +1,4 @@
-package app.fmgp.syntax
+package app.fmgp
 
 import zio._
 import zio.clock.Clock

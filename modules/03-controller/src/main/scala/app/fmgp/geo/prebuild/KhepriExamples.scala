@@ -1,8 +1,11 @@
-package app.fmgp.geo
+package app.fmgp.geo.prebuild
+
 import scala.math._
 import scala.util.Random
 
-trait KhepriExamples extends Syntax {
+import app.fmgp.geo._
+
+trait KhepriExamples extends OldSyntax {
 
   def cross = {
     line(Seq(xyz(-1, -1), xyz(-1, 0), xyz(1, 0), xyz(1, 1)))
@@ -16,18 +19,23 @@ trait KhepriExamples extends Syntax {
 
   def rectangle(p1: XYZ, p2: XYZ) = line(Seq(p1, xyz(p1.x, p2.y), p2, xyz(p2.x, p1.y)), closeLine = true)
 
-  /**
-    * Drawing Doric Columns
-    * The drawing of a Doric column is divided into three parts:
-    * shaft, echinus and abacus. Each of these parts has an independent function.
+  /** Drawing Doric Columns The drawing of a Doric column is divided into three parts: shaft, echinus and abacus. Each
+    * of these parts has an independent function.
     *
-    * @param p column's center base coordinate
-    * @param hShaft shaft's height
-    * @param rBaseShaft shaft's base radius
-    * @param hEchinus echinus' height
-    * @param rBaseEchinus echinus' base radius = shaft's top radius
-    * @param hAbacus abacus' height
-    * @param lAbacus abacus' length = 2*echinus top radius
+    * @param p
+    *   column's center base coordinate
+    * @param hShaft
+    *   shaft's height
+    * @param rBaseShaft
+    *   shaft's base radius
+    * @param hEchinus
+    *   echinus' height
+    * @param rBaseEchinus
+    *   echinus' base radius = shaft's top radius
+    * @param hAbacus
+    *   abacus' height
+    * @param lAbacus
+    *   abacus' length = 2*echinus top radius
     */
   def doricColumn2d(
       p: XYZ,
@@ -242,9 +250,9 @@ trait KhepriExamples extends Syntax {
           trussStruts(bs, cs.drop(1)) ++
           trussStruts(as, as.drop(1)) ++
           trussStruts(bs, bs.drop(1)) ++ {
-          if (ptss.size == 3 /*no nodes left?*/ ) trussNodes(cs) ++ trussStruts(cs, cs.drop(1))
-          else spaceTruss(ptss.drop(2)) ++ trussStruts(bs, ptss(3))
-        }
+            if (ptss.size == 3 /*no nodes left?*/ ) trussNodes(cs) ++ trussStruts(cs, cs.drop(1))
+            else spaceTruss(ptss.drop(2)) ++ trussStruts(bs, ptss(3))
+          }
     }
 
     def horizontalTrussPositions(p: XYZ, h: Double, l: Double, n: Int, m: Int): Seq[Seq[XYZ]] = {
@@ -284,15 +292,15 @@ trait KhepriExamples extends Syntax {
             (0 to m(w)(j).length - 1).flatMap { i =>
               (if (i > 0) Seq(trussStrut(m(w)(j)(i - 1), m(w)(j)(i))) else Seq.empty) ++
                 (if (j > 0) Seq(trussStrut(m(w)(j - 1)(i), m(w)(j)(i))) else Seq.empty) ++ {
-                if (w == 0) Seq.empty
-                else
-                  Seq(
-                    trussStrut(m(w - 1)(j)(i), m(w)(j)(i)),
-                    trussStrut(m(w - 1)(j)(i + 1), m(w)(j)(i)),
-                    trussStrut(m(w - 1)(j + 1)(i), m(w)(j)(i)),
-                    trussStrut(m(w - 1)(j + 1)(i + 1), m(w)(j)(i)),
-                  )
-              }
+                  if (w == 0) Seq.empty
+                  else
+                    Seq(
+                      trussStrut(m(w - 1)(j)(i), m(w)(j)(i)),
+                      trussStrut(m(w - 1)(j)(i + 1), m(w)(j)(i)),
+                      trussStrut(m(w - 1)(j + 1)(i), m(w)(j)(i)),
+                      trussStrut(m(w - 1)(j + 1)(i + 1), m(w)(j)(i)),
+                    )
+                }
             }
           }
         }

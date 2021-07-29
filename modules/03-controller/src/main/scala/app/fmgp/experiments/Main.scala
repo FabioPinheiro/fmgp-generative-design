@@ -1,4 +1,4 @@
-package app.fmgp
+package app.fmgp.experiments
 
 import akka.actor.{Actor, ActorSystem, Props}
 import akka.http.scaladsl.Http
@@ -25,12 +25,13 @@ object Main extends com.typesafe.scalalogging.LazyLogging {
     defaultExecutionContext = None
   )
 
-  var server: Option[MyAkkaServer] = None
-  def myAkkaServer: MyAkkaServer = server.get
+  var server: Option[LocalAkkaServer] = None
+  def myAkkaServer: LocalAkkaServer = server.get
 
   def start(interface: String, port: Int) = {
     if (server.isEmpty) {
-      server = Some(app.fmgp.MyAkkaServer(interface = interface, port = port))
+      //FIXME server = Some(app.fmgp.MyAkkaServer(interface = interface, port = port))
+      server = Some(new LocalAkkaServer)
       server.map(_.start)
       logger.info("Main starting")
     } else {

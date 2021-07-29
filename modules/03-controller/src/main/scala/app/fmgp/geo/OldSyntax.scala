@@ -2,16 +2,16 @@ package app.fmgp.geo
 
 import app.fmgp.syntax.{CoordinatesDsl, WorldOperations}
 
-object Syntax extends Syntax {
+object OldSyntax extends OldSyntax {
   override def addShape[T <: Shape](t: T, wireframeMode: Boolean): T = {
     println(s"wireframeMode=$wireframeMode: $t")
     t
   }
 
-  override def sendFile(file: MyFile): MyFile = {
-    println(s"file: $file")
-    file
-  }
+  // override def sendFile(file: MyFile): MyFile = {
+  //   println(s"file: $file")
+  //   file
+  // }
 
   override def clear: Unit = {
     println("Clear all Shapes!")
@@ -19,7 +19,7 @@ object Syntax extends Syntax {
   }
 }
 
-trait Syntax extends CoordinatesDsl with BaseSyntax with KhepriUtils with KhepriSolidPrimitives
+trait OldSyntax extends CoordinatesDsl with BaseSyntax with KhepriUtils with KhepriSolidPrimitives
 
 /** Khepri's defined functions
   * @see
@@ -46,12 +46,11 @@ trait KhepriUtils {
       .map(u => division(v0, v1, nv, include_last).map(v => f(u, v)))
 }
 
-trait BaseSyntax extends WorldOperations {
+trait BaseSyntax { //REMOVE extends WorldOperations {
   var wireframeMode: Boolean = false
   def addShape[T <: Shape](t: T): T = addShape(t = t, wireframeMode = wireframeMode)
-  override def sendFile(file: MyFile): MyFile
   def addShape[T <: Shape](t: T, wireframeMode: Boolean): T
-  override def clear: Unit = { wireframeMode = false }
+  def clear: Unit = { wireframeMode = false }
 
   def box(width: Double, height: Double, depth: Double): Box = addShape(Box(width, height, depth))
   def sphere(radius: Double, center: XYZ = XYZ.origin): Sphere = addShape(Sphere(radius, center))

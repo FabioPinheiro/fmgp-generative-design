@@ -1,4 +1,4 @@
-package app.fmgp.syntax
+package app.fmgp
 
 import scala.concurrent.ExecutionContext
 import akka.actor.ActorSystem
@@ -42,14 +42,14 @@ object websocket {
         defaultExecutionContext = None
       )
 
-      val server: MyAkkaServer = MyAkkaServer(interface, port)
+      val server: MyAkkaServer = new app.fmgp.experiments.LocalAkkaServer() {} //MyAkkaServer(interface, port)
 
       override def send[T <: app.fmgp.geo.Shape](t: T): Task[T] =
-        ZIO.effect(server.GeoSyntax.addShape(t)) //TODO make this beter
+        ZIO.effect(server.sendShape(t)) //TODO make this beter
       override def sendFile(file: MyFile): Task[MyFile] =
-        ZIO.effect(server.GeoSyntax.sendFile(file))
+        ZIO.effect(server.sendFile(file))
       override def clearWorld: ZIO[Websocket, Throwable, Unit] =
-        ZIO.effect(server.GeoSyntax.clear)
+        ZIO.effect(server.clearShapes)
 
       override def start: URIO[Any, Service] = ZIO.fromFuture(ex => server.start).map(_ => this).orDie
 

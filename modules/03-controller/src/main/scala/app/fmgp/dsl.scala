@@ -4,7 +4,7 @@ import zio._
 import app.fmgp.geo._
 import app.fmgp.meta
 
-import app.fmgp.syntax.logging._
+import app.fmgp.logging._
 import app.fmgp.syntax.CoordinatesDsl
 
 object dsl extends CoordinatesDsl {
@@ -30,13 +30,7 @@ object dsl extends CoordinatesDsl {
         ZIO.succeed(SurfaceGridShape(points.map(_.toArray).toArray))
     }
 
-    val live: URLayer[Logging, Dsl] =
-      ZLayer.fromService[Logging.Service, Dsl.Service] { (logging: Logging.Service) =>
-        new Service {
-          // override def box(width: Double, height: Double, depth: Double): IO[IOException, Box] =
-          //   ZIO.succeed(Box(width, height, depth)).flatMap(s => logging.log(s.toString).map(_ => s))
-        }
-      }
+    val live: ULayer[Dsl] = ZLayer.succeed(new Service {})
   }
 
   // Accessor Methods

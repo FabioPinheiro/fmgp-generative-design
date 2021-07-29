@@ -1,8 +1,10 @@
-package app.fmgp.geo
+package app.fmgp.experiments
+
+import app.fmgp.geo._
 
 @main def MainDSL() =
   //import app.fmgp.geo.DslConsole._
-  import app.fmgp.geo.DslJson._
+  import app.fmgp.experiments.DslJson._
   //import DslConsole._
   world3d {
     val origin = xyz()
