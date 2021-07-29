@@ -1,4 +1,4 @@
-package app.fmgp.syntax
+package app.fmgp
 
 import zio._
 import zio.console.Console
@@ -6,8 +6,8 @@ import zio.clock.Clock
 
 import app.fmgp.dsl._
 import app.fmgp.meta.MacroUtils._
-import app.fmgp.syntax.logging._
-import app.fmgp.syntax.websocket._
+import app.fmgp.logging._
+import app.fmgp.websocket._
 
 import app.fmgp.geo.{Box, Shape}
 import app.fmgp.geo.MyFile
@@ -21,10 +21,9 @@ object ZioApp extends zio.App {
   //Config
   val (interface: String, port: Int) = ("127.0.0.1", 8888)
 
-  lazy val envLog = Console.live ++ Clock.live >>> app.fmgp.syntax.logging.Logging.live
-  lazy val envDsl = envLog >>> Dsl.live
+  lazy val envLog = Console.live ++ Clock.live >>> Logging.live
   lazy val envWS = Console.live >>> Websocket.websocketServiceLive(interface, port)
-  lazy val env = Console.live ++ Clock.live ++ envLog ++ envDsl ++ envWS
+  lazy val env = Console.live ++ Clock.live ++ envLog ++ Dsl.live ++ envWS
 
   def run(args: List[String]) = program.provideLayer(env).exitCode
 

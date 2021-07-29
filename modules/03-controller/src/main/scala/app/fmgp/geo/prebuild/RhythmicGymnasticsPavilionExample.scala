@@ -1,11 +1,13 @@
-package app.fmgp.geo
+package app.fmgp.geo.prebuild
 
 import scala.math._
+
+import app.fmgp.geo._
 
 /** @see
   *   [[http://web.ist.utl.pt/renata.castelo.branco/RCB/programming/gymnastics/GymPav_Pluto.jl.html]]
   */
-trait RhythmicGymnasticsPavilionUtils extends Syntax {
+trait RhythmicGymnasticsPavilionUtils extends OldSyntax {
 
   /** sinusoidal funtion
     * @param a
@@ -72,7 +74,7 @@ trait RhythmicGymnasticsPavilionUtils extends Syntax {
   }
 }
 
-trait RhythmicGymnasticsPavilionExample extends Syntax with RhythmicGymnasticsPavilionUtils {
+trait RhythmicGymnasticsPavilionExample extends OldSyntax with RhythmicGymnasticsPavilionUtils {
 
   //surface_grid(damped_sin_roof_pts(u0(), 20, 3, 10, 15, pi, 0.03, pi/50, pi/10, 60, 100, 120, 800))
 

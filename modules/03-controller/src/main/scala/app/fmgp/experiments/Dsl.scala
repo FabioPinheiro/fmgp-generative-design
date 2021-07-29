@@ -1,7 +1,8 @@
-package app.fmgp.geo
+package app.fmgp.experiments
 
 import scala.annotation.implicitNotFound
 import scala.util.chaining._
+import app.fmgp.geo._
 
 object Dsl {
   final case class WorldBox(var v: Seq[Shape]) {

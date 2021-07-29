@@ -22,11 +22,12 @@ import app.fmgp.geo.Shape
 import app.fmgp.geo.EncoderDecoder.{WorldOrFile, given}
 import app.fmgp.geo.MyFile
 
-case class MyAkkaServer(interface: String, port: Int)(using
+class MyAkkaServer(interface: String, port: Int)(using
     ex: ExecutionContext,
     system: ActorSystem,
     mat: Materializer
-) extends com.typesafe.scalalogging.LazyLogging {
+) extends com.typesafe.scalalogging.LazyLogging
+    with app.fmgp.syntax.WorldOperations {
 
   lazy val binding: Future[Http.ServerBinding] = {
     val aux = Http().newServerAt(interface, port) //.bindAndHandle(route, interface, port)
@@ -36,8 +37,6 @@ case class MyAkkaServer(interface: String, port: Int)(using
     }
     aux.bind(route)
   }
-
-  val (geoSink, geoSource) = MergeHub.source[WorldOrFile].toMat(BroadcastHub.sink[WorldOrFile])(Keep.both).run()
 
   def start = binding
   def stop = binding.flatMap { s =>
@@ -51,23 +50,6 @@ case class MyAkkaServer(interface: String, port: Int)(using
         logger.info(s"Server in now terminated")
         e
       }
-  }
-
-  object GeoSyntax extends app.fmgp.geo.Syntax with geo.KhepriExamples with geo.RhythmicGymnasticsPavilionExample {
-    override def addShape[T <: app.fmgp.geo.Shape](t: T, wireframeMode: Boolean): T = {
-      val s: app.fmgp.geo.Shape = if (wireframeMode) app.fmgp.geo.Wireframe(t) else t
-      val w = WorldAddition(shapes = Seq(s))
-      geoSink.runWith(Source(Seq(w)))
-      t
-    }
-    override def clear: Unit = {
-      geoSink.runWith(Source(Seq(World.w3DEmpty)))
-      super.clear
-    }
-    override def sendFile(file: MyFile): MyFile = {
-      geoSink.runWith(Source.single(file))
-      file
-    }
   }
 
   val sinkDumy = Sink.onComplete {
@@ -96,4 +78,34 @@ case class MyAkkaServer(interface: String, port: Int)(using
       .map { world => TextMessage(world.asJson.noSpaces) }
   }
 
+  val (geoSink, geoSource) = MergeHub.source[WorldOrFile].toMat(BroadcastHub.sink[WorldOrFile])(Keep.both).run()
+
+  import app.fmgp.geo.prebuild._
+  import app.fmgp.geo.{OldSyntax, Wireframe}
+
+  //TODO REMOVE
+  object GeoSyntax extends OldSyntax with KhepriExamples with RhythmicGymnasticsPavilionUtils {
+
+    override def addShape[T <: Shape](t: T, wireframeMode: Boolean): T = {
+      val s: Shape = if (wireframeMode) Wireframe(t) else t
+      sendShape(s)
+      t
+    }
+
+    override def clear: Unit = {
+      clearShapes
+      super.clear
+    }
+  }
+
+  override def sendShape[T <: Shape](shape: T): T = {
+    val w = WorldAddition(shapes = Seq(shape))
+    geoSink.runWith(Source(Seq(w)))
+    shape
+  }
+  override def sendFile(file: MyFile): MyFile =
+    geoSink.runWith(Source.single(file))
+    file
+  override def clearShapes: Unit =
+    geoSink.runWith(Source(Seq(World.w3DEmpty)))
 }
