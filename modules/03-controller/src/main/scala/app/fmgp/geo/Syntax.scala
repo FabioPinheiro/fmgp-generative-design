@@ -1,6 +1,7 @@
 package app.fmgp.geo
 
-import app.fmgp.syntax.CoordinatesDsl
+import app.fmgp.syntax.{CoordinatesDsl, WorldOperations}
+
 object Syntax extends Syntax {
   override def addShape[T <: Shape](t: T, wireframeMode: Boolean): T = {
     println(s"wireframeMode=$wireframeMode: $t")
@@ -45,12 +46,12 @@ trait KhepriUtils {
       .map(u => division(v0, v1, nv, include_last).map(v => f(u, v)))
 }
 
-trait BaseSyntax {
+trait BaseSyntax extends WorldOperations {
   var wireframeMode: Boolean = false
   def addShape[T <: Shape](t: T): T = addShape(t = t, wireframeMode = wireframeMode)
-  def sendFile(file: MyFile): MyFile
+  override def sendFile(file: MyFile): MyFile
   def addShape[T <: Shape](t: T, wireframeMode: Boolean): T
-  def clear: Unit = { wireframeMode = false }
+  override def clear: Unit = { wireframeMode = false }
 
   def box(width: Double, height: Double, depth: Double): Box = addShape(Box(width, height, depth))
   def sphere(radius: Double, center: XYZ = XYZ.origin): Sphere = addShape(Sphere(radius, center))

@@ -1,0 +1,9 @@
+package app.fmgp.syntax
+
+import app.fmgp.geo.{MyFile, Shape}
+
+trait WorldOperations {
+  def sendFile(file: MyFile): MyFile
+  def addShape[T <: Shape](t: T): T
+  def clear: Unit
+}

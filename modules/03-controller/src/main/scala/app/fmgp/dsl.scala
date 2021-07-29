@@ -9,8 +9,6 @@ import app.fmgp.syntax.CoordinatesDsl
 
 object dsl extends CoordinatesDsl {
   type Dsl = Has[Dsl.Service]
-  //type F[T] = T //This will be object warping the metadata
-  type M[T] = app.fmgp.meta.MacroUtils.MetaValue[T] //This will be object warping the metadata
 
   // Companion object exists to hold service definition and a`lso the live implementation.
   object Dsl {
@@ -62,13 +60,6 @@ object dsl extends CoordinatesDsl {
 
   def surface_grid(points: Seq[Seq[XYZ]]): RIO[Dsl, SurfaceGridShape] =
     ZIO.accessM(_.get.surface_grid(points))
-
-  // def world(shapes: Shape*) = ZIO.succeed(WorldAddition(shapes))
-  // def worldConsole(shapes: Shape*) = console.putStrLn(WorldAddition(shapes).toString)
-  // def worldJson(shapes: Shape*) =
-  //   import io.circe._, io.circe.syntax._
-  //   import app.fmgp.geo.EncoderDecoder.{given}
-  //   console.putStrLn(WorldAddition(shapes).asJson.spaces2)
 
   // Macros Methods
   import scala.quoted.*

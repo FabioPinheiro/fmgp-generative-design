@@ -16,7 +16,7 @@ import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 import scala.io._
 
-object Main extends Logger {
+object Main extends com.typesafe.scalalogging.LazyLogging {
 
   given actorSystem: ActorSystem = ActorSystem(
     "akka-system",
@@ -28,7 +28,7 @@ object Main extends Logger {
   var server: Option[MyAkkaServer] = None
   def myAkkaServer: MyAkkaServer = server.get
 
-  def start(interface: String = "127.0.0.1", port: Int = 8888) = {
+  def start(interface: String, port: Int) = {
     if (server.isEmpty) {
       server = Some(app.fmgp.MyAkkaServer(interface = interface, port = port))
       server.map(_.start)
@@ -51,7 +51,7 @@ object Main extends Logger {
   }
 
   def main(args: Array[String]): Unit = {
-    start()
+    start(interface = "127.0.0.1", port = 8888)
     StdIn.readLine()
     stop
   }
