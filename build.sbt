@@ -159,7 +159,6 @@ lazy val controller = project
   .in(file("modules/03-controller"))
   //.settings(scalaVersion := "3.0.2-RC1-bin-20210706-6011847-NIGHTLY")
   .settings(commonSettings: _*)
-  .settings(setupTestConfig: _*)
   .settings(
     libraryDependencies ++= Seq(
       "io.circe" %%% "circe-core" % circeVersion,
@@ -173,6 +172,7 @@ lazy val controller = project
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
       ("com.typesafe.akka" %% "akka-slf4j" % "2.6.15").cross(CrossVersion.for3Use2_13),
     ),
+    libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test,
     console / initialCommands += """
     import scala.math._
     import scala.util.chaining._
