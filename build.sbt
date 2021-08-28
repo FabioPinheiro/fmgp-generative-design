@@ -97,8 +97,8 @@ lazy val root = project
   .settings(noPublishSettings)
 
 val threeVersion = "0.117.1" // https://www.npmjs.com/package/three
-val circeVersion = "0.14.1"
-val scalajsDomVersion = "1.0.0"
+val circeVersion = "0.15.0-M1" // https://mvnrepository.com/artifact/io.circe/circe-core
+val scalajsDomVersion = "1.2.0" // https://mvnrepository.com/artifact/org.scala-js/scalajs-dom
 //FIXME val scalajsLoggingVersion = "1.1.2-SNAPSHOT" //"1.1.2"
 val akkaVersion = "2.6.15"
 val akkaHttpVersion = "10.2.4"
@@ -158,7 +158,7 @@ lazy val geometryCore = project
     scalaJSUseMainModuleInitializer := true,
     //mainClass := Some("fmgp.Main"),
     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
-    //webpackBundlingMode := BundlingMode.LibraryAndApplication(),
+    webpackBundlingMode := BundlingMode.LibraryAndApplication(),
   )
   .dependsOn(threeUtils, geometryModelJs)
   .settings(publishSettings)
@@ -223,8 +223,6 @@ lazy val geometryWebapp = project
   .settings(
     scalaJSUseMainModuleInitializer := true,
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
-    Compile / fastOptJS / scalaJSLinkerConfig ~= { _.withSourceMap(false) },
-    Compile / fullOptJS / scalaJSLinkerConfig ~= { _.withSourceMap(false) },
   )
   .dependsOn(threeUtils, geometryModelJs, geometryCore)
   .settings(noPublishSettings)
