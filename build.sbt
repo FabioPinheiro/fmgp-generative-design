@@ -65,6 +65,14 @@ lazy val scalaJSBundlerConfigure: Project => Project =
     .settings(
       /* disabled because it somehow triggers many warnings */
       scalaJSLinkerConfig ~= (_.withSourceMap(false).withModuleKind(ModuleKind.CommonJSModule)),
+      scalaJSLinkerConfig ~= {
+        _.withJSHeader(
+          """/* FMGP generative design (a geometric liberty)
+            | * https://github.com/FabioPinheiro/fmgp-generative-design
+            | * Copyright: Fabio Pinheiro - fabiomgpinheiro@gmail.com
+            | */""".stripMargin.trim() + "\n"
+        )
+      }
     )
     // .settings( //TODO https://scalacenter.github.io/scalajs-bundler/reference.html#jsdom
     //   //jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
