@@ -15,4 +15,10 @@ jobs:
         with:
           node-version: "16" # or whatever
       - uses: japgolly/setup-scalajs@v1
-      - run: sbt test
+      #- run: sbt test
+      - run: sbt threeUtils/test
+      - run: sbt geometryModelJVM/test
+      - run: sbt geometryModelJS/test
+      - run: sbt geometryCore/test
+      #error - run: sbt geometryWebapp/test # SyntaxError: Cannot use import statement outside a module
+      - run: sbt controller/test
