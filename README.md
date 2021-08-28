@@ -58,6 +58,7 @@ Open `file:///.../modules/02-core/index-dev.html` on your browser.
   - Make a Docker Container with everything ready to use.
     - Serve the FE's javascript file via HTTP from the BE. [4h]
     - Draft DocketFile [16h]
+    - https://www.acervera.com/blog/2020/04/sbt-docker-buildx-multi-arch/
 - Draft support for real-time collaborative work on algorithmic design.
   - The system has 3 Components:
     - FE - A browser here the models is viewed. Most of the mesh of the models are generated on the FE!
