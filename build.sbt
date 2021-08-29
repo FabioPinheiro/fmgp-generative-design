@@ -88,7 +88,7 @@ lazy val scalaJSBundlerConfigure: Project => Project =
     )
 
 lazy val modules: List[ProjectReference] =
-  List(threeUtils, geometryModelJvm, geometryModelJs, geometryCore, geometryWebapp, controller)
+  List(threeUtils, geometryModelJVM, geometryModelJS, geometryCore, geometryWebapp, controller)
 
 lazy val root = project
   .in(file("."))
@@ -134,8 +134,8 @@ lazy val threeUtils = project
   )
   .settings(noPublishSettings)
 
-lazy val geometryModelJs = geometryModel.js
-lazy val geometryModelJvm = geometryModel.jvm
+lazy val geometryModelJS = geometryModel.js
+lazy val geometryModelJVM = geometryModel.jvm
 
 lazy val geometryCore = project
   .in(file("modules/02-core"))
@@ -160,7 +160,7 @@ lazy val geometryCore = project
     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
   )
-  .dependsOn(threeUtils, geometryModelJs)
+  .dependsOn(threeUtils, geometryModelJS)
   .settings(publishSettings)
 
 lazy val controller = project
@@ -193,7 +193,7 @@ lazy val controller = project
     app.fmgp.Main.stop
     """,
   )
-  .dependsOn(geometryModelJvm)
+  .dependsOn(geometryModelJVM)
   .settings(noPublishSettings)
 
 lazy val geometryWebapp = project
@@ -224,7 +224,7 @@ lazy val geometryWebapp = project
     scalaJSUseMainModuleInitializer := true,
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
   )
-  .dependsOn(threeUtils, geometryModelJs, geometryCore)
+  .dependsOn(threeUtils, geometryModelJS, geometryCore)
   .settings(noPublishSettings)
 
 // lazy val demo = project
