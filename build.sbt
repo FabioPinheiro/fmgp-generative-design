@@ -88,7 +88,8 @@ lazy val scalaJSBundlerConfigure: Project => Project =
     )
 
 lazy val modules: List[ProjectReference] =
-  List(threeUtils, geometryModelJVM, geometryModelJS, geometryCore, geometryWebapp, controller)
+  List(threeUtils, geometryModelJVM, geometryModelJS, geometryCore)
+//List(threeUtils, geometryModelJVM, geometryModelJS, geometryCore, geometryWebapp, controller)
 
 lazy val root = project
   .in(file("."))
@@ -163,69 +164,69 @@ lazy val geometryCore = project
   .dependsOn(threeUtils, geometryModelJS)
   .settings(publishSettings)
 
-lazy val controller = project
-  .in(file("modules/03-controller"))
-  //.settings(scalaVersion := "3.0.2-RC1-bin-20210706-6011847-NIGHTLY")
-  .settings(commonSettings: _*)
-  .settings(
-    libraryDependencies ++= Seq(
-      "io.circe" %%% "circe-core" % circeVersion,
-      "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
-      "io.circe" %%% "circe-parser" % circeVersion,
-    ),
-    libraryDependencies ++= Seq(
-      ("com.typesafe.akka" %% "akka-http" % akkaHttpVersion).cross(CrossVersion.for3Use2_13),
-      ("com.typesafe.akka" %% "akka-stream" % akkaVersion).cross(CrossVersion.for3Use2_13),
-      "ch.qos.logback" % "logback-classic" % "1.2.3",
-      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
-      ("com.typesafe.akka" %% "akka-slf4j" % "2.6.15").cross(CrossVersion.for3Use2_13),
-    ),
-    libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test,
-    console / initialCommands += """
-    import scala.math._
-    import scala.util.chaining._
-    app.fmgp.Main.start()
-    val myAkkaServer = app.fmgp.Main.server.get
-    import myAkkaServer.GeoSyntax._
-    import app.fmgp.geo._
-    """,
-    cleanupCommands += """
-    app.fmgp.Main.stop
-    """,
-  )
-  .dependsOn(geometryModelJVM)
-  .settings(noPublishSettings)
+// lazy val controller = project
+//   .in(file("modules/03-controller"))
+//   //.settings(scalaVersion := "3.0.2-RC1-bin-20210706-6011847-NIGHTLY")
+//   .settings(commonSettings: _*)
+//   .settings(
+//     libraryDependencies ++= Seq(
+//       "io.circe" %%% "circe-core" % circeVersion,
+//       "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
+//       "io.circe" %%% "circe-parser" % circeVersion,
+//     ),
+//     libraryDependencies ++= Seq(
+//       ("com.typesafe.akka" %% "akka-http" % akkaHttpVersion).cross(CrossVersion.for3Use2_13),
+//       ("com.typesafe.akka" %% "akka-stream" % akkaVersion).cross(CrossVersion.for3Use2_13),
+//       "ch.qos.logback" % "logback-classic" % "1.2.3",
+//       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
+//       ("com.typesafe.akka" %% "akka-slf4j" % "2.6.15").cross(CrossVersion.for3Use2_13),
+//     ),
+//     libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test,
+//     console / initialCommands += """
+//     import scala.math._
+//     import scala.util.chaining._
+//     app.fmgp.Main.start()
+//     val myAkkaServer = app.fmgp.Main.server.get
+//     import myAkkaServer.GeoSyntax._
+//     import app.fmgp.geo._
+//     """,
+//     cleanupCommands += """
+//     app.fmgp.Main.stop
+//     """,
+//   )
+//   .dependsOn(geometryModelJVM)
+//   .settings(noPublishSettings)
 
-lazy val geometryWebapp = project
-  .in(file("modules/03-webapp"))
-  .settings(name := "fmgp-geometry-webapp")
-  .configure(scalaJSBundlerConfigure)
-  // .settings(commonSettings: _*)
-  // .enablePlugins(ScalaJSPlugin)
-  // .enablePlugins(ScalaJSBundlerPlugin)
-  // .settings(setupTestConfig: _*)
-  .settings(
-    libraryDependencies += ("org.scala-js" %%% "scalajs-dom" % scalajsDomVersion).cross(CrossVersion.for3Use2_13),
-    libraryDependencies += "com.raquo" %%% "laminar" % "0.13.1",
-    libraryDependencies += "com.raquo" %%% "waypoint" % "0.4.1",
-    libraryDependencies += "com.lihaoyi" %%% "upickle" % "1.3.13",
-    libraryDependencies ++= Seq(
-      "io.circe" %%% "circe-core" % circeVersion,
-      "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
-      "io.circe" %%% "circe-parser" % circeVersion,
-    ),
-    Compile / npmDependencies ++= Seq(
-      "three" -> threeVersion,
-      "stats.js" -> "0.17.0",
-      "@types/stats.js" -> "0.17.0", //https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
-    ),
-  )
-  .settings(
-    scalaJSUseMainModuleInitializer := true,
-    webpackBundlingMode := BundlingMode.LibraryAndApplication(),
-  )
-  .dependsOn(threeUtils, geometryModelJS, geometryCore)
-  .settings(noPublishSettings)
+// lazy val geometryWebapp = project
+//   .in(file("modules/03-webapp"))
+//   .settings(name := "fmgp-geometry-webapp")
+//   .configure(scalaJSBundlerConfigure)
+//   // .settings(commonSettings: _*)
+//   // .enablePlugins(ScalaJSPlugin)
+//   // .enablePlugins(ScalaJSBundlerPlugin)
+//   // .settings(setupTestConfig: _*)
+//   .settings(
+//     libraryDependencies += ("org.scala-js" %%% "scalajs-dom" % scalajsDomVersion).cross(CrossVersion.for3Use2_13),
+//     libraryDependencies += "com.raquo" %%% "laminar" % "0.13.1",
+//     libraryDependencies += "com.raquo" %%% "waypoint" % "0.4.1",
+//     libraryDependencies += "com.lihaoyi" %%% "upickle" % "1.3.13",
+//     libraryDependencies ++= Seq(
+//       "io.circe" %%% "circe-core" % circeVersion,
+//       "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
+//       "io.circe" %%% "circe-parser" % circeVersion,
+//     ),
+//     Compile / npmDependencies ++= Seq(
+//       "three" -> threeVersion,
+//       "stats.js" -> "0.17.0",
+//       "@types/stats.js" -> "0.17.0", //https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
+//     ),
+//   )
+//   .settings(
+//     scalaJSUseMainModuleInitializer := true,
+//     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
+//   )
+//   .dependsOn(threeUtils, geometryModelJS, geometryCore)
+//   .settings(noPublishSettings)
 
 // lazy val demo = project
 //   .in(file("modules/03-demo"))

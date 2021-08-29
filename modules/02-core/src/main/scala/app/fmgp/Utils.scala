@@ -4,12 +4,12 @@ import typings.three.loaderMod.Loader
 import typings.three.mod._
 import typings.three.webGLRendererMod.WebGLRendererParameters
 
-import app.fmgp.threejs._
+//import app.fmgp.threejs._
 import app.fmgp.threejs.extras.OrbitControls
-import app.fmgp.geo._
+import app.fmgp.geo.Dimensions
 
 object Utils {
-  def computeStaticThreeObjects = {
+  def computeStaticThreeObjects: Object3D = {
     // create lights
     val sunLight = new DirectionalLight(0xffffca, 0.5)
     sunLight.position.set(0.2, 1, 0.3)
@@ -27,8 +27,9 @@ object Utils {
       //   println(s"Dimensions $d Unrecognized in computeStaticThreeObjects")
     }
 
-    val staticRoot = new Object3D()
-    Seq(sunLight, belowLight, hemiLight, gridHelper, axisHelper).foreach(e => staticRoot.add(e))
+    val staticRoot: Object3D = new Object3D()
+    //THIS WORK OK staticRoot.add(sunLight, belowLight, hemiLight, gridHelper, axisHelper)
+    Seq(sunLight, belowLight, hemiLight, gridHelper, axisHelper).foreach { case (e: Object3D) => staticRoot.add(e) }
     staticRoot
   }
 
