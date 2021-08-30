@@ -10,7 +10,7 @@ node_modules/
 **/yarn.lock
 
 ## igone the demo (generated code)
-docs/demo-fastopt-bundle.js
+docs/fmgp-geometry-webapp-fastopt-bundle.js
 
 ## igone(generated files)
 .*.swn
