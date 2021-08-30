@@ -28,7 +28,8 @@ object Utils {
     }
 
     val staticRoot = new Object3D()
-    Seq(sunLight, belowLight, hemiLight, gridHelper, axisHelper).foreach(e => staticRoot.add(e))
+    staticRoot.add(sunLight, belowLight, hemiLight, gridHelper, axisHelper)
+    //BUG Seq(sunLight, belowLight, hemiLight, gridHelper, axisHelper).foreach(e => staticRoot.add(e)) //BUG see https://github.com/scala-js/scala-js/issues/4548
     staticRoot
   }
 
