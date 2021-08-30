@@ -22,8 +22,8 @@ jobs:
       - name: Cache sbt
         uses: coursier/cache-action@v6.3
 
-      - run: sbt geometryCore/fastLinkJS
-      - run: sbt geometryCore/fullLinkJS # this will have see ./modules/02-core/src/main/scala/app/fmgp/Utils.scala line 32
+      - run: sbt fastOptJS
+      - run: sbt fullOptJS # this will have see ./modules/02-core/src/main/scala/app/fmgp/Utils.scala line 32
       #- run: sbt test
       # - run: sbt threeUtils/test
       # - run: sbt geometryModelJVM/test
