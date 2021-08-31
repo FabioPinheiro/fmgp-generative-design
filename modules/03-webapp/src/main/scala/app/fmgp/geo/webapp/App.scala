@@ -5,7 +5,6 @@ import com.raquo.laminar.api.L._
 import com.raquo.waypoint._
 
 import MyRouter._
-
 object App {
 
   def main(args: Array[String]): Unit = {
@@ -15,11 +14,17 @@ object App {
 
     lazy val appElement = {
       div(
-        child.maybe <-- MyRouter.router.$currentPage.map {
-          case HomePage => None
-          case _        => Some(h3(a(navigateTo(HomePage), "Back to home")))
-        },
-        child <-- $selectedApp.$view
+        // child.maybe <-- MyRouter.router.$currentPage.map {
+        //   case HomePage => None
+        //   case _        => Some(h3(a(navigateTo(HomePage), "Back to home")))
+        // },
+        AppUtils.topBarHeader("FMGP GEOMETRY"),
+        AppUtils.drawer(linkPages, MyRouter.router.$currentPage),
+        AppUtils.drawerScrim,
+        com.raquo.laminar.api.L.main(
+          className("mdc-top-app-bar--fixed-adjust"),
+          child <-- $selectedApp.$view
+        )
       )
     }
 
@@ -36,7 +41,6 @@ object App {
 
   private def renderHomePage(): HtmlElement = {
     div(
-      h1("FMGP GEOMETRY"),
       ul(
         fontSize := "120%",
         lineHeight := "2em",
