@@ -21,7 +21,10 @@ case class InteractiveMesh(mesh: typings.three.meshMod.Mesh[_, _], onSelected: (
   def id = mesh.id
 }
 
-class WebGLHelper {
+class WebGLHelper(topPadding: Int) {
+
+  def height = dom.window.innerHeight - topPadding
+  def width = dom.window.innerWidth
 
   lazy val renderer: WebGLRenderer = {
     val aux = new WebGLRenderer(
@@ -32,7 +35,7 @@ class WebGLHelper {
         o
       }
     )
-    aux.setSize(dom.window.innerWidth, dom.window.innerHeight)
+    aux.setSize(width, height)
     aux.autoClear = false //For multi scene
     aux
   }
@@ -46,7 +49,7 @@ class WebGLHelper {
 
     WebGLGlobal.camera = Some(
       Utils
-        .newCamera(dom.window.innerWidth, dom.window.innerHeight)
+        .newCamera(width, height)
         .tap(_.position.set(0, 0, 10))
         .tap(_.lookAt(new Vector3(0, 0, 0)))
     )
@@ -77,7 +80,7 @@ class WebGLHelper {
 
     WebGLGlobal.cameraUI = {
 
-      val proportions /*aspect*/ = dom.window.innerHeight / dom.window.innerWidth
+      val proportions /*aspect*/ = height / width
       val ui =
         new OrthographicCamera(left = 0, right = 1, top = 0, bottom = -proportions, near = 0, far = 3)
           .asInstanceOf[Camera]

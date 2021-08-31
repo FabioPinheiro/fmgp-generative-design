@@ -19,7 +19,8 @@ import app.fmgp.threejs.extras.FlyControls //FirstPersonControls, FlyControls, O
 
 @JSExportTopLevel("GeoApp")
 object GeoApp {
-  lazy val webGLHelper = new WebGLHelper()
+  val topPadding = 76
+  lazy val webGLHelper = new WebGLHelper(topPadding = topPadding)
 
   val clickObserver = Observer[dom.MouseEvent](onNext = ev => onClickEvent(ev))
   val touchObserver = Observer[dom.TouchEvent](onNext = ev => onTouchEvent(ev))
@@ -31,17 +32,18 @@ object GeoApp {
     //onTouch.useBubbleMode --> clickObserver,
   )
   geoCanvasHack.ref.appendChild(webGLHelper.renderer.domElement)
-  webGLHelper.renderer.domElement.style = "z-index:-1; position: fixed; top: 0px; left: 0px;"
+  //webGLHelper.renderer.domElement.style = "z-index:-1; position: fixed; top: 0px; left: 0px;"
+  webGLHelper.renderer.domElement.style = "z-index:-1; left: 0px;"
 
   def onClickEvent(event: dom.MouseEvent) = {
     // calculate mouse position in normalized device coordinates (-1 to +1) for both components
     val x = (event.clientX / dom.window.innerWidth) * 2 - 1
-    val y = -(event.clientY / dom.window.innerHeight) * 2 + 1
+    val y = -((event.clientY - topPadding) / dom.window.innerHeight) * 2 + 1
     WebGLGlobal.uiEvent = Some(AnonX(x, y))
   }
   def onTouchEvent(event: dom.TouchEvent) = {
     val x = (event.touches(0).screenX / dom.window.innerWidth) * 2 - 1
-    val y = -(event.touches(0).screenY / dom.window.innerHeight) * 2 + 1
+    val y = -((event.touches(0).screenY - topPadding) / dom.window.innerHeight) * 2 + 1
     WebGLGlobal.uiEvent = Some(AnonX(x, y))
   }
   dom.window.addEventListener("click", onClickEvent, false)

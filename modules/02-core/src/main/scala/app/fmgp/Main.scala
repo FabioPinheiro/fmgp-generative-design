@@ -35,7 +35,7 @@ object Main {
   dom.window.addEventListener("click", onClickEvent, false)
   dom.window.addEventListener("ontouch", onTouchEvent, false) //TODO need to test this
 
-  val webGLHelper = WebGLHelper()
+  val webGLHelper = WebGLHelper(topPadding = 0)
 
   def main(args: Array[String]): Unit = {
     WebGLGlobal.init

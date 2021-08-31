@@ -97,6 +97,7 @@ lazy val root = project
   .settings(noPublishSettings)
 
 val threeVersion = "0.117.1" // https://www.npmjs.com/package/three
+val materialComponentsVersion = "12.0.0" // https://www.npmjs.com/package/material-components-web
 val circeVersion = "0.15.0-M1" // https://mvnrepository.com/artifact/io.circe/circe-core
 val scalajsDomVersion = "1.2.0" // https://mvnrepository.com/artifact/org.scala-js/scalajs-dom
 //FIXME val scalajsLoggingVersion = "1.1.2-SNAPSHOT" //"1.1.2"
@@ -218,6 +219,13 @@ lazy val geometryWebapp = project
       "three" -> threeVersion,
       "stats.js" -> "0.17.0",
       "@types/stats.js" -> "0.17.0", //https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
+      //Material Design
+      "material-components-web" -> materialComponentsVersion,
+      // "@material/ripple" -> materialComponentsVersion, // https://material.io/develop/web/supporting/ripple
+      // "@material/checkbox" -> materialComponentsVersion,
+      // "@material/drawer" -> materialComponentsVersion,
+      // "@material/form-field" -> materialComponentsVersion,
+      // "@material/top-app-bar" -> materialComponentsVersion,
     ),
   )
   .settings(
