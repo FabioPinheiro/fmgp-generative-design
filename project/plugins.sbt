@@ -24,7 +24,7 @@ addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.20.0")
 //https://scalablytyped.org/docs/plugin
 //https://github.com/ScalablyTyped/Converter/releases
 resolvers += Resolver.bintrayRepo("oyvindberg", "converter")
-addSbtPlugin("org.scalablytyped.converter" % "sbt-converter" % "1.0.0-beta34")
+addSbtPlugin("org.scalablytyped.converter" % "sbt-converter" % "1.0.0-beta36")
 
 // CI
 addSbtPlugin("com.geirsson" % "sbt-ci-release" % "1.5.3")
