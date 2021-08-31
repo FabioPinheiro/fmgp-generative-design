@@ -16,8 +16,7 @@ object ShowGeo {
   val worldVar = Var(initial = GeometryExamples.atomiumWorld)
 
   def apply(b: Boolean): HtmlElement = div(
-    div(h1("FMGP Show Geometry")),
-    div(child <-- worldVar.signal.map(e => if (b) e.json else e.html))
+    child <-- worldVar.signal.map(e => if (b) e.json else e.html)
   )
 
   extension (w: World)

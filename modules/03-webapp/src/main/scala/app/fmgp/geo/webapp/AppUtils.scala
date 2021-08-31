@@ -18,7 +18,7 @@ object AppUtils {
     tmp.open_=(!tmp.open)
   })
 
-  def topBarHeader(title: String) = {
+  def topBarHeader(title: Signal[String]) = { //(title: String) = {
     val menuButton = button(
       className("material-icons mdc-top-app-bar__navigation-icon mdc-icon-button"),
       aria.label("Open navigation menu"),
@@ -33,7 +33,7 @@ object AppUtils {
         section(
           className("mdc-top-app-bar__section mdc-top-app-bar__section--align-start"),
           menuButton,
-          span(className("mdc-top-app-bar__title"), title)
+          span(className("mdc-top-app-bar__title"), child.text <-- title)
         ),
         section(
           className("mdc-top-app-bar__section mdc-top-app-bar__section--align-end"),
@@ -92,7 +92,17 @@ object AppUtils {
               aria.customProp("current", StringAsIsCodec)("page"),
               tabIndex(0),
               span(className("mdc-list-item__ripple")),
-              i(className("material-icons mdc-list-item__graphic"), aria.hidden(true), "inbox"),
+              i(
+                className("material-icons mdc-list-item__graphic"),
+                aria.hidden(true),
+                page match {
+                  case _: HomePage.type        => "home"
+                  case _: HelloPage.type       => "streetview"
+                  case _: GeoPage.type         => "explore"
+                  case _: ShowGeoJsonPage.type => "precision_manufacturing"
+                  case _: ShowGeoHtmlPage.type => "dashboard"
+                }
+              ),
               navigateTo(page),
               span(className("mdc-list-item__text"), page.title),
             ),

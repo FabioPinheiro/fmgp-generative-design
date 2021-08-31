@@ -18,7 +18,10 @@ object App {
         //   case HomePage => None
         //   case _        => Some(h3(a(navigateTo(HomePage), "Back to home")))
         // },
-        AppUtils.topBarHeader("FMGP GEOMETRY"),
+        AppUtils.topBarHeader(MyRouter.router.$currentPage.map {
+          case p: HomePage.type => "FMGP GEOMETRY"
+          case p                => p.title
+        }),
         AppUtils.drawer(linkPages, MyRouter.router.$currentPage),
         AppUtils.drawerScrim,
         com.raquo.laminar.api.L.main(
@@ -39,25 +42,14 @@ object App {
     .collectStatic(ShowGeoJsonPage)(ShowGeo(true))
     .collectStatic(ShowGeoHtmlPage)(ShowGeo(false))
 
-  private def renderHomePage(): HtmlElement = {
-    div(
-      ul(
-        fontSize := "120%",
-        lineHeight := "2em",
-        listStyleType.none,
-        paddingLeft := "0px",
-        linkPages.map { page =>
-          li(a(navigateTo(page), page.title))
-        }
-      )
-    )
-  }
-
-  val linkPages: List[Page] = List(
+  private val linkPages: List[Page] = List(
+    HomePage,
     HelloPage,
     GeoPage,
     ShowGeoJsonPage,
     ShowGeoHtmlPage,
   )
+
+  private def renderHomePage(): HtmlElement = div()
 
 }
