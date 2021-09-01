@@ -26,6 +26,7 @@ object GeoApp {
   val geoCanvasHack = div(
     onMountCallback(ctx => {
       webGLHelper.init
+      StatsComponent.append(ctx.thisNode.ref)
       webGLHelper.append(ctx.thisNode.ref)
     }),
   )
