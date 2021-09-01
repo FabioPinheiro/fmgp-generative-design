@@ -156,7 +156,7 @@ class WebGLHelper(topPadding: Int) {
 
   @JSExport
   val animate: js.Function1[Double, Unit] = (d: Double) => {
-    WebGLGlobal.stats.begin()
+    StatsComponent.stats.begin()
 
     WebGLGlobal.uiEvent.foreach { event =>
       val intersects = WebGLGlobal.raycaster
@@ -180,6 +180,6 @@ class WebGLHelper(topPadding: Int) {
     renderer.clearDepth()
     WebGLGlobal.cameraUI.foreach(renderer.render(WebGLGlobal.sceneUI, _))
 
-    WebGLGlobal.stats.end()
+    StatsComponent.stats.end()
   }
 }

@@ -4,7 +4,6 @@ import typings.three.loaderMod.Loader
 import typings.three.mod.{Shape => _, _}
 import typings.three.anon.{X => AnonX}
 import typings.three.webGLRendererMod.WebGLRendererParameters
-import typings.statsJs.mod.{^ => Stats}
 import app.fmgp.threejs.extras.{FirstPersonControls, FlyControls, OrbitControls}
 import app.fmgp.Websocket
 
@@ -21,12 +20,6 @@ object WebGLGlobal {
   var camera: Option[Camera] = None
   var cameraUI: Option[Camera] = None
   var controls: Option[FlyControls] = None
-  var stats: Stats = new Stats()
-
-  stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
-  stats.dom.style.right = "0px"
-  stats.dom.style.left = null
-  org.scalajs.dom.document.body.appendChild(stats.dom) //FIXME Not the best place ...
 
   val uiElements: scala.collection.mutable.HashMap[Int, InteractiveMesh] = scala.collection.mutable.HashMap.empty
   def addUiElement(o: InteractiveMesh) = {
