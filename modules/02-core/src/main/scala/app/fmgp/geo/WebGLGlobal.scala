@@ -8,8 +8,18 @@ import app.fmgp.threejs.extras.{FirstPersonControls, FlyControls, OrbitControls}
 import app.fmgp.Websocket
 
 import app.fmgp.Log
+object WebGLTextGlobal {
+  var textFont: typings.three.fontMod.Font = _
+  val loader = new FontLoader()
+  def init = Log.info(s"### WebGLTextGlobal.init ###")
+  loader.load(
+    "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/gentilis_regular.typeface.json", //"fonts/helvetiker_bold.typeface.json",
+    (f: typings.three.fontMod.Font) => textFont = f
+  )
+  init
+}
 
-object WebGLGlobal {
+class WebGLGlobal() {
   val masterWorld = DynamicWorldWarp()
   var websocket = Websocket.AutoReconnect("ws://127.0.0.1:8888/browser", Log, masterWorld)
   val debugUI = false
@@ -28,15 +38,5 @@ object WebGLGlobal {
   }
 
   val raycaster = new Raycaster()
-  var uiEvent: Option[AnonX] = None
-
-  // Text
-  var textFont: typings.three.fontMod.Font = _
-  val loader = new FontLoader()
-  def init = Log.info(s"### Global.init ###")
-  loader.load(
-    "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/gentilis_regular.typeface.json", //"fonts/helvetiker_bold.typeface.json",
-    (f: typings.three.fontMod.Font) => textFont = f
-  )
 
 }
