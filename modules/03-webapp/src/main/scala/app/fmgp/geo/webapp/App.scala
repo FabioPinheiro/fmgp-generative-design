@@ -36,7 +36,7 @@ object App {
   }
 
   private val $selectedApp = SplitRender(MyRouter.router.$currentPage)
-    .collectStatic(HomePage)(renderHomePage())
+    .collectStatic(HomePage)(Home())
     .collectStatic(HelloPage)(HelloWorld())
     .collectStatic(GeoPage)(GeoApp())
     .collectStatic(ShowGeoJsonPage)(ShowGeo(true))
@@ -49,7 +49,5 @@ object App {
     ShowGeoJsonPage,
     ShowGeoHtmlPage,
   )
-
-  private def renderHomePage(): HtmlElement = div()
 
 }
