@@ -19,7 +19,7 @@ import app.fmgp.threejs.extras.FlyControls //FirstPersonControls, FlyControls, O
 
 @JSExportTopLevel("GeoApp")
 object GeoApp {
-  val topPadding = 76
+  val topPadding = 64 //76
   lazy val webGLHelper = new WebGLHelper(topPadding = topPadding)
 
   val clickObserver = Observer[dom.MouseEvent](onNext = ev => onClickEvent(ev))
@@ -33,7 +33,7 @@ object GeoApp {
   )
   geoCanvasHack.ref.appendChild(webGLHelper.renderer.domElement)
   //webGLHelper.renderer.domElement.style = "z-index:-1; position: fixed; top: 0px; left: 0px;"
-  webGLHelper.renderer.domElement.style = "z-index:-1; left: 0px;"
+  //webGLHelper.renderer.domElement.style = "z-index:-1; left: 0px;"
 
   def onClickEvent(event: dom.MouseEvent) = {
     // calculate mouse position in normalized device coordinates (-1 to +1) for both components

@@ -23,7 +23,7 @@ case class InteractiveMesh(mesh: typings.three.meshMod.Mesh[_, _], onSelected: (
 
 class WebGLHelper(topPadding: Int) {
 
-  def height = dom.window.innerHeight - topPadding
+  def height = -5 + dom.window.innerHeight - topPadding
   def width = dom.window.innerWidth
 
   lazy val renderer: WebGLRenderer = {
