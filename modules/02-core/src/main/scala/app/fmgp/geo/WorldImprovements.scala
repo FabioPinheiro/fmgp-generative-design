@@ -358,7 +358,7 @@ object WorldImprovements {
 
       case geo.TextShape(text: String, size: Double) =>
         val textParameters = js.Dynamic.literal().asInstanceOf[typings.three.textGeometryMod.TextGeometryParameters]
-        textParameters.font = WebGLGlobal.textFont
+        textParameters.font = WebGLTextGlobal.textFont
         textParameters.size = size
         textParameters.height = 0
         textParameters.curveSegments = 12
