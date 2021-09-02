@@ -237,7 +237,7 @@ lazy val controller = project
   .settings(noPublishSettings)
 
 lazy val geometryWebapp = project
-  .in(file("modules/03-webapp")) //FIXME rename to 04-webapp
+  .in(file("modules/04-webapp"))
   .settings(name := "fmgp-geometry-webapp")
   .configure(scalaJSBundlerConfigure)
   // .settings(commonSettings: _*)
