@@ -36,7 +36,7 @@ fastOptJS::webpack
 Open `file:///.../modules/02-core/index-dev.html` on your browser.
 
 ```scala
-controller/console
+repl/console
 
 > :load script.sc
 ```

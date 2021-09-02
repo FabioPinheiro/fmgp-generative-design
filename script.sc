@@ -1,12 +1,8 @@
 /** Run this scipt.sc
   *
-  * sbt> browserRemoteControl/console
+  * sbt> repl/console
   *
   * :load script.sc
-  *
-  * app.fmgp.experiments.Main.start(interface = "127.0.0.1", port = 8888)
-  *
-  * val iii = app.fmgp.experiments.Main.server.get; import iii.GeoSyntax._
   */
 clear
 

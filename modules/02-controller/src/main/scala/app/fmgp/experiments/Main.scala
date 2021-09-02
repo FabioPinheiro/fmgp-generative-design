@@ -28,10 +28,9 @@ object Main extends com.typesafe.scalalogging.LazyLogging {
   var server: Option[LocalAkkaServer] = None
   def myAkkaServer: LocalAkkaServer = server.get
 
-  def start(interface: String, port: Int) = {
+  def startLocal = { //(interface: String, port: Int)
     if (server.isEmpty) {
-      //FIXME server = Some(app.fmgp.MyAkkaServer(interface = interface, port = port))
-      server = Some(new LocalAkkaServer)
+      server = Some(new LocalAkkaServer) //Some(app.fmgp.MyAkkaServer(interface = interface, port = port))
       server.map(_.start)
       logger.info("Main starting")
     } else {
@@ -52,7 +51,7 @@ object Main extends com.typesafe.scalalogging.LazyLogging {
   }
 
   def main(args: Array[String]): Unit = {
-    start(interface = "127.0.0.1", port = 8888)
+    startLocal //(interface = "127.0.0.1", port = 8888)
     StdIn.readLine()
     stop
   }

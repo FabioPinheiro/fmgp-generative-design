@@ -1,11 +1,11 @@
 package app.fmgp
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
+
 import akka.actor.ActorSystem
-import app.fmgp.MyAkkaServer
 import zio._
-import scala.concurrent.Future
-import app.fmgp.geo.MyFile
+import app.fmgp.MyAkkaServer
+import app.fmgp.geo.{Shape, MyFile}
 
 object websocket {
   type Websocket = Has[Websocket.Service]
@@ -13,7 +13,7 @@ object websocket {
   // Accessor Methods
   def clearWorld: ZIO[Websocket, Throwable, Unit] =
     ZIO.accessM(_.get.clearWorld)
-  def send[T <: app.fmgp.geo.Shape](shape: => T): ZIO[Websocket, Throwable, T] =
+  def send[T <: Shape](shape: => T): ZIO[Websocket, Throwable, T] =
     ZIO.accessM(_.get.send(shape))
   def sendFile(file: => MyFile): ZIO[Websocket, Throwable, MyFile] =
     ZIO.accessM(_.get.sendFile(file))
@@ -29,7 +29,7 @@ object websocket {
       def stop: URIO[Any, Unit]
       def stopAfterKeystroke: URIO[zio.console.Console, Unit]
 
-      def send[T <: app.fmgp.geo.Shape](t: T): Task[T]
+      def send[T <: Shape](t: T): Task[T]
       def sendFile(file: MyFile): Task[MyFile]
       def clearWorld: ZIO[Websocket, Throwable, Unit]
     }
@@ -44,7 +44,7 @@ object websocket {
 
       val server: MyAkkaServer = new app.fmgp.experiments.LocalAkkaServer() {} //MyAkkaServer(interface, port)
 
-      override def send[T <: app.fmgp.geo.Shape](t: T): Task[T] =
+      override def send[T <: Shape](t: T): Task[T] =
         ZIO.effect(server.sendShape(t)) //TODO make this beter
       override def sendFile(file: MyFile): Task[MyFile] =
         ZIO.effect(server.sendFile(file))

@@ -92,13 +92,14 @@ lazy val modules: List[ProjectReference] =
     threeUtils,
     modelJVM,
     modelJS,
+    controller,
     geometryCore,
     syntaxJVM,
     syntaxJS,
     prebuildJS,
     prebuildJVM,
-    geometryWebapp,
-    controller
+    webapp,
+    repl
   )
 
 lazy val root = project
@@ -191,7 +192,7 @@ lazy val syntaxJVM = syntax.jvm
 
 lazy val prebuild = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
-  .in(file("modules/02-prebuild"))
+  .in(file("modules/03-prebuild"))
   .settings(name := "fmgp-geometry-prebuild")
   .enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
@@ -204,7 +205,7 @@ lazy val prebuildJS = prebuild.js
 lazy val prebuildJVM = prebuild.jvm
 
 lazy val controller = project
-  .in(file("modules/03-controller"))
+  .in(file("modules/02-controller"))
   //.settings(scalaVersion := "3.0.2-RC1-bin-20210706-6011847-NIGHTLY")
   .settings(commonSettings: _*)
   .settings(
@@ -221,22 +222,31 @@ lazy val controller = project
       ("com.typesafe.akka" %% "akka-slf4j" % "2.6.15").cross(CrossVersion.for3Use2_13),
     ),
     libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test,
+  )
+  .dependsOn(modelJVM, syntaxJVM)
+  .settings(publishSettings)
+
+lazy val repl = project
+  .in(file("modules/04-repl"))
+  .settings(commonSettings: _*)
+  .settings(
     console / initialCommands += """
     import scala.math._
     import scala.util.chaining._
-    app.fmgp.experiments.Main.start(interface = "127.0.0.1", port = 8888)
+    app.fmgp.experiments.Main.startLocal //(interface = "127.0.0.1", port = 8888)
     val myAkkaServer = app.fmgp.experiments.Main.server.get
-    /*import myAkkaServer.GeoSyntax._*/
+    val geoSyntax = app.fmgp.GeoSyntax(myAkkaServer)
+    import geoSyntax._
     import app.fmgp.geo._
     """,
     cleanupCommands += """
     app.fmgp.experiments.Main.stop
     """,
   )
-  .dependsOn(modelJVM, syntaxJVM)
+  .dependsOn(modelJVM, syntaxJVM, prebuildJVM, controller)
   .settings(noPublishSettings)
 
-lazy val geometryWebapp = project
+lazy val webapp = project
   .in(file("modules/04-webapp"))
   .settings(name := "fmgp-geometry-webapp")
   .configure(scalaJSBundlerConfigure)

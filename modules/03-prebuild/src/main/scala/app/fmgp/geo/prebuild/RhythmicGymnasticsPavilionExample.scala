@@ -3,6 +3,7 @@ package app.fmgp.geo.prebuild
 import scala.math._
 
 import app.fmgp.geo._
+import app.fmgp.syntax.OldSyntax
 
 /** @see
   *   [[http://web.ist.utl.pt/renata.castelo.branco/RCB/programming/gymnastics/GymPav_Pluto.jl.html]]
