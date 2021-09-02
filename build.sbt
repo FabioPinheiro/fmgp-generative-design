@@ -88,7 +88,7 @@ lazy val scalaJSBundlerConfigure: Project => Project =
     )
 
 lazy val modules: List[ProjectReference] =
-  List(threeUtils, geometryModelJVM, geometryModelJS, geometryCore, geometryWebapp, controller)
+  List(threeUtils, modelJVM, modelJS, geometryCore, syntaxJVM, syntaxJS, geometryWebapp, controller)
 
 lazy val root = project
   .in(file("."))
@@ -106,7 +106,7 @@ val akkaHttpVersion = "10.2.4"
 val munitVersion = "0.7.26"
 
 /* For munit https://scalameta.org/munit/docs/getting-started.html#scalajs-setup */
-lazy val geometryModel = crossProject(JSPlatform, JVMPlatform)
+lazy val model = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("modules/01-model"))
   .settings(name := "fmgp-geometry-model")
@@ -135,8 +135,8 @@ lazy val threeUtils = project
   )
   .settings(noPublishSettings)
 
-lazy val geometryModelJS = geometryModel.js
-lazy val geometryModelJVM = geometryModel.jvm
+lazy val modelJS = model.js
+lazy val modelJVM = model.jvm
 
 lazy val geometryCore = project
   .in(file("modules/02-core"))
@@ -161,8 +161,29 @@ lazy val geometryCore = project
     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
   )
-  .dependsOn(threeUtils, geometryModelJS)
+  .dependsOn(threeUtils, modelJS)
   .settings(publishSettings)
+
+lazy val syntax = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("modules/02-syntax"))
+  .settings(name := "fmgp-geometry-syntax")
+  .enablePlugins(ScalaJSPlugin)
+  .settings(commonSettings: _*)
+  .settings(setupTestConfig: _*)
+  .settings(
+    libraryDependencies ++= Seq(
+      "io.circe" %%% "circe-core" % circeVersion,
+      "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
+      "io.circe" %%% "circe-parser" % circeVersion % Test,
+    ),
+    libraryDependencies += "dev.zio" %% "zio" % "1.0.9",
+  )
+  .dependsOn(model)
+  .settings(publishSettings)
+
+lazy val syntaxJS = syntax.js
+lazy val syntaxJVM = syntax.jvm
 
 lazy val controller = project
   .in(file("modules/03-controller"))
@@ -194,7 +215,7 @@ lazy val controller = project
     app.fmgp.Main.stop
     """,
   )
-  .dependsOn(geometryModelJVM)
+  .dependsOn(modelJVM, syntaxJVM)
   .settings(noPublishSettings)
 
 lazy val geometryWebapp = project
@@ -232,7 +253,7 @@ lazy val geometryWebapp = project
     scalaJSUseMainModuleInitializer := true,
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
   )
-  .dependsOn(threeUtils, geometryModelJS, geometryCore)
+  .dependsOn(threeUtils, modelJS, geometryCore)
   .settings(noPublishSettings)
 
 // lazy val demo = project
