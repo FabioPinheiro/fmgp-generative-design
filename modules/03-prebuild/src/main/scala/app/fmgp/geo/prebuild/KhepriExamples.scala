@@ -4,6 +4,7 @@ import scala.math._
 import scala.util.Random
 
 import app.fmgp.geo._
+import app.fmgp.syntax.OldSyntax
 
 trait KhepriExamples extends OldSyntax {
 

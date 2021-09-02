@@ -17,17 +17,15 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import akka.actor._
 import scala.concurrent.ExecutionContext
-import app.fmgp.geo.{World, WorldAddition}
-import app.fmgp.geo.Shape
+import app.fmgp.geo.{World, WorldAddition, Shape, MyFile}
 import app.fmgp.geo.EncoderDecoder.{WorldOrFile, given}
-import app.fmgp.geo.MyFile
 
 class MyAkkaServer(interface: String, port: Int)(using
     ex: ExecutionContext,
     system: ActorSystem,
     mat: Materializer
 ) extends com.typesafe.scalalogging.LazyLogging
-    with app.fmgp.syntax.WorldOperations {
+    with app.fmgp.geo.WorldOperations {
 
   lazy val binding: Future[Http.ServerBinding] = {
     val aux = Http().newServerAt(interface, port) //.bindAndHandle(route, interface, port)
@@ -79,23 +77,6 @@ class MyAkkaServer(interface: String, port: Int)(using
   }
 
   val (geoSink, geoSource) = MergeHub.source[WorldOrFile].toMat(BroadcastHub.sink[WorldOrFile])(Keep.both).run()
-
-  //TODO REMOVE / Move to prebuild
-  //import app.fmgp.geo.prebuild._
-  // import app.fmgp.geo.{OldSyntax, Wireframe}
-  // object GeoSyntax extends OldSyntax with KhepriExamples with RhythmicGymnasticsPavilionUtils {
-
-  //   override def addShape[T <: Shape](t: T, wireframeMode: Boolean): T = {
-  //     val s: Shape = if (wireframeMode) Wireframe(t) else t
-  //     sendShape(s)
-  //     t
-  //   }
-
-  //   override def clear: Unit = {
-  //     clearShapes
-  //     super.clear
-  //   }
-  // }
 
   override def sendShape[T <: Shape](shape: T): T = {
     val w = WorldAddition(shapes = Seq(shape))

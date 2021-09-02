@@ -46,7 +46,7 @@ trait KhepriUtils {
       .map(u => division(v0, v1, nv, include_last).map(v => f(u, v)))
 }
 
-trait BaseSyntax { //REMOVE extends WorldOperations {
+trait BaseSyntax {
   var wireframeMode: Boolean = false
   def addShape[T <: Shape](t: T): T = addShape(t = t, wireframeMode = wireframeMode)
   def addShape[T <: Shape](t: T, wireframeMode: Boolean): T

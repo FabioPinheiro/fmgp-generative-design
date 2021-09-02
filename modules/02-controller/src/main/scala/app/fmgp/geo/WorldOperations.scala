@@ -1,6 +1,4 @@
-package app.fmgp.syntax
-
-import app.fmgp.geo.{MyFile, Shape}
+package app.fmgp.geo
 
 trait WorldOperations {
   def sendFile(file: MyFile): MyFile
