@@ -22,9 +22,9 @@ case class InteractiveMesh(mesh: typings.three.meshMod.Mesh[_, _], onSelected: (
   def id = mesh.id
 }
 
-class WebGLHelper(topPadding: Int) {
+class WebGLHelper(topPadding: Int, onWorldUpdate: (world: World) => Unit) {
 
-  val webGLGlobal = new WebGLGlobal()
+  val webGLGlobal = new WebGLGlobal(onWorldUpdate)
   var uiEvent: Option[AnonX] = None
 
   def height = -5 + dom.window.innerHeight - topPadding

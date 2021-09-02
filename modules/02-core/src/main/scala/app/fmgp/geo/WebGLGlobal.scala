@@ -19,8 +19,8 @@ object WebGLTextGlobal {
   init
 }
 
-class WebGLGlobal() {
-  val masterWorld = DynamicWorldWarp()
+class WebGLGlobal(onWorldUpdate: (world: World) => Unit) {
+  val masterWorld = DynamicWorldWarp(onWorldUpdate)
   var websocket = Websocket.AutoReconnect("ws://127.0.0.1:8888/browser", Log, masterWorld)
   val debugUI = false
   var scene: Scene = _

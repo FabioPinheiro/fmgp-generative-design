@@ -18,14 +18,17 @@ case class WorldWarp(world: WorldState) extends GeoWarp {
   def dimensions: Dimensions = world.dimensions
 }
 
-class DynamicWorldWarp extends GeoWarp {
+class DynamicWorldWarp(var onWorldUpdate: (world: World) => Unit) extends GeoWarp {
   override def dimensions: Dimensions = Dimensions.D3
   override def generateObj3D: Object3D = obj
 
   private var multiBodyWorld: Seq[World] = Seq(World.w3DEmpty)
   private val obj: Object3D = new Object3D()
 
+  def getWorlds = multiBodyWorld
+
   def update(world: World) = {
+    onWorldUpdate(world)
     world match {
       case WorldAddition(shapes) =>
         multiBodyWorld = multiBodyWorld :+ world
@@ -40,7 +43,7 @@ class DynamicWorldWarp extends GeoWarp {
   }
 }
 object DynamicWorldWarp {
-  def apply() = new DynamicWorldWarp
+  def apply(onWorldUpdate: (world: World) => Unit = _ => ()) = new DynamicWorldWarp(onWorldUpdate)
 }
 
 case class Object3DWarp(

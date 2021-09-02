@@ -12,14 +12,14 @@ import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import java.awt.geom.Dimension2D
-import app.fmgp.geo.{Object3DWarp, GeoWarp, WorldWarp, DynamicWorldWarp}
+import app.fmgp.geo.{Object3DWarp, GeoWarp, WorldWarp}
 import org.scalajs.dom.raw.{Event, Element}
 
 import scala.util.chaining._
 
 //TODO move this file to TEST
 object Main {
-  val webGLHelper = WebGLHelper(topPadding = 0)
+  val webGLHelper = WebGLHelper(topPadding = 0, onWorldUpdate = _ => ())
 
   def main(args: Array[String]): Unit = {
     WebGLTextGlobal.init
