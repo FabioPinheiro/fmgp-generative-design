@@ -1,5 +1,7 @@
 package app.fmgp.syntax
 
+import app.fmgp.geo._
+
 object OldSyntax extends OldSyntax {
   override def addShape[T <: Shape](t: T, wireframeMode: Boolean): T = {
     println(s"wireframeMode=$wireframeMode: $t")

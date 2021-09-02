@@ -1,12 +1,11 @@
 package app.fmgp.experiments
 
-import app.fmgp.geo._
-import app.fmgp.MyAkkaServer
-
 import akka.actor._
 import scala.concurrent.ExecutionContext
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
+
+import app.fmgp.MyAkkaServer
 
 class LocalAkkaServer(using
     ex: ExecutionContext,
