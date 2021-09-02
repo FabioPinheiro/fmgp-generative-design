@@ -1,7 +1,7 @@
 package app.fmgp
 
 import app.fmgp.geo.{Wireframe, Shape}
-import app.fmgp.geo.prebuild._
+import app.fmgp.geo.prebuilt._
 import app.fmgp.syntax.OldSyntax
 
 class GeoSyntax(server: MyAkkaServer) extends OldSyntax with KhepriExamples with RhythmicGymnasticsPavilionUtils {

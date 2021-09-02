@@ -96,8 +96,8 @@ lazy val modules: List[ProjectReference] =
     geometryCore,
     syntaxJVM,
     syntaxJS,
-    prebuildJS,
-    prebuildJVM,
+    prebuiltJS,
+    prebuiltJVM,
     webapp,
     repl
   )
@@ -190,10 +190,10 @@ lazy val syntax = crossProject(JSPlatform, JVMPlatform)
 lazy val syntaxJS = syntax.js
 lazy val syntaxJVM = syntax.jvm
 
-lazy val prebuild = crossProject(JSPlatform, JVMPlatform)
+lazy val prebuilt = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
-  .in(file("modules/03-prebuild"))
-  .settings(name := "fmgp-geometry-prebuild")
+  .in(file("modules/03-prebuilt"))
+  .settings(name := "fmgp-geometry-prebuilt")
   .enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
   .settings(setupTestConfig: _*)
@@ -201,8 +201,8 @@ lazy val prebuild = crossProject(JSPlatform, JVMPlatform)
   .dependsOn(syntax)
   .settings(noPublishSettings)
 
-lazy val prebuildJS = prebuild.js
-lazy val prebuildJVM = prebuild.jvm
+lazy val prebuiltJS = prebuilt.js
+lazy val prebuiltJVM = prebuilt.jvm
 
 lazy val controller = project
   .in(file("modules/02-controller"))
@@ -243,7 +243,7 @@ lazy val repl = project
     app.fmgp.experiments.Main.stop
     """,
   )
-  .dependsOn(modelJVM, syntaxJVM, prebuildJVM, controller)
+  .dependsOn(modelJVM, syntaxJVM, prebuiltJVM, controller)
   .settings(noPublishSettings)
 
 lazy val webapp = project
@@ -281,5 +281,5 @@ lazy val webapp = project
     scalaJSUseMainModuleInitializer := true,
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
   )
-  .dependsOn(threeUtils, modelJS, geometryCore)
+  .dependsOn(threeUtils, modelJS, prebuiltJS, geometryCore)
   .settings(noPublishSettings)

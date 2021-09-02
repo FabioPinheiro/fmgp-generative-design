@@ -141,7 +141,8 @@ class WebGLHelper(topPadding: Int, onWorldUpdate: (world: World) => Unit) {
       val mesh = new typings.three.mod.Mesh(geometry, basicMarerial)
       webGLGlobal.addUiElement(InteractiveMesh(mesh))
     }
-    { //Examples
+    /*
+    { //Examples //TODO REMOVE
       val bottonGeometry = new PlaneBufferGeometry(0.05, 0.05).translate(0.025, -0.025, 0)
       val materialParameters = typings.three.meshBasicMaterialMod.MeshBasicMaterialParameters()
       materialParameters.color_=(new typings.three.colorMod.Color(0x666666))
@@ -170,6 +171,7 @@ class WebGLHelper(topPadding: Int, onWorldUpdate: (world: World) => Unit) {
         .map { case (mesh, material, index) => InteractiveMesh(mesh, update(mesh.id.toInt, index) _) }
         .map(webGLGlobal.addUiElement _)
     }
+     */
 
     webGLGlobal.scene.add(Utils.computeStaticThreeObjects)
     if (webGLGlobal.animateFrameId.isEmpty) animate(1)

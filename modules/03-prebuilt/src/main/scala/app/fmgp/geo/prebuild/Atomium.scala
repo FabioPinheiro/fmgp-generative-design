@@ -1,7 +1,10 @@
-package app.fmgp.geo
+package app.fmgp.geo.prebuilt
+
+import scala.scalajs.js.annotation._
 
 import app.fmgp.geo._
 
+@JSExportTopLevel("Atomium")
 object Atomium {
 
   def atomiumSpheres(cs: Seq[XYZ], r: Double) =
@@ -35,5 +38,8 @@ object Atomium {
 
   def atomium(sphereR: Double, frameW: Double, tubeR: Double): ShapeSeq =
     atomiumFrame(sphereR, frameW, tubeR).flatten
+
+  @JSExport
+  def atomiumWorld: WorldState = World.w3D(atomium(0.8, 3.0, 0.3))
 
 }

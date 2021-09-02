@@ -1,4 +1,4 @@
-package app.fmgp.geo
+package app.fmgp.geo.prebuilt
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
@@ -8,29 +8,23 @@ import app.fmgp.geo._
 object GeometryExamples {
 
   @JSExport
-  def atomium: ShapeSeq = Atomium.atomium(0.8, 3.0, 0.3)
-
-  @JSExport
-  def atomiumWorld: WorldState = World.w3D(atomium)
-
-  @JSExport
-  def shapesDemo: WorldState = World.w3D(
+  def shapesDemo3D: WorldState = World.w3D(
     Seq(
-      Sphere(0.3, XYZ(3, 3 + 8, -1)),
-      Sphere(0.2, XYZ(2, 2 + 8, -1)),
-      Sphere(0.1, XYZ(1, 1 + 8, -1)),
+      Sphere(0.3, XYZ(3, 3, -1)),
+      Sphere(0.2, XYZ(2, 2, -1)),
+      Sphere(0.1, XYZ(1, 1, -1)),
       //Cylinder(0.2, 2),
       TransformationShape(
         Cylinder(0.2, 2),
-        TransformMatrix(Matrix.translate(-1, +8, 1))
+        TransformMatrix(Matrix.translate(-1, 0, 1))
       ),
       TransformationShape(
         Cylinder(0.2, 2),
         TransformMatrix(
-          Matrix.translate(-1, +8, 1).postRotate(Math.PI / 2, Vec(0, 0, 1))
+          Matrix.translate(-1, 0, 1).postRotate(Math.PI / 2, Vec(0, 0, 1))
         )
       ),
-      Cylinder.fromVerticesRadius(XYZ(1, 1 + 8, 1), XYZ(3, 3 + 8, 1), 0.1)
+      Cylinder.fromVerticesRadius(XYZ(1, 1, 1), XYZ(3, 3, 1), 0.1)
     )
   )
 

@@ -10,6 +10,7 @@ object StatsComponent {
     tmp.dom.style.right = "0px"
     tmp.dom.style.left = null
     tmp.dom.style.top = null
+    tmp.dom.style.zIndex = null
     org.scalajs.dom.document.body.appendChild(tmp.dom) //FIXME Not the best place ...
     tmp
   }

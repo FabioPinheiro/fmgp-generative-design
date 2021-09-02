@@ -1,4 +1,4 @@
-package app.fmgp.geo.prebuild
+package app.fmgp.geo.prebuilt
 
 import scala.math._
 import scala.util.Random

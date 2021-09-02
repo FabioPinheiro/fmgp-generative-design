@@ -1,4 +1,4 @@
-package app.fmgp.geo.prebuild
+package app.fmgp.geo.prebuilt
 
 import scala.math._
 

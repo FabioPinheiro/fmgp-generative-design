@@ -14,16 +14,12 @@ object App {
 
     lazy val appElement = {
       div(
-        // child.maybe <-- MyRouter.router.$currentPage.map {
-        //   case HomePage => None
-        //   case _        => Some(h3(a(navigateTo(HomePage), "Back to home")))
-        // },
+        AppUtils.drawer(linkPages, MyRouter.router.$currentPage),
+        AppUtils.drawerScrim,
         AppUtils.topBarHeader(MyRouter.router.$currentPage.map {
           case p: HomePage.type => "FMGP GEOMETRY"
           case p                => p.title
         }),
-        AppUtils.drawer(linkPages, MyRouter.router.$currentPage),
-        AppUtils.drawerScrim,
         com.raquo.laminar.api.L.main(
           className("mdc-top-app-bar--fixed-adjust"),
           child <-- $selectedApp.$view
