@@ -21,7 +21,12 @@ import com.raquo.laminar.keys.ReactiveEventProp
 @JSExportTopLevel("GeoApp")
 object GeoApp {
   val topPadding = 64 //76
-  lazy val webGLHelper = new WebGLHelper(topPadding = topPadding)
+
+  def onWorldUpdate(world: World): Unit = {
+    AppGlobal.worldVar.set(world)
+  }
+
+  lazy val webGLHelper = new WebGLHelper(topPadding = topPadding, onWorldUpdate)
 
   val geoCanvasHack = div(
     onMountCallback(ctx => {
