@@ -88,7 +88,18 @@ lazy val scalaJSBundlerConfigure: Project => Project =
     )
 
 lazy val modules: List[ProjectReference] =
-  List(threeUtils, modelJVM, modelJS, geometryCore, syntaxJVM, syntaxJS, geometryWebapp, controller)
+  List(
+    threeUtils,
+    modelJVM,
+    modelJS,
+    geometryCore,
+    syntaxJVM,
+    syntaxJS,
+    prebuildJS,
+    prebuildJVM,
+    geometryWebapp,
+    controller
+  )
 
 lazy val root = project
   .in(file("."))
@@ -171,19 +182,26 @@ lazy val syntax = crossProject(JSPlatform, JVMPlatform)
   .enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
   .settings(setupTestConfig: _*)
-  .settings(
-    libraryDependencies ++= Seq(
-      "io.circe" %%% "circe-core" % circeVersion,
-      "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
-      "io.circe" %%% "circe-parser" % circeVersion % Test,
-    ),
-    libraryDependencies += "dev.zio" %% "zio" % "1.0.9",
-  )
+  .settings(libraryDependencies += "dev.zio" %% "zio" % "1.0.9")
   .dependsOn(model)
   .settings(publishSettings)
 
 lazy val syntaxJS = syntax.js
 lazy val syntaxJVM = syntax.jvm
+
+lazy val prebuild = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("modules/02-prebuild"))
+  .settings(name := "fmgp-geometry-prebuild")
+  .enablePlugins(ScalaJSPlugin)
+  .settings(commonSettings: _*)
+  .settings(setupTestConfig: _*)
+  .settings(libraryDependencies += "dev.zio" %% "zio" % "1.0.9")
+  .dependsOn(syntax)
+  .settings(noPublishSettings)
+
+lazy val prebuildJS = prebuild.js
+lazy val prebuildJVM = prebuild.jvm
 
 lazy val controller = project
   .in(file("modules/03-controller"))
@@ -206,20 +224,20 @@ lazy val controller = project
     console / initialCommands += """
     import scala.math._
     import scala.util.chaining._
-    app.fmgp.Main.start()
-    val myAkkaServer = app.fmgp.Main.server.get
-    import myAkkaServer.GeoSyntax._
+    app.fmgp.experiments.Main.start(interface = "127.0.0.1", port = 8888)
+    val myAkkaServer = app.fmgp.experiments.Main.server.get
+    /*import myAkkaServer.GeoSyntax._*/
     import app.fmgp.geo._
     """,
     cleanupCommands += """
-    app.fmgp.Main.stop
+    app.fmgp.experiments.Main.stop
     """,
   )
   .dependsOn(modelJVM, syntaxJVM)
   .settings(noPublishSettings)
 
 lazy val geometryWebapp = project
-  .in(file("modules/03-webapp"))
+  .in(file("modules/03-webapp")) //FIXME rename to 04-webapp
   .settings(name := "fmgp-geometry-webapp")
   .configure(scalaJSBundlerConfigure)
   // .settings(commonSettings: _*)
@@ -255,20 +273,3 @@ lazy val geometryWebapp = project
   )
   .dependsOn(threeUtils, modelJS, geometryCore)
   .settings(noPublishSettings)
-
-// lazy val demo = project
-//   .in(file("modules/03-demo"))
-//   .configure(baseSettings)
-//   .settings(
-//     name := "fmgp-generative-design-demo",
-//     publishArtifact := false,
-//     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion,
-//     npmDependencies in Compile += "three" -> threeVersion,
-//     scalaJSUseMainModuleInitializer := true,
-//     mainClass := Some("fmgp.threejs.Demo"),
-//     //scalaJSMainModuleInitializer := Some(mainMethod("fmgp.Main", "main"))
-//     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
-//     webpackBundlingMode := BundlingMode.LibraryAndApplication()
-//   )
-//   .dependsOn(threeUtils)
-//   .settings(noPublishSettings)

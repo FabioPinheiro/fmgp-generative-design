@@ -1,6 +1,4 @@
-package app.fmgp.geo
-
-import app.fmgp.syntax.{CoordinatesDsl, WorldOperations}
+package app.fmgp.syntax
 
 object OldSyntax extends OldSyntax {
   override def addShape[T <: Shape](t: T, wireframeMode: Boolean): T = {

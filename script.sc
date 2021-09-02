@@ -4,9 +4,9 @@
   *
   * :load script.sc
   *
-  * app.fmgp.Main.start()
+  * app.fmgp.experiments.Main.start(interface = "127.0.0.1", port = 8888)
   *
-  * val iii = app.fmgp.Main.server.get; import iii.GeoSyntax._
+  * val iii = app.fmgp.experiments.Main.server.get; import iii.GeoSyntax._
   */
 clear
 

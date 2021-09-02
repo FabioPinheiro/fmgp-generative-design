@@ -80,23 +80,22 @@ class MyAkkaServer(interface: String, port: Int)(using
 
   val (geoSink, geoSource) = MergeHub.source[WorldOrFile].toMat(BroadcastHub.sink[WorldOrFile])(Keep.both).run()
 
-  import app.fmgp.geo.prebuild._
-  import app.fmgp.geo.{OldSyntax, Wireframe}
+  //TODO REMOVE / Move to prebuild
+  //import app.fmgp.geo.prebuild._
+  // import app.fmgp.geo.{OldSyntax, Wireframe}
+  // object GeoSyntax extends OldSyntax with KhepriExamples with RhythmicGymnasticsPavilionUtils {
 
-  //TODO REMOVE
-  object GeoSyntax extends OldSyntax with KhepriExamples with RhythmicGymnasticsPavilionUtils {
+  //   override def addShape[T <: Shape](t: T, wireframeMode: Boolean): T = {
+  //     val s: Shape = if (wireframeMode) Wireframe(t) else t
+  //     sendShape(s)
+  //     t
+  //   }
 
-    override def addShape[T <: Shape](t: T, wireframeMode: Boolean): T = {
-      val s: Shape = if (wireframeMode) Wireframe(t) else t
-      sendShape(s)
-      t
-    }
-
-    override def clear: Unit = {
-      clearShapes
-      super.clear
-    }
-  }
+  //   override def clear: Unit = {
+  //     clearShapes
+  //     super.clear
+  //   }
+  // }
 
   override def sendShape[T <: Shape](shape: T): T = {
     val w = WorldAddition(shapes = Seq(shape))
