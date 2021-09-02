@@ -54,16 +54,16 @@ object AppUtils {
             href("https://github.com/FabioPinheiro/fmgp-generative-design"),
             i(aria.label("Github"), githubSVG),
           ),
-          button(
-            className("material-icons mdc-top-app-bar__action-item mdc-icon-button"),
-            aria.label("Search"),
-            "search"
-          ),
-          button(
-            className("material-icons mdc-top-app-bar__action-item mdc-icon-button"),
-            aria.label("Options"),
-            "more_vert"
-          ),
+          // button(
+          //   className("material-icons mdc-top-app-bar__action-item mdc-icon-button"),
+          //   aria.label("Search"),
+          //   "search"
+          // ),
+          // button(
+          //   className("material-icons mdc-top-app-bar__action-item mdc-icon-button"),
+          //   aria.label("Options"),
+          //   "more_vert"
+          // ),
         ),
       ),
     )

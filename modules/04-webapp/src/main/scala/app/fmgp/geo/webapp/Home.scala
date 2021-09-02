@@ -13,9 +13,7 @@ object Home {
         className("mdc-image-list__item"),
         img(
           className("mdc-image-list__image"),
-          src(
-            "https://lh6.googleusercontent.com/eXK0gKsD-l9B-MBWOeSv7nen8IPg7DKx-m4665Fy8mKXx1m1xO7hrOVUfqg6nDpRKhjR4eH_3jDxnlXO21d35b7sgAx1x5YrsROC9sK5LTo-G2w8JaybuCZ1V-PD8mkGEQ=w1280"
-          )
+          src("https://drive.google.com/uc?id=1Mx9SWaeODxP9B845gS3R0PX8xXu39AxL")
         ),
         div(
           className("mdc-image-list__supporting"),
