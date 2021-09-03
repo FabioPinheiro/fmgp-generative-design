@@ -25,10 +25,16 @@ jobs:
         uses: japgolly/setup-scalajs@v1
       - name: Cache sbt
         uses: coursier/cache-action@v6.3
+      ### TESTS ###
       #- run: sbt test
-      - run: sbt threeUtils/test
-      - run: sbt geometryModelJVM/test
-      - run: sbt geometryModelJS/test
-      - run: sbt geometryCore/test
-      #error - run: sbt geometryWebapp/test # SyntaxError: Cannot use import statement outside a module
-      - run: sbt controller/test
+      - run: sbt -mem 2048 -J-Xmx5120m threeUtils/test
+      - run: sbt -mem 2048 -J-Xmx5120m modelJVM/test
+      - run: sbt -mem 2048 -J-Xmx5120m modelJS/test
+      # No test - run: sbt -mem 2048 -J-Xmx5120m controller/test
+      # No test - run: sbt -mem 2048 -J-Xmx5120m geometryCore/test
+      - run: sbt -mem 2048 -J-Xmx5120m syntaxJVM/test
+      - run: sbt -mem 2048 -J-Xmx5120m syntaxJS/test
+      # No test - run: sbt -mem 2048 -J-Xmx5120m prebuiltJS/test
+      # No test - run: sbt -mem 2048 -J-Xmx5120m prebuiltJVM/test
+      # ERROR - run: sbt -mem 2048 -J-Xmx5120m webapp/test # SyntaxError: Cannot use import statement outside a module
+      # No test - run: sbt -mem 2048 -J-Xmx5120m repl/test
