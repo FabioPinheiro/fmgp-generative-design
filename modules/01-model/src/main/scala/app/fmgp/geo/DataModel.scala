@@ -12,7 +12,9 @@ sealed trait World {
 
 //final case class WorldReset(shapes: ShapeSeq = Seq.empty) extends World
 final case class WorldAddition(shapes: ShapeSeq) extends World
-final case class WorldState(shapes: ShapeSeq, dimensions: Dimensions) extends World
+final case class WorldState(shapes: ShapeSeq, dimensions: Dimensions) extends World {
+  def asAddition: WorldAddition = WorldAddition(shapes)
+}
 
 object World {
   def addition(shapes: ShapeSeq): WorldAddition = WorldAddition(shapes)
@@ -40,7 +42,7 @@ sealed trait Coordinate3D extends Coordinate2D
 /** XYZ
   *
   * @param x
-  *   @param y
+  * @param y
   * @param z
   */
 final case class XYZ(x: Double, y: Double, z: Double = 0) extends Coordinate3D {
