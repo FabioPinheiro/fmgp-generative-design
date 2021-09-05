@@ -18,6 +18,7 @@ final case class WorldState(shapes: ShapeSeq, dimensions: Dimensions) extends Wo
 
 object World {
   def addition(shapes: ShapeSeq): WorldAddition = WorldAddition(shapes)
+  def addition(shape: Shape): WorldAddition = WorldAddition(Seq(shape))
   def w2D(shapes: ShapeSeq): WorldState = WorldState(shapes, dimensions = Dimensions.D2)
   def w3D(shapes: ShapeSeq): WorldState = WorldState(shapes, dimensions = Dimensions.D3)
   def w3DEmpty: WorldState = w3D(Seq.empty)
