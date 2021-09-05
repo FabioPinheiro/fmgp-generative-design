@@ -130,8 +130,16 @@ lazy val model = crossProject(JSPlatform, JVMPlatform)
       "io.circe" %%% "circe-core" % circeVersion,
       "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
       "io.circe" %%% "circe-parser" % circeVersion % Test,
-    ),
-    libraryDependencies += "dev.zio" %% "zio" % "1.0.9",
+    )
+  )
+  .settings(
+    libraryDependencies += "dev.zio" %%% "zio" % "1.0.11" //2.0.0-M2 //https://mvnrepository.com/artifact/dev.zio/zio
+  )
+  .jsSettings( //Need for ZIO
+    libraryDependencies ++= Seq(
+      "io.github.cquiroz" %%% "scala-java-time" % "2.3.0", // https://mvnrepository.com/artifact/io.github.cquiroz/scala-java-time
+      "io.github.cquiroz" %%% "scala-java-time-tzdb" % "2.3.0"
+    )
   )
   // /.settings(setupTestConfig, libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test)
   .settings(publishSettings)
@@ -183,7 +191,7 @@ lazy val syntax = crossProject(JSPlatform, JVMPlatform)
   .enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
   .settings(setupTestConfig: _*)
-  .settings(libraryDependencies += "dev.zio" %% "zio" % "1.0.9")
+  .settings(libraryDependencies += "dev.zio" %%% "zio" % "1.0.9")
   .dependsOn(model)
   .settings(publishSettings)
 
@@ -197,7 +205,7 @@ lazy val prebuilt = crossProject(JSPlatform, JVMPlatform)
   .enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
   .settings(setupTestConfig: _*)
-  .settings(libraryDependencies += "dev.zio" %% "zio" % "1.0.9")
+  .settings(libraryDependencies += "dev.zio" %%% "zio" % "1.0.9")
   .dependsOn(syntax)
   .settings(noPublishSettings)
 

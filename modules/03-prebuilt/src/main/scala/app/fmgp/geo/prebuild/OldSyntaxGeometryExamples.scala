@@ -2,11 +2,10 @@ package app.fmgp.geo.prebuild
 
 import app.fmgp.syntax.OldSyntax
 import app.fmgp.geo.prebuilt.KhepriExamples
-import app.fmgp.geo.prebuilt.RhythmicGymnasticsPavilionUtils
 import app.fmgp.geo.Shape
 import app.fmgp.geo.WorldAddition
 
-object OldSyntaxGeometryExamples extends OldSyntax with KhepriExamples with RhythmicGymnasticsPavilionUtils {
+object OldSyntaxGeometryExamples extends OldSyntax with KhepriExamples {
 
   var shapes: Seq[Shape] = Seq.empty
 

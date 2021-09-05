@@ -31,6 +31,7 @@ object dsl extends CoordinatesDsl {
     }
 
     val live: ULayer[Dsl] = ZLayer.succeed(new Service {})
+    val liveService: Dsl = Has(new Service {})
   }
 
   // Accessor Methods

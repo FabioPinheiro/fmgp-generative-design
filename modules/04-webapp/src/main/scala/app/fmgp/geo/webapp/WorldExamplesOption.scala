@@ -6,6 +6,7 @@ import app.fmgp.geo._
 import app.fmgp.geo.prebuilt.Atomium
 import app.fmgp.geo.prebuilt.GeometryExamples
 import app.fmgp.geo.prebuild.OldSyntaxGeometryExamples
+import app.fmgp.geo.prebuilt.RhythmicGymnasticsPavilionExample
 
 enum WorldExamplesOption(
     val www: app.fmgp.geo.World,
@@ -19,6 +20,26 @@ enum WorldExamplesOption(
       extends WorldExamplesOption(
         World.w3DEmpty,
         "delete"
+      )
+  case Default
+      extends WorldExamplesOption(
+        {
+          import zio._
+          import scala.math._
+          import app.fmgp.dsl._
+
+          val program = for {
+            _ <- ZIO.unit
+            grid = RhythmicGymnasticsPavilionExample
+              .damped_sin_roof_pts(u0(), 20, 3, 10, 15, Pi, 0.03, Pi / 50, Pi / 10, 60, 100, 24, 100, 1)
+            sg <- surface_grid(grid)
+            shape = sg.transformWith(Matrix.rotate(Pi / 2, Vec(1, 0, 0)).postTranslate(0, -100, 0))
+            world: World = WorldAddition(shapes = Seq(shape))
+          } yield (world)
+          // zio.Runtime.default.unsafeRun(program.provideLayer(Dsl.live))
+          Runtime(Dsl.liveService, zio.internal.Platform.default).unsafeRun(program)
+        },
+        "work"
       )
   case Atomium3D
       extends WorldExamplesOption(
@@ -133,7 +154,7 @@ enum WorldExamplesOption(
           import e._
           addShape(TestShape())
         },
-        "token"
+        "grade"
       )
   case TextShape3D
       extends WorldExamplesOption(
@@ -142,14 +163,13 @@ enum WorldExamplesOption(
       )
   case SurfaceGridShape3D
       extends WorldExamplesOption(
-        OldSyntaxGeometryExamples.world { e =>
-          import scala.math._
-          import e._
-          //val a = damped_sin_roof_pts(u0(), 20, 3, 10, 15, Pi, 0.03, Pi / 50, Pi / 10, 60, 100, 120, 800, 1)
-          val a = damped_sin_roof_pts(e.u0(), 20, 3, 10, 15, Pi, 0.03, Pi / 50, Pi / 10, 60, 100, 24, 100, 1)
-          addShape(
-            SurfaceGridShape(a.map(_.toArray).toArray)
-              .transformWith(Matrix.rotate(Pi / 2, Vec(1, 0, 0)).postTranslate(0, -100, 0))
+        {
+          val roofProgram = RhythmicGymnasticsPavilionExample.roof.map {
+            import scala.math._
+            _.transformWith(Matrix.rotate(Pi / 2, Vec(1, 0, 0)).postTranslate(0, -100, 0))
+          }
+          World.addition(
+            zio.Runtime(app.fmgp.dsl.Dsl.liveService, zio.internal.Platform.default).unsafeRun(roofProgram)
           )
         },
         "token"
