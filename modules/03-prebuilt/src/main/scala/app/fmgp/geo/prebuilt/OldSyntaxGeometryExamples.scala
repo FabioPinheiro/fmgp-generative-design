@@ -1,4 +1,4 @@
-package app.fmgp.geo.prebuild
+package app.fmgp.geo.prebuilt
 
 import app.fmgp.syntax.OldSyntax
 import app.fmgp.geo.prebuilt.KhepriExamples

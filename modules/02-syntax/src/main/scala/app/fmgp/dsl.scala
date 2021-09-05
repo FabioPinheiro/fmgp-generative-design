@@ -10,6 +10,8 @@ import app.fmgp.syntax.CoordinatesDsl
 object dsl extends CoordinatesDsl {
   type Dsl = Has[Dsl.Service]
 
+  def defaultRuntime = Runtime(Dsl.liveService, zio.internal.Platform.default)
+
   // Companion object exists to hold service definition and a`lso the live implementation.
   object Dsl {
     trait Service {
