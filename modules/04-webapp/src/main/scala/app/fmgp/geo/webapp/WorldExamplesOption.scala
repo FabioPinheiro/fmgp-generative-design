@@ -3,10 +3,13 @@ package app.fmgp.geo.webapp
 import com.raquo.laminar.api.L._
 
 import app.fmgp.geo._
-import app.fmgp.geo.prebuilt.Atomium
-import app.fmgp.geo.prebuilt.GeometryExamples
-import app.fmgp.geo.prebuild.OldSyntaxGeometryExamples
-import app.fmgp.geo.prebuilt.RhythmicGymnasticsPavilionExample
+import app.fmgp.geo.prebuilt.{
+  Atomium,
+  GeometryExamples,
+  OldSyntaxGeometryExamples,
+  RhythmicGymnasticsPavilionExample,
+  GeoZioExample
+}
 
 enum WorldExamplesOption(
     val www: app.fmgp.geo.World,
@@ -16,62 +19,16 @@ enum WorldExamplesOption(
       ]
     )
 ) {
-  case Clean
-      extends WorldExamplesOption(
-        World.w3DEmpty,
-        "delete"
-      )
-  case Default
-      extends WorldExamplesOption(
-        {
-          import zio._
-          import scala.math._
-          import app.fmgp.dsl._
+  case Clean extends WorldExamplesOption(World.w3DEmpty, "delete")
+  case Default extends WorldExamplesOption(GeoZioExample.world, "work")
+  case Atomium3D extends WorldExamplesOption(Atomium.atomiumWorld.asAddition, MyIcons.atomiumSVG)
+  case ShapesDemo2D extends WorldExamplesOption(GeometryExamples.shapesDemo2D.asAddition, "token")
+  case ShapesDemo3D extends WorldExamplesOption(GeometryExamples.shapesDemo3D.asAddition, "token")
+  case Cross2D extends WorldExamplesOption(OldSyntaxGeometryExamples.world(_.cross), "token")
 
-          val program = for {
-            _ <- ZIO.unit
-            grid = RhythmicGymnasticsPavilionExample
-              .damped_sin_roof_pts(u0(), 20, 3, 10, 15, Pi, 0.03, Pi / 50, Pi / 10, 60, 100, 24, 100, 1)
-            sg <- surface_grid(grid)
-            shape = sg.transformWith(Matrix.rotate(Pi / 2, Vec(1, 0, 0)).postTranslate(0, -100, 0))
-            world: World = WorldAddition(shapes = Seq(shape))
-          } yield (world)
-          // zio.Runtime.default.unsafeRun(program.provideLayer(Dsl.live))
-          Runtime(Dsl.liveService, zio.internal.Platform.default).unsafeRun(program)
-        },
-        "work"
-      )
-  case Atomium3D
-      extends WorldExamplesOption(
-        Atomium.atomiumWorld.asAddition,
-        MyIcons.atomiumSVG
-      )
-  case ShapesDemo2D
-      extends WorldExamplesOption(
-        GeometryExamples.shapesDemo2D.asAddition,
-        "token"
-      )
-  case ShapesDemo3D
-      extends WorldExamplesOption(
-        GeometryExamples.shapesDemo3D.asAddition,
-        "token"
-      )
-  case Cross2D
-      extends WorldExamplesOption(
-        OldSyntaxGeometryExamples.world(_.cross),
-        "token"
-      )
-
-  case Polygon2D
-      extends WorldExamplesOption(
-        OldSyntaxGeometryExamples.world(_.polygon(10, 5)), //FIXME
-        "token"
-      )
+  case Polygon2D extends WorldExamplesOption(OldSyntaxGeometryExamples.world(_.polygon(10, 5)), "token") //FIXME
   case Rectangle2D
-      extends WorldExamplesOption(
-        OldSyntaxGeometryExamples.world(_.rectangle(XYZ(-1, -1, 0), XYZ(1, 1, 0))),
-        "token"
-      )
+      extends WorldExamplesOption(OldSyntaxGeometryExamples.world(_.rectangle(XYZ(-1, -1, 0), XYZ(1, 1, 0))), "token")
   case DoricColumn2d
       extends WorldExamplesOption(
         OldSyntaxGeometryExamples.world { e =>
@@ -123,7 +80,7 @@ enum WorldExamplesOption(
           e.addShape(e.tree2Random(e.xyz(0, 0, -10), 5, Pi / 2, Pi / 16, Pi / 4, 0.6, 0.9))
           e.addShape(e.tree2Random(e.xyz(20, 0, -10), 5, Pi / 2, Pi / 16, Pi / 4, 0.6, 0.9))
         },
-        "token"
+        "park"
       )
   case ArcTruss
       extends WorldExamplesOption(
@@ -145,7 +102,7 @@ enum WorldExamplesOption(
           //e.addShape(e.Heart.planeShape(holes = Seq(e.Heart.path(x = 0, y = 1, size = 0.5)), x = 0, y = 0, size = 1))
           e.addShape(e.Heart.extrude(holes = Seq(e.Heart.path(x = 0, y = 1, size = 0.5)), x = 0, y = 0, size = 1))
         },
-        "token"
+        "favorite_border"
       )
 
   case TestShape3D
@@ -159,7 +116,7 @@ enum WorldExamplesOption(
   case TextShape3D
       extends WorldExamplesOption(
         OldSyntaxGeometryExamples.world { e => e.addShape(TextShape("Hello World!", 3)) },
-        "token"
+        "title"
       )
   case SurfaceGridShape3D
       extends WorldExamplesOption(
@@ -168,9 +125,7 @@ enum WorldExamplesOption(
             import scala.math._
             _.transformWith(Matrix.rotate(Pi / 2, Vec(1, 0, 0)).postTranslate(0, -100, 0))
           }
-          World.addition(
-            zio.Runtime(app.fmgp.dsl.Dsl.liveService, zio.internal.Platform.default).unsafeRun(roofProgram)
-          )
+          World.addition(app.fmgp.dsl.defaultRuntime.unsafeRun(roofProgram))
         },
         "token"
       )
