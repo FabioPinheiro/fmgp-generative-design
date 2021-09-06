@@ -1,8 +1,8 @@
 #!/bin/sh
 scriptdir="$(dirname "$0")"
 
-#(cd "$scriptdir/.." ; sbt -mem 2048 -J-Xmx5120m "clean; fastOptJS::webpack")
 [[ -z $(git status -uall --porcelain) ]] && {
+  (cd "$scriptdir/.." ; sbt -mem 2048 -J-Xmx5120m "clean; fastOptJS::webpack")
   cp "$scriptdir/../modules/04-webapp/target/scala-3.0.0/scalajs-bundler/main/fmgp-geometry-webapp-fastopt-bundle.js" "$scriptdir" &&
   git branch gh-pages &&
   git checkout gh-pages &&
