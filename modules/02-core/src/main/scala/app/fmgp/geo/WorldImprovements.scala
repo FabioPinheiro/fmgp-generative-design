@@ -32,6 +32,18 @@ object WorldImprovements {
     // format: on
     aux
   }
+  def matrixJs2matrix(m: typings.three.matrix4Mod.Matrix4): geo.Matrix = {
+    val aux = m.elements
+    // format: off
+    geo.Matrix(
+      m00 = aux(0), m01= aux(1), m02= aux(2), m03= aux(3),
+      m10 = aux(4), m11= aux(5), m12= aux(6), m13= aux(7),
+      m20 = aux(8), m21= aux(9), m22= aux(10), m23= aux(11),
+      m30 = aux(12), m31= aux(13), m32= aux(14), m33= aux(15)
+    )
+    // format: on
+  }
+
   @inline def float2ArrayLike(points: Seq[Float]): typings.std.ArrayLike[Double] =
     new scala.scalajs.js.typedarray.Float32Array(points.toJSIterable)
       .asInstanceOf[typings.std.ArrayLike[Double]] //FIXME ... TS
@@ -183,7 +195,7 @@ object WorldImprovements {
         shapes.map(generateShape(_, state)).fold(new Object3D)((z, n) => z.add(n))
       case geo.TransformationShape(shape, transformation) =>
         val aux = generateShape(shape, state)
-        aux.applyMatrix4(matrix2matrix(transformation.matrix).multiply(aux.matrix))
+        aux.applyMatrix4(matrix2matrix(transformation.matrix).multiply(aux.matrixWorld))
         aux
 
       case geo.Points(points) =>
