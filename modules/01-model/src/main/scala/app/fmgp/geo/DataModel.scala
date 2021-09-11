@@ -21,7 +21,8 @@ object World {
   def addition(shape: Shape): WorldAddition = WorldAddition(Seq(shape))
   def w2D(shapes: ShapeSeq): WorldState = WorldState(shapes, dimensions = Dimensions.D2)
   def w3D(shapes: ShapeSeq): WorldState = WorldState(shapes, dimensions = Dimensions.D3)
-  def w3DEmpty: WorldState = w3D(Seq.empty)
+  //def w3D(shape: Shape): WorldState = w3D(ShapeSeq(shape))
+  def w3DEmpty: World = w3D(Seq.empty)
 }
 
 sealed trait Coordinate {
@@ -155,6 +156,7 @@ final case class Vec(x: Double = 0, y: Double = 0, z: Double = 0) extends Coordi
 
   /** Returns the cross product of two vectors. */
   @inline def cross(v: Vec): Vec = this ⨯ v
+  def perpendicularInXY2D = cross(Vec(z = 1))
 
   @inline def magSqr = x * x + y * y + z * z
 
@@ -301,10 +303,10 @@ final case class Matrix(
     m33 = m03 * b.m30 + m13 * b.m31 + m23 * b.m32 + m33 * b.m33
   )
 
-  def preTranslate(x: Double, y: Double, z: Double): Matrix =
+  def preTranslate(x: Double = 0, y: Double = 0, z: Double = 0): Matrix =
     preMultiply(Matrix.translate(x, y, z))
   def preTranslate(v: Vec): Matrix = preTranslate(v.x, v.y, v.z)
-  def postTranslate(x: Double, y: Double, z: Double): Matrix =
+  def postTranslate(x: Double = 0, y: Double = 0, z: Double = 0): Matrix =
     postMultiply(Matrix.translate(x, y, z))
   def postTranslate(v: Vec): Matrix = postTranslate(v.x, v.y, v.z)
 
@@ -369,7 +371,7 @@ final case class Matrix(
 }
 object Matrix {
   // format: off
-  @inline def translate(x: Double, y: Double, z: Double): Matrix = Matrix(
+  @inline def translate(x: Double = 0, y: Double = 0, z: Double = 0): Matrix = Matrix(
     1, 0, 0, x,
     0, 1, 0, y,
     0, 0, 1, z,

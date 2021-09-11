@@ -13,10 +13,13 @@ object EncoderDecoder {
       c.as[String].map(Dimensions.valueOf(_))
   }
 
-  given Encoder[WorldAddition] = deriveEncoder[WorldAddition]
-  given Decoder[WorldAddition] = deriveDecoder[WorldAddition]
-  given Encoder[WorldState] = deriveEncoder[WorldState]
-  given Decoder[WorldState] = deriveDecoder[WorldState]
+  object worldEncoderDecoderAux {
+    given Encoder[WorldAddition] = deriveEncoder[WorldAddition]
+    given Decoder[WorldAddition] = deriveDecoder[WorldAddition]
+    given Encoder[WorldState] = deriveEncoder[WorldState]
+    given Decoder[WorldState] = deriveDecoder[WorldState]
+  }
+  import worldEncoderDecoderAux.given
 
   given Encoder[World] = Encoder.instance {
     case e: WorldState    => JsonObject(("WorldState", e.asJson)).asJson
@@ -45,6 +48,7 @@ object EncoderDecoder {
   given Decoder[WorldOrFile] = new Decoder[WorldOrFile]:
     override def apply(c: io.circe.HCursor): io.circe.Decoder.Result[WorldOrFile] =
       c.keys.map(_.toSeq) match {
+        case Some("World" :: Nil)         => c.downField("WorldState").as[WorldState] //Default
         case Some("WorldState" :: Nil)    => c.downField("WorldState").as[WorldState]
         case Some("WorldAddition" :: Nil) => c.downField("WorldAddition").as[WorldAddition]
         case Some("MyFile" :: Nil)        => c.downField("MyFile").as[MyFile]

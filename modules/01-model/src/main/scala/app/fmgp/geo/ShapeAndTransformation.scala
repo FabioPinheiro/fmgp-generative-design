@@ -25,6 +25,7 @@ object Shape {
 //     ): TransformationShape[S, Transformation] =
 //       TransformationShape(obj, TransformMatrix(transform))
 //   }
+  def apply(shapes: Shape*): ShapeSeq = ShapeSeq(shapes)
 }
 
 case class TransformationShape(
