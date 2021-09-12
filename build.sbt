@@ -231,6 +231,18 @@ lazy val controller = project
     ),
     libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test,
   )
+  .settings( // compile and merge webapp as a resource
+    Compile / unmanagedResources := ((Compile / unmanagedResources) dependsOn (webapp / Compile / fastOptJS / webpack)).value,
+    Compile / unmanagedResources += (webapp / target).value /
+      ("scala-" + scalaVersion.value) /
+      ("scalajs-bundler/main/" + (webapp / name).value + "-fastopt-bundle.js"),
+    Compile / unmanagedResources += (webapp / target).value /
+      ("scala-" + scalaVersion.value) /
+      ("scalajs-bundler/main/" + (webapp / name).value + "-fullopt-bundle.js"),
+    Compile / unmanagedResources += (webapp / target).value /
+      ("scala-" + scalaVersion.value) /
+      ("scalajs-bundler/main/node_modules/material-components-web/dist/material-components-web.min.css"),
+  )
   .dependsOn(modelJVM, syntaxJVM)
   .settings(publishSettings)
 
@@ -252,6 +264,7 @@ lazy val repl = project
     app.fmgp.experiments.Main.stop
     """,
   )
+  .settings(reStart / mainClass := Some("app.fmgp.SingleRequest"))
   .dependsOn(modelJVM, syntaxJVM, prebuiltJVM, controller)
   .settings(noPublishSettings)
 

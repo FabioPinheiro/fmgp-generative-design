@@ -9,6 +9,9 @@ import app.fmgp.geo.World
 
 object SingleRequest {
   def main(args: Array[String]): Unit = {
+    println("SingleRequest Start")
+
+    val backend = HttpURLConnectionBackend()
 
     val request = basicRequest.get(uri"http://localhost:8888/add")
 
@@ -20,13 +23,11 @@ object SingleRequest {
       .post(uri"http://localhost:8888/add")
       .body(GeoZioExample.world.asJson.noSpaces) // World.w3D(Seq(GeoZioExample.shapes))
 
-    val backend = HttpURLConnectionBackend()
-
-    // val sameResponse = backend.send(request)
     val responseClean = requestClean.send(backend)
     val responseAdd = requestAdd.send(backend)
-    //println(response.header("Content-Length"))
-    //println(response.body)
 
+    println("SingleRequest Sleep")
+    Thread.sleep(1000 * 60 * 5) // 5 mins
+    println("SingleRequest End")
   }
 }

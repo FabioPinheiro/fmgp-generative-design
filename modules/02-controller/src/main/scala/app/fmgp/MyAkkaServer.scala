@@ -1,28 +1,26 @@
 package app.fmgp
 
+import scala.concurrent.{Future, ExecutionContext}
+import scala.collection.concurrent.TrieMap
+import scala.collection.immutable
+import scala.concurrent.duration._
+import scala.util._
 import java.util.concurrent.TimeUnit
 
-import akka.NotUsed
+import io.circe._, io.circe.syntax._, io.circe.generic.semiauto._, io.circe.parser._
+
+import akka.actor._
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.{HttpEntity, ContentTypes, ContentType, MediaTypes, HttpCharsets}
 import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.unmarshalling.Unmarshaller
 import akka.stream.{Materializer, Graph, OverflowStrategy, SinkShape}
 import akka.stream.scaladsl.{Broadcast, BroadcastHub, Flow, Keep, MergeHub, RunnableGraph, Sink, Source}
 import akka.util.ByteString
-import io.circe._, io.circe.syntax._, io.circe.generic.semiauto._, io.circe.parser._
-
-import scala.collection.concurrent.TrieMap
-import scala.collection.immutable
-import scala.concurrent.Future
-import scala.concurrent.duration._
-import akka.actor._
-import io.circe._, io.circe.syntax._
-import scala.concurrent.ExecutionContext
 
 import app.fmgp.geo.{World, WorldAddition, Shape, MyFile}
 import app.fmgp.geo.EncoderDecoder.{WorldOrFile, given}
-import akka.http.scaladsl.unmarshalling.Unmarshaller
-import akka.http.scaladsl.model.HttpEntity
 
 class MyAkkaServer(interface: String, port: Int)(using
     ex: ExecutionContext,
@@ -57,7 +55,7 @@ class MyAkkaServer(interface: String, port: Int)(using
               data match {
                 case Some(wf) =>
                   geoSink.runWith(Source.single(wf))
-                  logger.info(s"WorldOrFile received, $wf")
+                  logger.info(s"WorldOrFile received")
                   complete { "WorldOrFile received" }
                 case None => complete { "Fail" }
               }
@@ -71,9 +69,39 @@ class MyAkkaServer(interface: String, port: Int)(using
       )
     }
 
-    val aux = Http().newServerAt(interface, port) //.bindAndHandle(route, interface, port)
+    val appRoutes = {
+      import scala.io.Source
+      val serveIndex =
+        Try(Source.fromResource("index.html").iter.mkString) match { //getFromResourceDirectory("index.html")
+          case Failure(ex)   => failWith(ex)
+          case Success(data) => complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, data))
+        }
+      val serveMainJs = {
+        Try(Source.fromResource("fmgp-geometry-webapp-fastopt-bundle.js").iter.mkString)
+          .orElse(Try(Source.fromResource("fmgp-geometry-webapp-fullopt-bundle.js").iter.mkString))
+      } match {
+        case Failure(ex) => failWith(ex)
+        case Success(data) =>
+          complete(HttpEntity(ContentType.WithCharset(MediaTypes.`application/javascript`, HttpCharsets.`UTF-8`), data))
+      }
+
+      val serveMaterialCSS =
+        Try(scala.io.Source.fromResource("material-components-web.min.css").iter.mkString) match {
+          case Failure(ex) => failWith(ex)
+          case Success(data) =>
+            complete(HttpEntity(ContentType.WithCharset(MediaTypes.`text/css`, HttpCharsets.`UTF-8`), data))
+        }
+
+      concat(
+        path("") { get(serveIndex) },
+        path("main.js") { get(serveMainJs) },
+        path("material-components-web.min.css") { get(serveMaterialCSS) },
+      )
+    }
+
+    val myServer = Http().newServerAt(interface, port) //.bindAndHandle(route, interface, port)
     logger.info(s"Server is now online at [$interface:$port]")
-    aux.bind(concat(wsRoute, addRoute))
+    myServer.bind(concat(wsRoute, addRoute, appRoutes))
   }
 
   def start = binding
