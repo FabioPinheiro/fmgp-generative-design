@@ -237,6 +237,7 @@ lazy val controller = project
 lazy val repl = project
   .in(file("modules/04-repl"))
   .settings(commonSettings: _*)
+  .settings(libraryDependencies += "com.softwaremill.sttp.client3" %% "core" % "3.3.14")
   .settings(
     console / initialCommands += """
     import scala.math._

@@ -48,7 +48,7 @@ object AppUtils {
           li(
             ul(
               className("mdc-menu__selection-group"),
-              WorldExamplesOption.values.toSeq.map(_.makeLi),
+              WorldExamplesOption.values.filterNot(_ == WorldExamplesOption.Clean).toSeq.map(_.makeLi),
             )
           ),
         )

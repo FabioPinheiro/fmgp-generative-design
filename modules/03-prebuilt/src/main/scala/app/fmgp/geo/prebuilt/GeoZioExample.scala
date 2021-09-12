@@ -1,21 +1,41 @@
 package app.fmgp.geo.prebuilt
 
+import scala.scalajs.js.annotation._
+
 import zio._
 import scala.math._
 import app.fmgp.geo._
 import app.fmgp.dsl._
 
-import app.fmgp.geo.prebuilt.RhythmicGymnasticsPavilionExample
+//import app.fmgp.geo.prebuilt.RhythmicGymnasticsPavilionExample._
+import app.fmgp.geo.prebuilt.IsenbergSchoolOfManagementHubExample._
 
+@JSExportTopLevel("GeoZioExample")
 object GeoZioExample {
 
   val program = for {
     _ <- ZIO.unit
-    grid = RhythmicGymnasticsPavilionExample
-      .damped_sin_roof_pts(u0(), 20, 3, 10, 15, Pi, 0.03, Pi / 50, Pi / 10, 60, 100, 24, 100, 1)
-    sg <- surface_grid(grid)
-    shape = sg.transformWith(Matrix.rotate(Pi / 2, Vec(1, 0, 0)).postTranslate(0, -100, 0))
-  } yield (shape)
+    //points = pts_circle(XYZ.origin, r = 2, alfa_init = 0, alfa_end = Pi, n = 10)
+    isenberg = Isenberg(
+      XYZ.origin,
+      ri = 5,
+      re = 10,
+      alfa_init = 0,
+      alfa_proj = Pi,
+      alfa_end = 3d / 2 * Pi,
+      n = 50,
+      slabThickness = 0.02,
+    )
+    height = 1.5
+    floors = ShapeSeq((1 to 5).map(f => isenberg.slabRoof(height * f)))
+    beams = isenberg.beams(height)
+    shapes = Shape(
+      isenberg.slabFloor,
+      floors,
+      beams
+    ).transformWith(Matrix.rotate(-Pi / 2, Vec(x = 1))) //Points(points)
+  } yield (shapes)
 
-  val world: World = World.addition(defaultRuntime.unsafeRun(program))
+  def shapes: Shape = defaultRuntime.unsafeRun(program)
+  def world: World = World.addition(shapes)
 }
