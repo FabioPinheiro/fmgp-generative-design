@@ -52,8 +52,14 @@ object Main extends com.typesafe.scalalogging.LazyLogging {
 
   def main(args: Array[String]): Unit = {
     startLocal //(interface = "127.0.0.1", port = 8888)
-    StdIn.readLine()
-    stop
+
+    if (args.isEmpty) {
+      logger.info("Press RETURN to stop...")
+      StdIn.readLine()
+      stop
+    } else {
+      logger.info("NO STOP MAIN ...")
+    }
   }
 
 }
