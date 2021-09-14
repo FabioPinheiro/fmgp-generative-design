@@ -29,7 +29,7 @@ libraryDependencies += "app.fmgp" % "fmgp-threejs_2.13" % "0.1-M1"
 
 ### **Run controller (Server)**
 
-On sbt `controller/run` (but we suggest to use the sbt-revolver to run the server on the background by calling `controller/reStart "Revolver"`)
+On sbt `controller/reStart "Revolver"` (this will run the server on the background)
 
 Open `http://localhost:8888` on your browser.
 
