@@ -80,11 +80,18 @@ class JsonEncoderDecodeTest extends munit.FunSuite {
   // World
   test("Generic-Shape") {
     val obj = WorldAddition(Seq(Box(1, 2, 3)))
+    val obj2: World = obj
     //val str = """{"shapes":[{"Box":{"width":1.0,"height":2.0,"depth":3.0}}]}"""
     val str = """{"shapes":[{"Box":{"width":1,"height":2,"depth":3}}]}"""
+    val str2 = s"""{"WorldAddition":$str}"""
+
+    import app.fmgp.geo.EncoderDecoder.worldEncoderDecoderAux.{given}
 
     assertEncoder(obj, str)
     assertDecode(str, obj)
+
+    assertEncoder(obj2, str2)
+    assertDecode(str2, obj2)
   }
 
   // import io.circe._, io.circe.syntax._, io.circe.parser._
