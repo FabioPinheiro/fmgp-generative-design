@@ -71,6 +71,11 @@ On sbt `webapp/fastOptJS::webpack`
 
 Open `file:///.../modules/04-webapp/index-fastopt.html` on your browser.
 
+## GRPC
+
+For the GRPC and protubuf you need to have envoy runing.
+`docker run --rm -ti --net=host -v $PWD/envoy.yaml:/etc/envoy/envoy.yaml envoyproxy/envoy:v1.17.0`
+
 ## Copyright and License
 
 This project is licensed under the MIT license, available at

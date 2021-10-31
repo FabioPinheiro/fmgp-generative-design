@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package fmgp.geometry.proto;
+package fmgp.geo.proto;
 
 message XYZ {
   double x = 1;

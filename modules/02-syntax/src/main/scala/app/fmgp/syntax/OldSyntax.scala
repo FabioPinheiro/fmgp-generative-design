@@ -14,7 +14,7 @@ object OldSyntax extends OldSyntax {
   // }
 
   override def clear: Unit = {
-    println("Clear all Shapes!")
+    println("Clear all Shapes! (OldSyntax)")
     super.clear
   }
 }

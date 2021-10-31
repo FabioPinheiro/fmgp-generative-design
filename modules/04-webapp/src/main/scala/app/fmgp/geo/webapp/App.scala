@@ -1,5 +1,7 @@
 package app.fmgp.geo.webapp
 
+import scala.scalajs.js.annotation._
+
 import org.scalajs.dom
 import com.raquo.laminar.api.L._
 import com.raquo.waypoint._
@@ -7,7 +9,10 @@ import com.raquo.waypoint._
 import MyRouter._
 object App {
 
-  def main(args: Array[String]): Unit = {
+  // @JSExportTopLevel(name = "start", moduleID = "app_print")
+  // def print() = println("Ola from webapp App")
+
+  def main( /*args: Array[String]*/ ): Unit = {
 
     // This div, its id and contents are defined in index-fastopt.html and index-fullopt.html files
     lazy val container = dom.document.getElementById("app-container")

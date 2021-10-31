@@ -21,10 +21,20 @@ libraryDependencies += "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.1.0"
   */
 addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.20.0")
 
+// GRPC
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+addSbtPlugin("com.thesamet" % "sbt-protoc" % "1.0.3")
+libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.11.6"
+//https://mvnrepository.com/artifact/com.thesamet.scalapb.grpcweb/scalapb-grpcweb
+libraryDependencies += "com.thesamet.scalapb.grpcweb" %% "scalapb-grpcweb-code-gen" % "0.6.4"
+
 //https://scalablytyped.org/docs/plugin
 //https://github.com/ScalablyTyped/Converter/releases
 resolvers += Resolver.bintrayRepo("oyvindberg", "converter")
 addSbtPlugin("org.scalablytyped.converter" % "sbt-converter" % "1.0.0-beta36")
+
+// Utils Buildinfo
+addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.10.0")
 
 // CI
 addSbtPlugin("com.geirsson" % "sbt-ci-release" % "1.5.3")

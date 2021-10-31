@@ -87,6 +87,22 @@ lazy val scalaJSBundlerConfigure: Project => Project =
       useYarn := true
     )
 
+  lazy val buildInfoConfigure: Project => Project = _.enablePlugins(BuildInfoPlugin)
+    .settings(
+      buildInfoPackage := "app.fmgp.geo",
+      //buildInfoObject := "BuildInfo",
+      buildInfoKeys := Seq[BuildInfoKey](
+        name,
+        version,
+        scalaVersion,
+        sbtVersion,
+        BuildInfoKey.action("buildTime") { System.currentTimeMillis }, // re-computed each time at compile
+        "serverPort" -> 8888,
+        "grpcPort" -> 8889,
+        "grpcWebPort" -> 8890, //DOCKER: `docker run --rm -ti --net=host -v $PWD/envoy.yaml:/etc/envoy/envoy.yaml envoyproxy/envoy:v1.17.0`
+      ),
+    )
+
 lazy val modules: List[ProjectReference] =
   List(
     threeUtils,
@@ -99,7 +115,9 @@ lazy val modules: List[ProjectReference] =
     prebuiltJS,
     prebuiltJVM,
     webapp,
-    repl
+    repl,
+    protosJVM,
+    protosJS,
   )
 
 lazy val root = project
@@ -212,9 +230,10 @@ lazy val prebuilt = crossProject(JSPlatform, JVMPlatform)
 lazy val prebuiltJS = prebuilt.js
 lazy val prebuiltJVM = prebuilt.jvm
 
+// ### controller ###
 lazy val controller = project
   .in(file("modules/02-controller"))
-  //.settings(scalaVersion := "3.0.2-RC1-bin-20210706-6011847-NIGHTLY")
+  .configure(buildInfoConfigure)
   .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
@@ -242,8 +261,16 @@ lazy val controller = project
     Compile / unmanagedResources += (webapp / target).value /
       ("scala-" + scalaVersion.value) /
       ("scalajs-bundler/main/node_modules/material-components-web/dist/material-components-web.min.css"),
+    //Compile / unmanagedResources :=
+    // ((Compile / unmanagedResources) dependsOn (webapp / Compile / fastLinkJS)).value,
   )
-  .dependsOn(modelJVM, syntaxJVM)
+  .settings(
+    libraryDependencies ++= Seq(
+      "io.grpc" % "grpc-netty" % scalapb.compiler.Version.grpcJavaVersion, //GRPC
+      "io.grpc" % "grpc-services" % scalapb.compiler.Version.grpcJavaVersion //GRPC reflection api
+    )
+  )
+  .dependsOn(modelJVM, syntaxJVM, protosJVM)
   .settings(publishSettings)
 
 lazy val repl = project
@@ -272,10 +299,7 @@ lazy val webapp = project
   .in(file("modules/04-webapp"))
   .settings(name := "fmgp-geometry-webapp")
   .configure(scalaJSBundlerConfigure)
-  // .settings(commonSettings: _*)
-  // .enablePlugins(ScalaJSPlugin)
-  // .enablePlugins(ScalaJSBundlerPlugin)
-  // .settings(setupTestConfig: _*)
+  .configure(buildInfoConfigure)
   .settings(
     libraryDependencies += ("org.scala-js" %%% "scalajs-dom" % scalajsDomVersion).cross(CrossVersion.for3Use2_13),
     libraryDependencies += "com.raquo" %%% "laminar" % "0.13.1",
@@ -288,6 +312,7 @@ lazy val webapp = project
     ),
     Compile / npmDependencies ++= Seq(
       "three" -> threeVersion,
+      "grpc-web" -> "1.2.1", //"1.3.0", //https://github.com/scalapb/scalapb-grpcweb/blob/master/build.sbt#L93
       "stats.js" -> "0.17.0",
       "@types/stats.js" -> "0.17.0", //https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
       //Material Design
@@ -300,8 +325,54 @@ lazy val webapp = project
     ),
   )
   .settings(
-    scalaJSUseMainModuleInitializer := true,
-    webpackBundlingMode := BundlingMode.LibraryAndApplication(),
+    webpackBundlingMode := BundlingMode.Application,
+    //MODUELS
+    //scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) },
+    //scalaJSLinkerConfig ~= (_.withModuleSplitStyle(ModuleSplitStyle.SmallestModules)),
+    Compile / scalaJSModuleInitializers += {
+      ModuleInitializer
+        .mainMethod("app.fmgp.geo.webapp.App", "main")
+      // .withModuleID("app_print")
+      // .withModuleID("clientGRPC")
+    },
   )
-  .dependsOn(threeUtils, modelJS, prebuiltJS, geometryCore)
+  .dependsOn(threeUtils, modelJS, prebuiltJS, geometryCore, protosJS)
   .settings(noPublishSettings)
+
+// ##############
+// ###  GRPC  ###
+// ##############
+import org.scalajs.linker.interface.ModuleSplitStyle
+import org.scalajs.linker.interface.ModuleInitializer
+
+lazy val protos =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("modules/01-protos"))
+    .settings(
+      Compile / PB.protoSources := Seq( //show protosJVM/protocSources
+        (ThisBuild / baseDirectory).value / "modules" / "01-protos" / "src" / "main" / "protobuf"
+      ),
+      libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
+      //IS this needed? //libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf"
+    )
+    .jvmSettings(
+      libraryDependencies += "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion,
+      Compile / PB.targets := Seq(scalapb.gen() -> (Compile / sourceManaged).value),
+    )
+    .jsSettings(
+      // publish locally and update the version for test
+      libraryDependencies += (
+        "com.thesamet.scalapb.grpcweb" %%% "scalapb-grpcweb" % scalapb.grpcweb.BuildInfo.version
+      ).cross(CrossVersion.for3Use2_13),
+      Compile / PB.targets := Seq(
+        scalapb.gen(grpc = false) -> (Compile / sourceManaged).value,
+        scalapb.grpcweb.GrpcWebCodeGenerator -> (Compile / sourceManaged).value
+      )
+    )
+
+  libraryDependencies ++= Seq(
+  )
+
+lazy val protosJS = protos.js
+lazy val protosJVM = protos.jvm

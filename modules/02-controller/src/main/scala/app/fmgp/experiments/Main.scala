@@ -26,40 +26,57 @@ object Main extends com.typesafe.scalalogging.LazyLogging {
   )
 
   var server: Option[LocalAkkaServer] = None
-  def myAkkaServer: LocalAkkaServer = server.get
+  //def myAkkaServer: LocalAkkaServer = server.get
+
+  var serverGRPC: Option[io.grpc.Server] = None
 
   def startLocal = { //(interface: String, port: Int)
     if (server.isEmpty) {
       server = Some(new LocalAkkaServer) //Some(app.fmgp.MyAkkaServer(interface = interface, port = port))
       server.map(_.start)
-      logger.info("Main starting")
+      logger.info("LocalAkka server starting")
     } else {
-      logger.info("Main is alredy started")
+      logger.info("LocalAkka server Main is alredy started")
+    }
+
+    if (serverGRPC.isEmpty) {
+      serverGRPC = Some(ServerGRPC.build.start())
+      logger.info("GRPC server starting")
+    } else {
+      logger.info("GRPC server is alredy started")
     }
   }
 
   def stop = {
     //import actorSystem.dispatcher
-    logger.info("Main stoping")
+    logger.info("LocalAkka stoping")
     server.map { s =>
       val a = Await.result(s.stop, 10.seconds)
       logger.info(a.toString())
     }
+    serverGRPC.map { s =>
+      val a = s.shutdown()
+      logger.info(a.toString())
+    }
+
     val b = Await.result(actorSystem.terminate(), 10.seconds)
     logger.info(b.toString())
-    logger.info("Main in now STOP")
+    logger.info("LocalAkka in now STOP")
   }
 
   def main(args: Array[String]): Unit = {
     startLocal //(interface = "127.0.0.1", port = 8888)
 
-    if (args.isEmpty) {
-      logger.info("Press RETURN to stop...")
-      StdIn.readLine()
-      stop
-    } else {
-      logger.info("NO STOP MAIN ...")
-    }
+    // if (args.isEmpty) {
+    //   logger.info("Press RETURN to stop...")
+    //   StdIn.readLine()
+    //   stop
+    // } else {
+    //   logger.info("NO STOP MAIN ...")
+    // }
+
+    sys.addShutdownHook { stop }
+    serverGRPC.map(_.awaitTermination())
   }
 
 }

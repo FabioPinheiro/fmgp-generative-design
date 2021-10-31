@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package fmgp.geo.proto;
+
+// The greeting service definition.
+// grpcurl -plaintext localhost:9090 list fmgp.geo.proto.Visualizer
+// grpcurl -plaintext localhost:9090 describe fmgp.geo.proto.Visualizer
+service Visualizer {
+  // grpcurl -plaintext -import-path modules/01-protos/src/main -d '{"value":"Fabio"}' -proto protobuf/geometry.proto localhost:9090 fmgp.geo.proto.Visualizer/SayHello
+  rpc SayHello (DataReq) returns (DataRes) {}
+  rpc SayHelloServerStreaming(DataReq) returns (stream DataRes) {}
+  rpc SayHelloBidiStreaming(stream DataReq) returns (stream DataRes) {}
+  rpc SayHelloClientStreaming(stream DataReq) returns (DataRes) {}
+}
+
+message DataReq {
+  string value = 1;
+}
+message DataRes {
+  string value = 1;
+}
