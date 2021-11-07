@@ -121,7 +121,7 @@ object AppUtils {
                 aria.hidden(true),
                 page match {
                   case _: HomePage.type        => "home"
-                  case _: HelloPage.type       => "streetview"
+                  case _: ConfigPage.type      => "streetview"
                   case _: GeoPage.type         => "explore"
                   case _: ShowGeoJsonPage.type => "precision_manufacturing"
                   case _: ShowGeoHtmlPage.type => "dashboard"

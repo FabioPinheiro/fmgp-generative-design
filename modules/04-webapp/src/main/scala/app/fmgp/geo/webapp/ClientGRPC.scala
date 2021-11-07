@@ -19,6 +19,9 @@ object ClientGRPC {
   }
 
   @JSExport
+  def send(data: String) = stub.sayHello(Req(data)).map(_.value)
+
+  @JSExport
   //@JSExportTopLevel(name = "start", moduleID = "clientGRPC")
   def run(): Unit = {
     println("ClientGRPC Run")

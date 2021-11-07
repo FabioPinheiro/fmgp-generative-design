@@ -9,13 +9,13 @@ object MyRouter {
   sealed abstract class Page(val title: String)
 
   case object HomePage extends Page("Home")
-  case object HelloPage extends Page("Hello")
+  case object ConfigPage extends Page("Config")
   case object GeoPage extends Page("GeoApp")
   case object ShowGeoJsonPage extends Page("ShowGeoJson")
   case object ShowGeoHtmlPage extends Page("ShowGeoHTML")
 
   given HomePageRW: ReadWriter[HomePage.type] = macroRW
-  given HelloPageRW: ReadWriter[HelloPage.type] = macroRW
+  given ConfigPageRW: ReadWriter[ConfigPage.type] = macroRW
   //given GeoAppPageRW: ReadWriter[GeoAppPage.type] = macroRW
   given ShowGeoJsonPageRW: ReadWriter[ShowGeoJsonPage.type] = macroRW
 
@@ -23,7 +23,7 @@ object MyRouter {
 
   private val routes = List(
     Route.static(HomePage, root / endOfSegments, Router.localFragmentBasePath),
-    Route.static(HelloPage, root / "hello" / endOfSegments, Router.localFragmentBasePath),
+    Route.static(ConfigPage, root / "config" / endOfSegments, Router.localFragmentBasePath),
     Route.static(GeoPage, root / "geo" / endOfSegments, Router.localFragmentBasePath),
     Route.static(ShowGeoJsonPage, root / "json" / endOfSegments, Router.localFragmentBasePath),
     Route.static(ShowGeoHtmlPage, root / "html" / endOfSegments, Router.localFragmentBasePath),

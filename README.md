@@ -10,6 +10,32 @@ The webbapp visualizer uses the [threejs](https://threejs.org/) library on the b
 
 [Live Demo](https://fabiopinheiro.github.io/fmgp-generative-design/)
 
+```text
+      ┌───────┐ ┌───────┐ ┌────────────┐
+      │ Model │ │ Proto │ │ ThreeUtils │
+      └────┬──┘ └─┬──┬──┘ └────────┬───┘
+           │      │  │             │
+           │    ┌─┘  └────────┐    │
+           │    │             │    │
+         ┌─▼────▼─┐      ┌────▼────▼────┐
+         │ syntax │      │ geometryCore │
+         └─┬─────┬┘      └──────────┬───┘
+           │     │                  │
+           │     └──────┬────────┐  │
+           │            │        │  │
+    ┌──────▼─────┐ ┌────▼─────┐  │  │
+    │ controller │ │ prebuild │  │  │
+    └───▲────┬───┘ └─┬──────┬─┘  │  │
+        │    │       │      │    │  │
+        │    └──┐  ┌─┘      └──┐ │  │
+        │       │  │           │ │  │
+        │     ┌─▼──▼─┐       ┌─▼─▼──▼─┐
+        │     │ repl │       │ webapp │
+        │     └──────┘       └───┬────┘
+        └────────────────────────┘
+
+```
+
 ## How to use?
 
 (We will make a release the future)

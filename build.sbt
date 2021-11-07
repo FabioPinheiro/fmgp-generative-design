@@ -268,7 +268,9 @@ lazy val controller = project
     libraryDependencies ++= Seq(
       "io.grpc" % "grpc-netty" % scalapb.compiler.Version.grpcJavaVersion, //GRPC
       "io.grpc" % "grpc-services" % scalapb.compiler.Version.grpcJavaVersion //GRPC reflection api
-    )
+    ),
+    javaOptions += "-Dio.netty.tryReflectionSetAccessible=true", //For netty
+    javaOptions += "--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED", //For netty
   )
   .dependsOn(modelJVM, syntaxJVM, protosJVM)
   .settings(publishSettings)
@@ -322,10 +324,11 @@ lazy val webapp = project
       // "@material/drawer" -> materialComponentsVersion,
       // "@material/form-field" -> materialComponentsVersion,
       // "@material/top-app-bar" -> materialComponentsVersion,
+      // "@material/switch"
     ),
   )
   .settings(
-    webpackBundlingMode := BundlingMode.Application,
+    webpackBundlingMode := BundlingMode.LibraryAndApplication(),
     //MODUELS
     //scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) },
     //scalaJSLinkerConfig ~= (_.withModuleSplitStyle(ModuleSplitStyle.SmallestModules)),
