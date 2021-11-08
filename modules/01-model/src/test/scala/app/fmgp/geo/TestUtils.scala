@@ -17,12 +17,12 @@ object TestUtils {
   }
 
   //circe json
-  inline def assertEncoder[A](a:A , s: String)(using Encoder[A]) =
-    assertEquals(a.asJson.noSpaces, s)
+  inline def assertEncoder[A](a: A, s: String)(using Encoder[A]) =
+    assertEquals(a.asJson.noSpaces.replaceAll("\\.0", ""), s)
 
-  inline def assertDecode[T](str:String, expected: T)(using Decoder[T]) =
+  inline def assertDecode[T](str: String, expected: T)(using Decoder[T]) =
     decode[T](str) match {
-    case Left(e) =>  fail(s"Decode fail with $e")
-    case Right(e) => assertEquals(e, expected)
- }
+      case Left(e)  => fail(s"Decode fail with $e")
+      case Right(e) => assertEquals(e, expected)
+    }
 }

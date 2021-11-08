@@ -134,6 +134,7 @@ val scalajsDomVersion = "1.2.0" // https://mvnrepository.com/artifact/org.scala-
 val akkaVersion = "2.6.15"
 val akkaHttpVersion = "10.2.4"
 val munitVersion = "0.7.26"
+val zioVersion = "1.0.12" //2.0.0-M2 //https://mvnrepository.com/artifact/dev.zio/zio
 
 /* For munit https://scalameta.org/munit/docs/getting-started.html#scalajs-setup */
 lazy val model = crossProject(JSPlatform, JVMPlatform)
@@ -151,7 +152,7 @@ lazy val model = crossProject(JSPlatform, JVMPlatform)
     )
   )
   .settings(
-    libraryDependencies += "dev.zio" %%% "zio" % "1.0.12" //2.0.0-M2 //https://mvnrepository.com/artifact/dev.zio/zio
+    libraryDependencies += "dev.zio" %%% "zio" % zioVersion
   )
   .jsSettings( //Need for ZIO
     libraryDependencies ++= Seq(
