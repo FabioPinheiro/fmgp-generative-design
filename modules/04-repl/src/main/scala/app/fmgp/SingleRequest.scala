@@ -21,7 +21,10 @@ object SingleRequest {
 
     val requestAdd = basicRequest
       .post(uri"http://localhost:8888/add")
-      .body(GeoZioExample.world.asJson.noSpaces) // World.w3D(Seq(GeoZioExample.shapes))
+      .body {
+        val shapes = app.fmgp.dsl.defaultRuntime.unsafeRun(GeoZioExample.program)
+        World.addition(shapes).asWorld.asJson.noSpaces
+      } // World.w3D(Seq(GeoZioExample.shapes))
 
     val responseClean = requestClean.send(backend)
     val responseAdd = requestAdd.send(backend)

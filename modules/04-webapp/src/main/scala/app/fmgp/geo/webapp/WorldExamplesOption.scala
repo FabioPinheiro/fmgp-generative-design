@@ -10,117 +10,118 @@ import app.fmgp.geo.prebuilt.{
   RhythmicGymnasticsPavilionExample,
   GeoZioExample
 }
+import scala.concurrent.Future
+
+val workWorld: Future[World] = {
+  implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
+  app.fmgp.dsl.defaultRuntime.unsafeRunToFuture(GeoZioExample.program).future.map(s => World.addition(s))
+}
+
+val treesWorld: Future[World] = {
+  implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
+  app.fmgp.dsl.defaultRuntime.unsafeRunToFuture(GeoZioExample.programTrees).future.map(s => World.addition(s))
+}
 
 enum WorldExamplesOption(
-    val www: app.fmgp.geo.World,
+    val www: Future[World],
     val icon: (
       com.raquo.domtypes.generic.Modifier[
         com.raquo.laminar.nodes.ReactiveHtmlElement[org.scalajs.dom.html.Element]
       ]
     )
 ) {
-  case Clean extends WorldExamplesOption(World.w3DEmpty, "delete")
-  case Default extends WorldExamplesOption(GeoZioExample.world, "work")
-  case Atomium3D extends WorldExamplesOption(Atomium.atomiumWorld.asAddition, MyIcons.atomiumSVG)
-  case ShapesDemo2D extends WorldExamplesOption(GeometryExamples.shapesDemo2D.asAddition, "token")
-  case ShapesDemo3D extends WorldExamplesOption(GeometryExamples.shapesDemo3D.asAddition, "token")
-  case Cross2D extends WorldExamplesOption(OldSyntaxGeometryExamples.world(_.cross), "token")
+  case Clean extends WorldExamplesOption(Future.successful(World.w3DEmpty), "delete")
 
-  case Polygon2D extends WorldExamplesOption(OldSyntaxGeometryExamples.world(_.polygon(10, 5)), "token") //FIXME
+  case Default extends WorldExamplesOption(workWorld, "work")
+  case Atomium3D extends WorldExamplesOption(Future.successful(Atomium.atomiumWorld.asAddition), MyIcons.atomiumSVG)
+  case ShapesDemo2D extends WorldExamplesOption(Future.successful(GeometryExamples.shapesDemo2D.asAddition), "token")
+  case ShapesDemo3D extends WorldExamplesOption(Future.successful(GeometryExamples.shapesDemo3D.asAddition), "token")
+  case Cross2D extends WorldExamplesOption(Future.successful(OldSyntaxGeometryExamples.world(_.cross)), "token")
+
+  case Polygon2D
+      extends WorldExamplesOption(Future.successful(OldSyntaxGeometryExamples.world(_.polygon(10, 5))), "token") //FIXME
   case Rectangle2D
-      extends WorldExamplesOption(OldSyntaxGeometryExamples.world(_.rectangle(XYZ(-1, -1, 0), XYZ(1, 1, 0))), "token")
+      extends WorldExamplesOption(
+        Future.successful(OldSyntaxGeometryExamples.world(_.rectangle(XYZ(-1, -1, 0), XYZ(1, 1, 0)))),
+        "token"
+      )
   case DoricColumn2d
       extends WorldExamplesOption(
-        OldSyntaxGeometryExamples.world { e =>
+        Future.successful(OldSyntaxGeometryExamples.world { e =>
           e.doricColumn2d(XYZ(0, 0), 9, 0.5, 0.4, 0.3, 0.3, 1.0)
           e.doricColumn2d(XYZ(3, 0), 7, 0.5, 0.4, 0.6, 0.6, 1.6)
           e.doricColumn2d(XYZ(6, 0), 9, 0.7, 0.5, 0.3, 0.2, 1.2)
           e.doricColumn2d(XYZ(9, 0), 8, 0.4, 0.3, 0.2, 0.3, 1.0)
           e.doricColumn2d(XYZ(12, 0), 5, 0.5, 0.4, 0.3, 0.1, 1.0)
           e.doricColumn2d(XYZ(15, 0), 6, 0.8, 0.3, 0.2, 0.4, 1.4)
-        },
+        }),
         "token"
       )
 
   case DoricColumn3d
       extends WorldExamplesOption(
-        OldSyntaxGeometryExamples.world { e =>
+        Future.successful(OldSyntaxGeometryExamples.world { e =>
           e.doricColumn3d(XYZ(0, 0), 9, 0.5, 0.4, 0.3, 0.3, 1.0)
           e.doricColumn3d(XYZ(3, 0), 7, 0.5, 0.4, 0.6, 0.6, 1.6)
           e.doricColumn3d(XYZ(6, 0), 9, 0.7, 0.5, 0.3, 0.2, 1.2)
           e.doricColumn3d(XYZ(9, 0), 8, 0.4, 0.3, 0.2, 0.3, 1.0)
           e.doricColumn3d(XYZ(12, 0), 5, 0.5, 0.4, 0.3, 0.1, 1.0)
           e.doricColumn3d(XYZ(15, 0), 6, 0.8, 0.3, 0.2, 0.4, 1.4)
-        },
+        }),
         "token"
       )
 
   case SpiralStairs
       extends WorldExamplesOption(
-        OldSyntaxGeometryExamples.world { e =>
+        Future.successful(OldSyntaxGeometryExamples.world { e =>
           import scala.math._
           e.spiralStairs(XYZ(0, 0, 0), 0.1, 3, Pi / 6, 1, 10)
         // e.spiralStairs(XYZ(0, 40, 0), 1.5, 5, Pi / 9)
         // e.spiralStairs(XYZ(0, 80, 0), 0.5, 6, Pi / 8)
-        },
+        }),
         "token"
       )
 
-  case Tree2D
-      extends WorldExamplesOption(
-        OldSyntaxGeometryExamples.world { e =>
-          import scala.math._
-          e.addShape(e.tree2d(e.xyz(-10, 0), 5, Pi / 2, Pi / 8, 0.6, iterations = 7))
-          e.addShape(e.tree2d(e.xyz(0, 0), 5, Pi / 2, Pi / 8, 0.8, iterations = 7))
-          e.addShape(e.tree2d(e.xyz(10, 0), 5, Pi / 2, Pi / 6, 0.7, iterations = 7))
-
-          implicit val random: scala.util.Random = new scala.util.Random
-          random.setSeed(532443)
-          e.addShape(e.tree2Random(e.xyz(-20, 0, -10), 5, Pi / 2, Pi / 16, Pi / 4, 0.6, 0.9))
-          e.addShape(e.tree2Random(e.xyz(0, 0, -10), 5, Pi / 2, Pi / 16, Pi / 4, 0.6, 0.9))
-          e.addShape(e.tree2Random(e.xyz(20, 0, -10), 5, Pi / 2, Pi / 16, Pi / 4, 0.6, 0.9))
-        },
-        "park"
-      )
+  case Tree2D extends WorldExamplesOption(treesWorld, "park")
   case ArcTruss
       extends WorldExamplesOption(
-        OldSyntaxGeometryExamples.world { e =>
+        Future.successful(OldSyntaxGeometryExamples.world { e =>
           import scala.math._
           e.addShape(e.Truss.arcTruss(e.xyz(0, 0, 0), 10, 9, 0, -Pi / 2, Pi / 2, 1.0, 20))
           e.addShape(e.Truss.arcTruss(e.xyz(0, 5, 0), 8, 9, 0, -Pi / 3, Pi / 3, 2.0, 20))
           e.addShape(e.Truss.spaceTruss(e.Truss.horizontalTrussPositions(e.xyz(0, 0, 0), 1, 1, 9, 10)))
           e.addShape(e.Truss.trussPyramid(10, 10, 1, 1, 0.98))
-        },
+        }),
         "token"
       )
   case Heart3D
       extends WorldExamplesOption(
-        OldSyntaxGeometryExamples.world { e =>
+        Future.successful(OldSyntaxGeometryExamples.world { e =>
           //e.addShape(e.Heart.path(x = 0, y = 0))
           //e.addShape(e.Heart.planeShape(x = 0, y = 0))
           //e.addShape(e.Heart.planeShape(x = 0, y = 0, size = 0.5))
           //e.addShape(e.Heart.planeShape(holes = Seq(e.Heart.path(x = 0, y = 1, size = 0.5)), x = 0, y = 0, size = 1))
           e.addShape(e.Heart.extrude(holes = Seq(e.Heart.path(x = 0, y = 1, size = 0.5)), x = 0, y = 0, size = 1))
-        },
+        }),
         "favorite_border"
       )
 
   case TestShape3D
       extends WorldExamplesOption(
-        OldSyntaxGeometryExamples.world { e =>
+        Future.successful(OldSyntaxGeometryExamples.world { e =>
           import e._
           addShape(TestShape())
-        },
+        }),
         "grade"
       )
   case TextShape3D
       extends WorldExamplesOption(
-        OldSyntaxGeometryExamples.world { e => e.addShape(TextShape("Hello World!", 3)) },
+        Future.successful(OldSyntaxGeometryExamples.world { e => e.addShape(TextShape("Hello World!", 3)) }),
         "title"
       )
   case SurfaceGridShape3D
       extends WorldExamplesOption(
-        {
+        Future.successful {
           val roofProgram = RhythmicGymnasticsPavilionExample.roof.map {
             import scala.math._
             _.transformWith(Matrix.rotate(Pi / 2, Vec(1, 0, 0)).postTranslate(0, -100, 0))
@@ -144,5 +145,7 @@ enum WorldExamplesOption(
       onClick --> setWorldObserver(www),
     )
 
-  def setWorldObserver(w: World) = Observer[org.scalajs.dom.MouseEvent](onNext = ev => AppGlobal.setWorld(w))
+  def setWorldObserver(world: Future[World]) = {
+    Observer[org.scalajs.dom.MouseEvent](onNext = ev => world.value.map(_.get).map(AppGlobal.setWorld)) //FIXME .get
+  }
 }

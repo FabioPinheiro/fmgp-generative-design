@@ -8,6 +8,7 @@ enum Dimensions:
 
 sealed trait World {
   def shapes: ShapeSeq
+  def asWorld: World = this
 }
 
 //final case class WorldReset(shapes: ShapeSeq = Seq.empty) extends World

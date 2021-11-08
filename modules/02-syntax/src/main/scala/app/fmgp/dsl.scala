@@ -37,6 +37,11 @@ object dsl extends CoordinatesDsl {
   }
 
   // Accessor Methods
+  def emptyShape: RIO[Dsl, Shape] = ZIO.succeed(ShapeSeq(Seq()))
+  def zShapes(shapesSeq: RIO[Dsl, Shape]*): RIO[Dsl, Shape] = {
+    shapesSeq.reduce((a, b) => a.zipPar(b).flatMap(e => shapes(e._1, e._2)))
+  }
+
   def box(width: => Double, height: => Double, depth: => Double): RIO[Dsl, Box] =
     ZIO.accessM(_.get.box(width, height, depth))
 

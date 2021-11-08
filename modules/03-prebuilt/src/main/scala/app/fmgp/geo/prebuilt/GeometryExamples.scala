@@ -1,13 +1,9 @@
 package app.fmgp.geo.prebuilt
 
-import scala.scalajs.js
-import scala.scalajs.js.annotation._
 import app.fmgp.geo._
 
-@JSExportTopLevel("GeometryExamples")
 object GeometryExamples {
 
-  @JSExport
   def shapesDemo3D: WorldState = World.w3D(
     Seq(
       Sphere(0.3, XYZ(3, 3, -1)),
@@ -28,7 +24,6 @@ object GeometryExamples {
     )
   )
 
-  @JSExport
   def shapesDemo2D: WorldState = World.w2D(
     Seq(
       LinePath(Seq(XYZ(-8, 0), XYZ(0, 8), XYZ(8, 0), XYZ(0, 4), XYZ(-8, 0))),
