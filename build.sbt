@@ -87,21 +87,21 @@ lazy val scalaJSBundlerConfigure: Project => Project =
       useYarn := true
     )
 
-  lazy val buildInfoConfigure: Project => Project = _.enablePlugins(BuildInfoPlugin)
-    .settings(
-      buildInfoPackage := "app.fmgp.geo",
-      //buildInfoObject := "BuildInfo",
-      buildInfoKeys := Seq[BuildInfoKey](
-        name,
-        version,
-        scalaVersion,
-        sbtVersion,
-        BuildInfoKey.action("buildTime") { System.currentTimeMillis }, // re-computed each time at compile
-        "serverPort" -> 8888,
-        "grpcPort" -> 8889,
-        "grpcWebPort" -> 8890, //DOCKER: `docker run --rm -ti --net=host -v $PWD/envoy.yaml:/etc/envoy/envoy.yaml envoyproxy/envoy:v1.17.0`
-      ),
-    )
+lazy val buildInfoConfigure: Project => Project = _.enablePlugins(BuildInfoPlugin)
+  .settings(
+    buildInfoPackage := "app.fmgp.geo",
+    //buildInfoObject := "BuildInfo",
+    buildInfoKeys := Seq[BuildInfoKey](
+      name,
+      version,
+      scalaVersion,
+      sbtVersion,
+      BuildInfoKey.action("buildTime") { System.currentTimeMillis }, // re-computed each time at compile
+      "serverPort" -> 8888,
+      "grpcPort" -> 8889,
+      "grpcWebPort" -> 8890, //DOCKER: `docker run --rm -ti --net=host -v $PWD/envoy.yaml:/etc/envoy/envoy.yaml envoyproxy/envoy:v1.17.0`
+    ),
+  )
 
 lazy val modules: List[ProjectReference] =
   List(
@@ -109,7 +109,7 @@ lazy val modules: List[ProjectReference] =
     modelJVM,
     modelJS,
     controller,
-    geometryCore,
+    geometryCoreJS,
     syntaxJVM,
     syntaxJS,
     prebuiltJS,
@@ -140,7 +140,7 @@ lazy val model = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("modules/01-model"))
   .settings(name := "fmgp-geometry-model")
-  .enablePlugins(ScalaJSPlugin)
+  //.enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
   .settings(setupTestConfig: _*)
   .settings(
@@ -151,7 +151,7 @@ lazy val model = crossProject(JSPlatform, JVMPlatform)
     )
   )
   .settings(
-    libraryDependencies += "dev.zio" %%% "zio" % "1.0.11" //2.0.0-M2 //https://mvnrepository.com/artifact/dev.zio/zio
+    libraryDependencies += "dev.zio" %%% "zio" % "1.0.12" //2.0.0-M2 //https://mvnrepository.com/artifact/dev.zio/zio
   )
   .jsSettings( //Need for ZIO
     libraryDependencies ++= Seq(
@@ -176,7 +176,7 @@ lazy val threeUtils = project
 lazy val modelJS = model.js
 lazy val modelJVM = model.jvm
 
-lazy val geometryCore = project
+lazy val geometryCoreJS = project
   .in(file("modules/02-core"))
   .settings(name := "fmgp-geometry-core")
   .configure(scalaJSBundlerConfigure)
@@ -206,10 +206,9 @@ lazy val syntax = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("modules/02-syntax"))
   .settings(name := "fmgp-geometry-syntax")
-  .enablePlugins(ScalaJSPlugin)
+  //.enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
   .settings(setupTestConfig: _*)
-  .settings(libraryDependencies += "dev.zio" %%% "zio" % "1.0.9")
   .dependsOn(model)
   .settings(publishSettings)
 
@@ -220,10 +219,9 @@ lazy val prebuilt = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("modules/03-prebuilt"))
   .settings(name := "fmgp-geometry-prebuilt")
-  .enablePlugins(ScalaJSPlugin)
+  //.enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
   .settings(setupTestConfig: _*)
-  .settings(libraryDependencies += "dev.zio" %%% "zio" % "1.0.9")
   .dependsOn(syntax)
   .settings(noPublishSettings)
 
@@ -231,7 +229,7 @@ lazy val prebuiltJS = prebuilt.js
 lazy val prebuiltJVM = prebuilt.jvm
 
 // ### controller ###
-lazy val controller = project
+lazy val controller = project //or crossProject(JVMPlatform).crossType(CrossType.Pure)
   .in(file("modules/02-controller"))
   .configure(buildInfoConfigure)
   .settings(commonSettings: _*)
@@ -275,23 +273,23 @@ lazy val controller = project
   .dependsOn(modelJVM, syntaxJVM, protosJVM)
   .settings(publishSettings)
 
-lazy val repl = project
+lazy val repl = project //or crossProject(JVMPlatform).crossType(CrossType.Pure)
   .in(file("modules/04-repl"))
   .settings(commonSettings: _*)
   .settings(libraryDependencies += "com.softwaremill.sttp.client3" %% "core" % "3.3.14")
   .settings(
-    console / initialCommands += """
-    import scala.math._
-    import scala.util.chaining._
-    app.fmgp.experiments.Main.startLocal //(interface = "127.0.0.1", port = 8888)
-    val myAkkaServer = app.fmgp.experiments.Main.server.get
-    val geoSyntax = app.fmgp.GeoSyntax(myAkkaServer)
-    import geoSyntax._
-    import app.fmgp.geo._
-    """,
-    cleanupCommands += """
-    app.fmgp.experiments.Main.stop
-    """,
+    // console / initialCommands += """
+    // import scala.math._
+    // import scala.util.chaining._
+    // app.fmgp.experiments.Main.startLocal //(interface = "127.0.0.1", port = 8888)
+    // val myAkkaServer = app.fmgp.experiments.Main.server.get
+    // val geoSyntax = app.fmgp.GeoSyntax(myAkkaServer)
+    // import geoSyntax._
+    // import app.fmgp.geo._
+    // """,
+    // cleanupCommands += """
+    // app.fmgp.experiments.Main.stop
+    // """,
   )
   .settings(reStart / mainClass := Some("app.fmgp.SingleRequest"))
   .dependsOn(modelJVM, syntaxJVM, prebuiltJVM, controller)
@@ -339,7 +337,7 @@ lazy val webapp = project
       // .withModuleID("clientGRPC")
     },
   )
-  .dependsOn(threeUtils, modelJS, prebuiltJS, geometryCore, protosJS)
+  .dependsOn(threeUtils, modelJS, prebuiltJS, geometryCoreJS, protosJS)
   .settings(noPublishSettings)
 
 // ##############
