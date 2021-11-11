@@ -1,32 +1,26 @@
 package app.fmgp
 
 import zio._
-import zio.clock.Clock
-import zio.console.Console
+import zio.{Clock, Console, Has}
 
 object logging {
-  type Logging = Has[Logging.Service]
+  trait Logging {
+    def log(line: String): UIO[Unit]
+  }
 
-  // Companion object exists to hold service definition and also the live implementation.
-  object Logging {
-    trait Service {
-      def log(line: String): UIO[Unit]
-    }
+  case class LoggingLive(console: Console, clock: Clock) extends Logging {
+    override def log(line: String): UIO[Unit] =
+      for {
+        current <- clock.currentDateTime
+        _ <- console.printLine(current.toString + "--" + line).orDie
+      } yield ()
+  }
 
-    val live: URLayer[Clock & Console, Logging] =
-      ZLayer.fromServices[Clock.Service, Console.Service, Logging.Service] {
-        (clock: Clock.Service, console: Console.Service) =>
-          new Service {
-            override def log(line: String): UIO[Unit] =
-              for {
-                current <- clock.currentDateTime.orDie
-                _ <- console.putStrLn(current.toString + "--" + line).orDie
-              } yield ()
-          }
-      }
+  object LoggingLive {
+    val layer: URLayer[Has[Console] with Has[Clock], Has[Logging]] =
+      (LoggingLive(_, _)).toLayer[Logging]
   }
 
   // Accessor Methods
-  def log(line: => String): URIO[Logging, Unit] =
-    ZIO.accessM(_.get.log(line))
+  def log(line: => String): URIO[Has[Logging], Unit] = ZIO.serviceWith(_.log(line))
 }

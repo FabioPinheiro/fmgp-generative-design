@@ -46,3 +46,7 @@ addSbtPlugin("com.jsuereth" % "sbt-pgp" % "2.0.0") //https://github.com/sbt/sbt-
 
 // Revolver use for command 'reStart' (like the command 'run' but run on the backgroun by forking the app from sbt)
 addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.1")
+
+// https://zio.dev/howto/migrate/zio-2.x-migration-guide%20v0.9.31
+//sbt "scalafixEnable; scalafixAll github:zio/zio/Zio2Upgrade?sha=series/2.x"
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.31")

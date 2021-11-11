@@ -4,13 +4,13 @@ import zio._
 import app.fmgp.geo._
 import app.fmgp.meta
 
-import app.fmgp.logging._
+//import app.fmgp.logging._
 import app.fmgp.syntax.CoordinatesDsl
 
 object dsl extends CoordinatesDsl {
   type Dsl = Has[Dsl.Service]
 
-  def defaultRuntime = Runtime(Dsl.liveService, zio.internal.Platform.default)
+  def defaultRuntime = Runtime(Dsl.liveService, zio.RuntimeConfig.default)
 
   // Companion object exists to hold service definition and a`lso the live implementation.
   object Dsl {
@@ -47,34 +47,34 @@ object dsl extends CoordinatesDsl {
 
   // Accessor Methods
   def emptyShape: RIO[Dsl, Shape] =
-    ZIO.accessM(_.get.emptyShape)
+    ZIO.accessZIO(_.get.emptyShape)
 
   def zShapes(shapesSeq: RIO[Dsl, Shape]*): RIO[Dsl, Shape] =
-    ZIO.accessM(_.get.zShapes(shapesSeq: _*))
+    ZIO.accessZIO(_.get.zShapes(shapesSeq: _*))
 
   def box(width: => Double, height: => Double, depth: => Double): RIO[Dsl, Box] =
-    ZIO.accessM(_.get.box(width, height, depth))
+    ZIO.accessZIO(_.get.box(width, height, depth))
 
   def sphere(center: => XYZ, radius: => Double): RIO[Dsl, Sphere] =
-    ZIO.accessM(_.get.sphere(center, radius))
+    ZIO.accessZIO(_.get.sphere(center, radius))
 
   def shapes(shapes: Shape*): RIO[Dsl, Shape] =
-    ZIO.accessM(_.get.shapes(shapes: _*))
+    ZIO.accessZIO(_.get.shapes(shapes: _*))
 
   def cylinder(radius: Double, height: Double): RIO[Dsl, Cylinder] =
-    ZIO.accessM(_.get.cylinder(radius, height))
+    ZIO.accessZIO(_.get.cylinder(radius, height))
 
   def cylinder(bottom: XYZ, top: XYZ, bottomRadius: Double): RIO[Dsl, TransformationShape] =
-    ZIO.accessM(_.get.cylinder(bottom, top, bottomRadius))
+    ZIO.accessZIO(_.get.cylinder(bottom, top, bottomRadius))
 
   def line(vertices: Seq[XYZ], closeLine: Boolean = false): RIO[Dsl, LinePath] =
-    ZIO.accessM(_.get.line(vertices, closeLine))
+    ZIO.accessZIO(_.get.line(vertices, closeLine))
 
   def circle(radius: Double, center: XYZ = XYZ.origin): RIO[Dsl, Circle] =
-    ZIO.accessM(_.get.circle(radius, center))
+    ZIO.accessZIO(_.get.circle(radius, center))
 
   def surface_grid(points: Seq[Seq[XYZ]]): RIO[Dsl, SurfaceGridShape] =
-    ZIO.accessM(_.get.surface_grid(points))
+    ZIO.accessZIO(_.get.surface_grid(points))
 
   // Macros Methods
   import scala.quoted.*
