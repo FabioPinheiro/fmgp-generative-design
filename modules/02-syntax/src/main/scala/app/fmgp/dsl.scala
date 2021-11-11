@@ -15,6 +15,12 @@ object dsl extends CoordinatesDsl {
   // Companion object exists to hold service definition and a`lso the live implementation.
   object Dsl {
     trait Service {
+
+      def emptyShape: RIO[Dsl, Shape] = ZIO.succeed(ShapeSeq(Seq()))
+      def zShapes(shapesSeq: RIO[Dsl, Shape]*): RIO[Dsl, Shape] = {
+        shapesSeq.reduce((a, b) => a.zipPar(b).flatMap(e => shapes(e._1, e._2)))
+      }
+
       def box(width: Double, height: Double, depth: Double): UIO[Box] =
         ZIO.succeed(Box(width, height, depth))
       def sphere(center: => XYZ, radius: => Double): UIO[Sphere] =
@@ -24,6 +30,9 @@ object dsl extends CoordinatesDsl {
 
       def cylinder(radius: Double, height: Double): UIO[Cylinder] =
         ZIO.succeed(Cylinder(radius, height))
+      def cylinder(bottom: XYZ, top: XYZ, bottomRadius: Double): UIO[TransformationShape] =
+        ZIO.succeed(Cylinder.fromVerticesRadius(bottom, top, bottomRadius))
+
       def line(vertices: Seq[XYZ], closeLine: Boolean = false): UIO[LinePath] =
         ZIO.succeed(LinePath(if (closeLine) vertices ++ vertices.headOption else vertices))
       def circle(radius: Double, center: XYZ = XYZ.origin): UIO[Circle] =
@@ -37,10 +46,11 @@ object dsl extends CoordinatesDsl {
   }
 
   // Accessor Methods
-  def emptyShape: RIO[Dsl, Shape] = ZIO.succeed(ShapeSeq(Seq()))
-  def zShapes(shapesSeq: RIO[Dsl, Shape]*): RIO[Dsl, Shape] = {
-    shapesSeq.reduce((a, b) => a.zipPar(b).flatMap(e => shapes(e._1, e._2)))
-  }
+  def emptyShape: RIO[Dsl, Shape] =
+    ZIO.accessM(_.get.emptyShape)
+
+  def zShapes(shapesSeq: RIO[Dsl, Shape]*): RIO[Dsl, Shape] =
+    ZIO.accessM(_.get.zShapes(shapesSeq: _*))
 
   def box(width: => Double, height: => Double, depth: => Double): RIO[Dsl, Box] =
     ZIO.accessM(_.get.box(width, height, depth))
@@ -53,6 +63,9 @@ object dsl extends CoordinatesDsl {
 
   def cylinder(radius: Double, height: Double): RIO[Dsl, Cylinder] =
     ZIO.accessM(_.get.cylinder(radius, height))
+
+  def cylinder(bottom: XYZ, top: XYZ, bottomRadius: Double): RIO[Dsl, TransformationShape] =
+    ZIO.accessM(_.get.cylinder(bottom, top, bottomRadius))
 
   def line(vertices: Seq[XYZ], closeLine: Boolean = false): RIO[Dsl, LinePath] =
     ZIO.accessM(_.get.line(vertices, closeLine))

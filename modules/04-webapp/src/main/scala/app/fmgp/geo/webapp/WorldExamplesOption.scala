@@ -8,7 +8,8 @@ import app.fmgp.geo.prebuilt.{
   GeometryExamples,
   OldSyntaxGeometryExamples,
   RhythmicGymnasticsPavilionExample,
-  GeoZioExample
+  GeoZioExample,
+  TreesExample,
 }
 import scala.concurrent.Future
 
@@ -19,7 +20,7 @@ val workWorld: Future[World] = {
 
 val treesWorld: Future[World] = {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
-  app.fmgp.dsl.defaultRuntime.unsafeRunToFuture(GeoZioExample.programTrees).future.map(s => World.addition(s))
+  app.fmgp.dsl.defaultRuntime.unsafeRunToFuture(TreesExample.program).future.map(s => World.addition(s))
 }
 
 enum WorldExamplesOption(
