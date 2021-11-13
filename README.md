@@ -65,7 +65,7 @@ We suggest to develop your geometric algorithm designs, in a separate main, and 
 
 Your code must post the geometric model to the **controller** via http. See an example in the main class SingleRequest.scala.
 
-On sbt: `~repl/run app.fmgp.SingleRequest`
+On sbt: `~repl/run fmgp.SingleRequest`
 
 *Note:* `~` will hot reload a your main every time a change is made to the code.
 

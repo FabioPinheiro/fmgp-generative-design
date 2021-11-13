@@ -89,7 +89,7 @@ lazy val scalaJSBundlerConfigure: Project => Project =
 
 lazy val buildInfoConfigure: Project => Project = _.enablePlugins(BuildInfoPlugin)
   .settings(
-    buildInfoPackage := "app.fmgp.geo",
+    buildInfoPackage := "fmgp.geo",
     //buildInfoObject := "BuildInfo",
     buildInfoKeys := Seq[BuildInfoKey](
       name,
@@ -282,17 +282,17 @@ lazy val repl = project //or crossProject(JVMPlatform).crossType(CrossType.Pure)
     // console / initialCommands += """
     // import scala.math._
     // import scala.util.chaining._
-    // app.fmgp.experiments.Main.startLocal //(interface = "127.0.0.1", port = 8888)
-    // val myAkkaServer = app.fmgp.experiments.Main.server.get
-    // val geoSyntax = app.fmgp.GeoSyntax(myAkkaServer)
+    // fmgp.experiments.Main.startLocal //(interface = "127.0.0.1", port = 8888)
+    // val myAkkaServer = fmgp.experiments.Main.server.get
+    // val geoSyntax = fmgp.GeoSyntax(myAkkaServer)
     // import geoSyntax._
-    // import app.fmgp.geo._
+    // import fmgp.geo._
     // """,
     // cleanupCommands += """
-    // app.fmgp.experiments.Main.stop
+    // fmgp.experiments.Main.stop
     // """,
   )
-  .settings(reStart / mainClass := Some("app.fmgp.SingleRequest"))
+  .settings(reStart / mainClass := Some("fmgp.SingleRequest"))
   .dependsOn(modelJVM, syntaxJVM, prebuiltJVM, controller)
   .settings(noPublishSettings)
 
@@ -333,7 +333,7 @@ lazy val webapp = project
     //scalaJSLinkerConfig ~= (_.withModuleSplitStyle(ModuleSplitStyle.SmallestModules)),
     Compile / scalaJSModuleInitializers += {
       ModuleInitializer
-        .mainMethod("app.fmgp.geo.webapp.App", "main")
+        .mainMethod("fmgp.geo.webapp.App", "main")
       // .withModuleID("app_print")
       // .withModuleID("clientGRPC")
     },

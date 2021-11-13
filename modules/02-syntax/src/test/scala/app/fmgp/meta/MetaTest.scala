@@ -1,4 +1,4 @@
-package app.fmgp.meta
+package fmgp.meta
 
 import MacroUtils._
 

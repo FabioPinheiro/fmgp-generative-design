@@ -1,4 +1,4 @@
-package app.fmgp.threejs.extras
+package fmgp.threejs.extras
 
 import typings.three.loaderMod.Loader
 import typings.three.mod._
