@@ -19,14 +19,11 @@ object WebGLTextGlobal {
   init
 }
 
-class WebGLGlobal(onWorldUpdate: (world: World) => Unit) {
-  val masterWorld = DynamicWorldWarp(onWorldUpdate)
-  var websocket = Websocket.AutoReconnect("ws://127.0.0.1:8888/browser", Log, masterWorld)
+class WebGLGlobal {
   val debugUI = false
   var scene: Scene = _
   var sceneUI: Scene = _
   var animateFrameId: Option[Int] = None
-  var modelToAnimate: () => Option[Object3D] = () => None
   var camera: Option[Camera] = None
   var cameraUI: Option[Camera] = None
   var controls: Option[FlyControls] = None

@@ -11,11 +11,11 @@ import app.fmgp.geo._
 import app.fmgp.geo.EncoderDecoder.{WorldOrFile, given_Decoder_WorldOrFile}
 
 import scala.scalajs.js
+import zio._
 
 //case class World(data: String)
 
 object Websocket {
-
   object State extends Enumeration {
     type State = Value
 
@@ -35,11 +35,10 @@ object Websocket {
   case class AutoReconnect(
       wsUrl: String,
       log: Logger,
-      dynamicWorld: DynamicWorldWarp,
       defualtReconnectDelay: Int = 10000,
-      var onStateChange: State.State => Unit = (_: State.State) => (),
       var ws: js.UndefOr[WebSocket] = js.undefined,
   ) {
+    implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
     connect(0)
 
     def getState: State.State = ws.map(e => State(e.readyState)).getOrElse(State.CLOSED)
@@ -48,38 +47,89 @@ object Websocket {
     private def connect(delay: Int): Unit = {
       log.info(s"WS try reconect to $wsUrl (in ${delay / 1000} s)")
       js.timers.setTimeout(delay) {
-        onStateChange(getState)
+        WebsocketJSLive.onStateChange(getState)
         val tmpWS = new WebSocket(wsUrl) //TODO Add a timeout here
         ws = tmpWS
+
         tmpWS.onopen = { (ev: Event) =>
-          log.info(s"WS Connected '${ev.`type`}'")
-          onStateChange(getState)
-        }
-        tmpWS.onclose = { (ev: CloseEvent) =>
-          log.warn(s"WS Closed because '${ev.reason}'")
-          connect(defualtReconnectDelay)
-          onStateChange(getState)
-        }
-        tmpWS.onmessage = { (ev: MessageEvent) =>
-          log.info(ev.data.toString)
-          decode[WorldOrFile](ev.data.toString) match {
-            case Left(ex)             => log.error(s"Error parsing the obj World: $ex")
-            case Right(value: World)  => dynamicWorld.update(value)
-            case Right(value: MyFile) => log.warn(s"MyFile: $value")
-          }
-        }
-        tmpWS.onerror = { (ev: Event) =>
-          log.error(
-            ev.asInstanceOf[js.Dynamic] //TODO ErrorEvent
-              .message
-              .asInstanceOf[js.UndefOr[String]]
-              .fold(s"WS Error (type:${ev.`type`}) occurred!")("Error: " + _)
+          zio.Runtime.global.unsafeRunToFuture(
+            WebsocketJS
+              .onOpen(ev.`type`)
+              .inject(WebsocketJSLive.layer, VisualizerJSLive.live, MesherLive.live)
           )
         }
-
+        tmpWS.onclose = { (ev: CloseEvent) =>
+          zio.Runtime.global
+            .unsafeRunToFuture(
+              WebsocketJS
+                .onClose(ev.reason)
+                .inject(WebsocketJSLive.layer, VisualizerJSLive.live, MesherLive.live)
+            )
+            .map(_ => connect(defualtReconnectDelay))
+        }
+        tmpWS.onmessage = { (ev: MessageEvent) =>
+          zio.Runtime.global.unsafeRunToFuture(
+            WebsocketJS
+              .onMessage(message = ev.data.toString)
+              .inject(WebsocketJSLive.layer, VisualizerJSLive.live, MesherLive.live)
+          )
+        }
+        tmpWS.onerror = { (ev: Event) => //TODO ErrorEvent
+          val message = ev
+            .asInstanceOf[js.Dynamic]
+            .message
+            .asInstanceOf[js.UndefOr[String]]
+            .fold("")("Error: " + _)
+          zio.Runtime.global.unsafeRunToFuture(
+            WebsocketJS
+              .onError(ev.`type`, message)
+              .inject(WebsocketJSLive.layer, VisualizerJSLive.live, MesherLive.live)
+          )
+        }
       }
     }
-
   }
+}
 
+trait WebsocketJS {
+  def onOpen(evType: String): UIO[Unit]
+  def onClose(reason: String): UIO[Unit]
+  def onMessage(message: String): UIO[Unit]
+  def onError(evType: String, message: String): UIO[Unit]
+}
+
+object WebsocketJS {
+  // Accessor Methods Inside the Companion Object
+  def onOpen(evType: String): URIO[Has[WebsocketJS], Unit] = ZIO.serviceWith(_.onOpen(evType))
+  def onClose(reason: String): URIO[Has[WebsocketJS], Unit] = ZIO.serviceWith(_.onClose(reason))
+  def onMessage(message: String): URIO[Has[WebsocketJS], Unit] = ZIO.serviceWith(_.onMessage(message))
+  def onError(evType: String, message: String): URIO[Has[WebsocketJS], Unit] =
+    ZIO.serviceWith(_.onError(evType: String, message: String))
+}
+case class WebsocketJSLive(vissualizer: Visualizer) extends WebsocketJS {
+  override def onOpen(evType: String): UIO[Unit] =
+    UIO(WebsocketJSLive.onStateChange(Websocket.State.OPEN)) <&>
+      UIO { Log.info(s"WS Connected '$evType'") }
+  override def onClose(reason: String): UIO[Unit] =
+    UIO(WebsocketJSLive.onStateChange(Websocket.State.CLOSED)) <&>
+      UIO { Log.info(s"WS Closed because '${reason}'") }
+  override def onMessage(message: String): UIO[Unit] =
+    decode[WorldOrFile](message) match { //TODO user ZIO.fromEither
+      case Left(ex) =>
+        UIO(Log.debug(message)).map(_ => Log.error(s"Error parsing the obj World: $ex"))
+      case Right(value: World)  => vissualizer.update(value)
+      case Right(value: MyFile) => UIO(Log.warn(s"MyFile: $value"))
+    }
+  override def onError(evType: String, messageError: String): UIO[Unit] =
+    UIO(Log.error(s"WS Error (type:$evType) occurred! " + messageError))
+}
+
+object WebsocketJSLive {
+  val layer: URLayer[Has[Visualizer], Has[WebsocketJS]] =
+    (WebsocketJSLive(_)).toLayer[WebsocketJS]
+
+  var onStateChange: Websocket.State.State => Unit = (_: Websocket.State.State) => ()
+  val wsUrl = "ws://127.0.0.1:8888/browser"
+
+  lazy val autoReconnect = Websocket.AutoReconnect(wsUrl, Log)
 }

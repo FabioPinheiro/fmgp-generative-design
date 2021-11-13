@@ -11,26 +11,27 @@ import typings.three.loaderMod.Loader
 import typings.three.mod.{Shape => _, _}
 import typings.three.anon.{X => AnonX}
 import typings.three.webGLRendererMod.WebGLRendererParameters
-//import typings.statsJs.mod.{^ => Stats}
 
 import app.fmgp._
 import app.fmgp.geo._
-import app.fmgp.threejs.extras.FlyControls //FirstPersonControls, FlyControls, OrbitControls
+import app.fmgp.threejs.extras.FlyControls
 import com.raquo.laminar.keys.ReactiveEventProp
 
 @JSExportTopLevel("GeoApp")
 object GeoApp {
 
+  // Need to start (autoReconnect is lazy)
+  WebsocketJSLive.autoReconnect
+
   val geoCanvasHack = div(
     onMountCallback(ctx => {
-      AppGlobal.webGLHelper.init
+      VisualizerJSLive.webGLHelper.init
       StatsComponent.append(ctx.thisNode.ref)
-      AppGlobal.webGLHelper.append(ctx.thisNode.ref)
-    }),
+      VisualizerJSLive.webGLHelper.append(ctx.thisNode.ref)
+    })
   )
 
   val rootElement = geoCanvasHack
 
-  def apply(): HtmlElement =
-    rootElement
+  def apply(): HtmlElement = rootElement
 }

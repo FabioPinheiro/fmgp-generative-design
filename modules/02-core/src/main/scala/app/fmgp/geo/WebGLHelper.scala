@@ -17,14 +17,15 @@ import app.fmgp.threejs.extras.{FirstPersonControls, FlyControls, OrbitControls}
 import app.fmgp.{Log, Websocket, Utils}
 
 import _root_.app.fmgp.Websocket
+import app.fmgp.WebsocketJSLive
 
 case class InteractiveMesh(mesh: typings.three.meshMod.Mesh[_, _], onSelected: () => Unit = () => ()) {
   def id = mesh.id
 }
 
-class WebGLHelper(topPadding: Int, onWorldUpdate: (world: World) => Unit) {
+class WebGLHelper(topPadding: Int, modelToAnimate: Object3D = new Object3D()) {
 
-  val webGLGlobal = new WebGLGlobal(onWorldUpdate)
+  val webGLGlobal = new WebGLGlobal
   var uiEvent: Option[AnonX] = None
 
   def height = -5 + dom.window.innerHeight - topPadding
@@ -86,19 +87,19 @@ class WebGLHelper(topPadding: Int, onWorldUpdate: (world: World) => Unit) {
       //val firstPerson = new FirstPersonControls(c, renderer.domElement)
       //firstPerson.lookSpeed = 0.01
       //firstPerson.movementSpeed = 0.5
-      dimensions match {
-        case Dimensions.D2 =>
-        //orbit.enableRotate = false
-        //orbit.screenSpacePanning = true
-        case Dimensions.D3 =>
-          webGLGlobal.modelToAnimate = if (webGLGlobal.masterWorld.dimensions.isD3) { () =>
-            Some(webGLGlobal.masterWorld.generateObj3D)
-          } else () => None
-      }
+      // dimensions match {
+      //   case Dimensions.D2 =>
+      //   //orbit.enableRotate = false
+      //   //orbit.screenSpacePanning = true
+      //   case Dimensions.D3 =>
+      //     //######################################################################
+      //     if (webGLGlobal.masterWorld.dimensions.isD3) (() => Some(webGLGlobal.masterWorld.generateObj3D))
+      //     else () => None
+      // }
       fly //orbit //firstPerson
     }
 
-    webGLGlobal.scene.add(webGLGlobal.modelToAnimate().getOrElse(webGLGlobal.masterWorld.generateObj3D))
+    webGLGlobal.scene.add(modelToAnimate)
 
     webGLGlobal.cameraUI = {
 
@@ -124,7 +125,7 @@ class WebGLHelper(topPadding: Int, onWorldUpdate: (world: World) => Unit) {
         case Websocket.State.CLOSING    => material.color = new typings.three.colorMod.Color("yellow")
         case Websocket.State.CLOSED     => material.color = new typings.three.colorMod.Color("red")
       }
-      webGLGlobal.websocket.onStateChange = updateColor _
+      WebsocketJSLive.onStateChange = updateColor _
 
       webGLGlobal.addUiElement(InteractiveMesh(mesh, () => material.color = new typings.three.colorMod.Color("blue")))
     }
@@ -135,12 +136,13 @@ class WebGLHelper(topPadding: Int, onWorldUpdate: (world: World) => Unit) {
       textParameters.height = 0
       textParameters.curveSegments = 12
 
-      val geometry = new TextBufferGeometry(webGLGlobal.websocket.wsUrl, textParameters).translate(0.01, -0.02, 0)
+      val geometry = new TextBufferGeometry(WebsocketJSLive.wsUrl, textParameters).translate(0.01, -0.02, 0)
       val basicMarerial = new typings.three.meshBasicMaterialMod.MeshBasicMaterial()
       basicMarerial.color = new typings.three.colorMod.Color(0x444444)
       val mesh = new typings.three.mod.Mesh(geometry, basicMarerial)
       webGLGlobal.addUiElement(InteractiveMesh(mesh))
     }
+
     /*
     { //Examples //TODO REMOVE
       val bottonGeometry = new PlaneBufferGeometry(0.05, 0.05).translate(0.025, -0.025, 0)

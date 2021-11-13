@@ -24,7 +24,7 @@ object SingleRequest {
       .post(uri"http://localhost:8888/add")
       .body {
 
-        val shapes = runtime.allRT.unsafeRun(GeoZioExample.program)
+        val shapes = runtime.run(GeoZioExample.program)
 
         World.addition(shapes).asWorld.asJson.noSpaces
       } // World.w3D(Seq(GeoZioExample.shapes))

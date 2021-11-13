@@ -1,6 +1,8 @@
+/* Is now the Visualizer
 package app.fmgp.geo
 
 import typings.three.mod._
+
 
 sealed trait GeoWarp {
   def generateObj3D: Object3D
@@ -42,6 +44,7 @@ class DynamicWorldWarp(var onWorldUpdate: (world: World) => Unit) extends GeoWar
     }
   }
 }
+
 object DynamicWorldWarp {
   def apply(onWorldUpdate: (world: World) => Unit = _ => ()) = new DynamicWorldWarp(onWorldUpdate)
 }
@@ -56,3 +59,4 @@ case class Object3DWarp(
     this
   }
 }
+ */
