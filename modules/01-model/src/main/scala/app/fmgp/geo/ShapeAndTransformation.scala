@@ -89,7 +89,7 @@ object Cylinder {
   //   val translation = XYZ.midpoint(base, top)
 
   //   Cylinder(bottomRadius = bottomRadius, height = eixo.length, topRadius = topRadius.getOrElse(bottomRadius))
-  //   //FIXME missing transformation
+  //   //TODO missing transformation
   // }
 
   def fromVerticesRadius(

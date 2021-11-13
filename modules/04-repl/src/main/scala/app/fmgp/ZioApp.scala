@@ -4,12 +4,12 @@ import zio._
 
 import app.fmgp.dsl._
 import app.fmgp.meta.MacroUtils._
-import app.fmgp.logging._
-import app.fmgp.websocket._
+import app.fmgp.Logging._
+import app.fmgp.Websocket._
 
 import app.fmgp.geo.{Box, Shape}
 import app.fmgp.geo.MyFile
-import zio.Console
+import app.fmgp.geo.prebuilt.TreesExample
 
 extension (m: MetaBase) //{ def sourceFile: String })
   def getFile: zio.Task[app.fmgp.geo.MyFile] =
@@ -17,15 +17,23 @@ extension (m: MetaBase) //{ def sourceFile: String })
     app.fmgp.geo.MyFile.readFile(m.sourceFile)
 
 object ZioApp extends zio.ZIOAppDefault {
-  //Config
-  val (interface: String, port: Int) = ("127.0.0.1", 8888)
+  //TODO Config // val (interface: String, port: Int) = ("127.0.0.1", 8888)
 
-  lazy val envLog = Console.live ++ Clock.live >>> LoggingLive.layer
-  lazy val envWS = Console.live >>> WebsocketLive.layer //WebsocketLive.websocketServiceLive(interface, port)
-  lazy val env = Console.live ++ Clock.live ++ envLog ++ Dsl.live ++ envWS
+  // lazy val envLog = Console.live ++ Clock.live >>> LoggingLive.layer
+  // lazy val envWS = Console.live >>> WebsocketLive.layer //WebsocketLive.websocketServiceLive(interface, port)
+  // lazy val env = Console.live ++ Clock.live ++ envLog ++ DslLive.layer ++ envWS
 
-  //def run(args: List[String]) = program.provideLayer(env).exitCode
-  def run = program.provideLayer(env).exitCode
+  def run = program
+    .inject(
+      Console.live,
+      Clock.live,
+      LoggingLive.layer,
+      WebsocketLive.layer,
+      DslLive.layer,
+      //TreesExample.Tree.layer
+      ZLayer.Debug.mermaid,
+    )
+    .exitCode
 
   def program = for {
     _ <- Console.printLine("-")
@@ -35,7 +43,6 @@ object ZioApp extends zio.ZIOAppDefault {
     f <- b1.getFile
     _ <- sendFile(f)
     _ <- log(f.toString)
-
     b2 <- box(2, 2, 2)
     b3 <- box(3, 3, 3)
     _ <- log((b1: Shape).toString)

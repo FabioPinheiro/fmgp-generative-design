@@ -11,7 +11,7 @@ import scala.util.Random
 
 object GeoZioExample {
 
-  val program: zio.ZIO[app.fmgp.dsl.Dsl, Throwable, app.fmgp.geo.Shape] =
+  val program: zio.ZIO[Has[Dsl], Throwable, app.fmgp.geo.Shape] =
     for {
       _ <- ZIO.unit
       //points = pts_circle(XYZ.origin, r = 2, alfa_init = 0, alfa_end = Pi, n = 10)
@@ -35,6 +35,4 @@ object GeoZioExample {
       ).transformWith(Matrix.rotate(-Pi / 2, Vec(x = 1))) //Points(points)
     } yield (shapes)
 
-  def unsafeWorldShapes: Shape = defaultRuntime.unsafeRun(program)
-  def unsafeWorld: World = World.addition(unsafeWorldShapes)
 }

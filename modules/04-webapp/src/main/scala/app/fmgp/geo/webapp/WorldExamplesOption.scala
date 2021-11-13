@@ -4,6 +4,7 @@ import com.raquo.laminar.api.L._
 
 import app.fmgp.geo._
 import app.fmgp.geo.prebuilt.{
+  runtime,
   Atomium,
   GeometryExamples,
   OldSyntaxGeometryExamples,
@@ -15,12 +16,12 @@ import scala.concurrent.Future
 
 val workWorld: Future[World] = {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
-  app.fmgp.dsl.defaultRuntime.unsafeRunToFuture(GeoZioExample.program).future.map(s => World.addition(s))
+  runtime.runToFuture(GeoZioExample.program).map(s => World.addition(s))
 }
 
 val treesWorld: Future[World] = {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
-  app.fmgp.dsl.defaultRuntime.unsafeRunToFuture(TreesExample.program).future.map(s => World.addition(s))
+  runtime.runToFuture(TreesExample.program).map(s => World.addition(s))
 }
 
 enum WorldExamplesOption(
@@ -122,12 +123,11 @@ enum WorldExamplesOption(
       )
   case SurfaceGridShape3D
       extends WorldExamplesOption(
-        Future.successful {
-          val roofProgram = RhythmicGymnasticsPavilionExample.roof.map {
-            import scala.math._
-            _.transformWith(Matrix.rotate(Pi / 2, Vec(1, 0, 0)).postTranslate(0, -100, 0))
-          }
-          World.addition(app.fmgp.dsl.defaultRuntime.unsafeRun(roofProgram))
+        {
+          val roofProgram = RhythmicGymnasticsPavilionExample.roof
+            .map(_.transformWith(Matrix.rotate(scala.math.Pi / 2, Vec(1, 0, 0)).postTranslate(0, -100, 0)))
+          implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
+          runtime.runToFuture(roofProgram).map(World.addition)
         },
         "token"
       )

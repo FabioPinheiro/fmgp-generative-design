@@ -6,8 +6,7 @@ addSbtPlugin("org.scala-js" % "sbt-jsdependencies" % "1.0.1")
 
 libraryDependencies += "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.1.0"
 
-// addSbtPlugin("com.vmunier" % "sbt-web-scalajs" % "1.1.0")
-// FIXME
+// addSbtPlugin("com.vmunier" % "sbt-web-scalajs" % "1.1.0") //we can now update 1.2.0!
 // [error] (update) found version conflict(s) in library dependencies; some are suspected to be binary incompatible:
 // [error]
 // [error] 	* org.scala-lang.modules:scala-java8-compat_2.12:1.0.0 (early-semver) is selected over 0.8.0

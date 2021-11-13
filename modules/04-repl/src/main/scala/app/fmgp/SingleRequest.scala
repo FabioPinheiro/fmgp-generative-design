@@ -6,7 +6,7 @@ import io.circe._, io.circe.syntax._, io.circe.parser._
 import app.fmgp.geo.EncoderDecoder.{given}
 import app.fmgp.geo.prebuilt.GeoZioExample
 import app.fmgp.geo.World
-import app.fmgp.geo.prebuilt.TreesExample
+import app.fmgp.geo.prebuilt.{runtime, TreesExample}
 
 object SingleRequest {
   def main(args: Array[String]): Unit = {
@@ -23,8 +23,8 @@ object SingleRequest {
     val requestAdd = basicRequest
       .post(uri"http://localhost:8888/add")
       .body {
-        val shapes = app.fmgp.dsl.defaultRuntime.unsafeRun(GeoZioExample.program)
-        //val shapes = app.fmgp.dsl.defaultRuntime.unsafeRun(TreesExample.program)
+
+        val shapes = runtime.allRT.unsafeRun(GeoZioExample.program)
 
         World.addition(shapes).asWorld.asJson.noSpaces
       } // World.w3D(Seq(GeoZioExample.shapes))
