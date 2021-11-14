@@ -49,8 +49,10 @@ lazy val settingsFlags: Seq[sbt.Def.SettingsDefinition] = Seq(
 )
 
 val setupTestConfig: Seq[sbt.Def.SettingsDefinition] = Seq(
-  Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
   libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test,
+)
+val setupTestConfigJS: Seq[sbt.Def.SettingsDefinition] = Seq(
+  Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
 )
 
 lazy val commonSettings: Seq[sbt.Def.SettingsDefinition] = settingsFlags ++ Seq(
@@ -61,7 +63,7 @@ lazy val scalaJSBundlerConfigure: Project => Project =
   _.settings(commonSettings: _*)
     .enablePlugins(ScalaJSPlugin)
     .enablePlugins(ScalaJSBundlerPlugin)
-    .settings(setupTestConfig: _*)
+    .settings((setupTestConfig ++ setupTestConfigJS): _*)
     .settings(
       /* disabled because it somehow triggers many warnings */
       scalaJSLinkerConfig ~= (_.withSourceMap(false).withModuleKind(ModuleKind.CommonJSModule)),
@@ -144,6 +146,7 @@ lazy val model = crossProject(JSPlatform, JVMPlatform)
   //.enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
   .settings(setupTestConfig: _*)
+  .jsSettings(setupTestConfigJS: _*)
   .settings(
     libraryDependencies ++= Seq(
       "io.circe" %%% "circe-core" % circeVersion,
@@ -160,7 +163,6 @@ lazy val model = crossProject(JSPlatform, JVMPlatform)
       "io.github.cquiroz" %%% "scala-java-time-tzdb" % "2.3.0"
     )
   )
-  // /.settings(setupTestConfig, libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test)
   .settings(publishSettings)
 
 lazy val threeUtils = project
@@ -210,6 +212,7 @@ lazy val syntax = crossProject(JSPlatform, JVMPlatform)
   //.enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
   .settings(setupTestConfig: _*)
+  .jsSettings(setupTestConfigJS: _*)
   .dependsOn(model)
   .settings(publishSettings)
 
@@ -223,6 +226,7 @@ lazy val prebuilt = crossProject(JSPlatform, JVMPlatform)
   //.enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
   .settings(setupTestConfig: _*)
+  .jsSettings(setupTestConfigJS: _*)
   .dependsOn(syntax)
   .settings(noPublishSettings)
 
