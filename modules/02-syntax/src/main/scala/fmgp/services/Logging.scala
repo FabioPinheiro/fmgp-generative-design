@@ -22,5 +22,5 @@ case class LoggingLive(console: Console, clock: Clock) extends Logging {
 
 object LoggingLive {
   val layer: URLayer[Has[Console] with Has[Clock], Has[Logging]] =
-    (LoggingLive(_, _)).toLayer[Logging]
+    (LoggingLive(_, _)).toServiceBuilder[Logging]
 }

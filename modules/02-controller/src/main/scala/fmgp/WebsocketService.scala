@@ -79,5 +79,5 @@ case class WebsocketLive(console: Console) extends Websocket {
 }
 
 object WebsocketLive {
-  lazy val layer: URLayer[Has[Console], Has[Websocket]] = (WebsocketLive(_)).toLayer[Websocket]
+  lazy val layer: URLayer[Has[Console], Has[Websocket]] = (WebsocketLive(_)).toServiceBuilder[Websocket]
 }

@@ -48,7 +48,7 @@ object dsl extends CoordinatesDsl {
       ZIO.succeed(SurfaceGridShape(points.map(_.toArray).toArray))
   }
   object DslLive {
-    val layer: ULayer[Has[Dsl]] = (() => DslLive()).toLayer[Dsl]
+    val layer: ULayer[Has[Dsl]] = (() => DslLive()).toServiceBuilder[Dsl]
   }
 
   // Accessor Methods

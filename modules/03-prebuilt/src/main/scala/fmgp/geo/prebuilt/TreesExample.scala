@@ -203,7 +203,7 @@ object TreesExample {
 
   object TreeLive {
     val layer: URLayer[Has[Random] with Has[Dsl], Has[Tree]] =
-      (TreeLive(_, _)).toLayer[Tree]
+      (TreeLive(_, _)).toServiceBuilder[Tree]
   }
 
   // Accessor Methods

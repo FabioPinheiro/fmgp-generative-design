@@ -31,7 +31,7 @@ object ZioApp extends zio.ZIOAppDefault {
       WebsocketLive.layer,
       DslLive.layer,
       //TreesExample.Tree.layer
-      ZLayer.Debug.mermaid,
+      ZServiceBuilder.Debug.mermaid,
     )
     .exitCode
 

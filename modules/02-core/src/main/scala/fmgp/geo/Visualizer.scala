@@ -40,5 +40,5 @@ object VisualizerJSLive {
   var callbackHack: World => Unit = (_) => () //FIXME
 
   lazy val live: URLayer[Has[Mesher], Has[Visualizer]] =
-    (VisualizerJSLive(_)).toLayer[Visualizer]
+    (VisualizerJSLive(_)).toServiceBuilder[Visualizer]
 }

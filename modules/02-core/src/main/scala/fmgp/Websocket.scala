@@ -126,7 +126,7 @@ case class WebsocketJSLive(vissualizer: Visualizer) extends WebsocketJS {
 
 object WebsocketJSLive {
   val layer: URLayer[Has[Visualizer], Has[WebsocketJS]] =
-    (WebsocketJSLive(_)).toLayer[WebsocketJS]
+    (WebsocketJSLive(_)).toServiceBuilder[WebsocketJS]
 
   var onStateChange: Websocket.State.State => Unit = (_: Websocket.State.State) => ()
   val wsUrl = "ws://127.0.0.1:8888/browser"
