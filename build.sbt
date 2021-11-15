@@ -128,15 +128,29 @@ lazy val root = project
   .settings(commonSettings: _*)
   .settings(noPublishSettings)
 
-val threeVersion = "0.117.1" // https://www.npmjs.com/package/three
 val materialComponentsVersion = "12.0.0" // https://www.npmjs.com/package/material-components-web
 val circeVersion = "0.15.0-M1" // https://mvnrepository.com/artifact/io.circe/circe-core
+// scalajsDomVersion 2.0.0 need to update sbt-converter to 37?
 val scalajsDomVersion = "1.2.0" // https://mvnrepository.com/artifact/org.scala-js/scalajs-dom
 //FIXME val scalajsLoggingVersion = "1.1.2-SNAPSHOT" //"1.1.2"
 val akkaVersion = "2.6.15"
 val akkaHttpVersion = "10.2.4"
 val munitVersion = "0.7.26"
 val zioVersion = "2.0.0-M5" //https://mvnrepository.com/artifact/dev.zio/zio
+
+val threeJsVersion = "0.134.0" // https://www.npmjs.com/package/three
+val statsJsVersion = "0.17.0" // https://www.npmjs.com/package/@types/three
+
+val threeNpmDependencies = Seq(
+  "three" -> threeJsVersion,
+  "@types/three" -> threeJsVersion // https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/three
+)
+val myNpmDependencies = threeNpmDependencies ++ Seq(
+  "stats.js" -> statsJsVersion,
+  "@types/stats.js" -> statsJsVersion, // https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
+)
+
+// #####################################################################################################################
 
 /* For munit https://scalameta.org/munit/docs/getting-started.html#scalajs-setup */
 lazy val model = crossProject(JSPlatform, JVMPlatform)
@@ -167,12 +181,11 @@ lazy val model = crossProject(JSPlatform, JVMPlatform)
 
 lazy val threeUtils = project
   .in(file("modules/01-threejs-utils"))
-  .settings(name := "fmgp-geometry-threejs-utils")
+  .settings(name := "fmgp-threejs-utils")
   .configure(scalaJSBundlerConfigure)
   .settings(
-    scalaJSUseMainModuleInitializer := false,
-    Compile / npmDependencies += "three" -> threeVersion,
-    webpackBundlingMode := BundlingMode.LibraryOnly(), //LibraryAndApplication
+    Compile / npmDependencies ++= threeNpmDependencies,
+    webpackBundlingMode := BundlingMode.LibraryOnly(),
   )
   .settings(noPublishSettings)
 
@@ -192,11 +205,7 @@ lazy val geometryCoreJS = project
       "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
       "io.circe" %%% "circe-parser" % circeVersion,
     ),
-    Compile / npmDependencies ++= Seq(
-      "three" -> threeVersion,
-      "stats.js" -> "0.17.0",
-      "@types/stats.js" -> "0.17.0", //https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
-    ),
+    Compile / npmDependencies ++= myNpmDependencies,
     scalaJSUseMainModuleInitializer := true,
     //mainClass := Some("fmgp.Main"),
     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
@@ -315,11 +324,8 @@ lazy val webapp = project
       "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
       "io.circe" %%% "circe-parser" % circeVersion,
     ),
-    Compile / npmDependencies ++= Seq(
-      "three" -> threeVersion,
+    Compile / npmDependencies ++= myNpmDependencies ++ Seq(
       "grpc-web" -> "1.2.1", //"1.3.0", //https://github.com/scalapb/scalapb-grpcweb/blob/master/build.sbt#L93
-      "stats.js" -> "0.17.0",
-      "@types/stats.js" -> "0.17.0", //https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
       //Material Design
       "material-components-web" -> materialComponentsVersion,
       // "@material/ripple" -> materialComponentsVersion, // https://material.io/develop/web/supporting/ripple
@@ -336,8 +342,7 @@ lazy val webapp = project
     //scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) },
     //scalaJSLinkerConfig ~= (_.withModuleSplitStyle(ModuleSplitStyle.SmallestModules)),
     Compile / scalaJSModuleInitializers += {
-      ModuleInitializer
-        .mainMethod("fmgp.geo.webapp.App", "main")
+      ModuleInitializer.mainMethod("fmgp.geo.webapp.App", "main")
       // .withModuleID("app_print")
       // .withModuleID("clientGRPC")
     },

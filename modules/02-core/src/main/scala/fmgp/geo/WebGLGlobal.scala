@@ -2,19 +2,21 @@ package fmgp.geo
 
 import typings.three.loaderMod.Loader
 import typings.three.mod.{Shape => _, _}
-import typings.three.anon.{X => AnonX}
 import typings.three.webGLRendererMod.WebGLRendererParameters
+import typings.three.fontLoaderMod.Font
+import typings.three.fontLoaderMod.FontLoader
+
 import fmgp.threejs.extras.{FirstPersonControls, FlyControls, OrbitControls}
 import fmgp.Websocket
 
 import fmgp.Log
 object WebGLTextGlobal {
-  var textFont: typings.three.fontMod.Font = _
+  var textFont: Font = _
   val loader = new FontLoader()
   def init = Log.info(s"### WebGLTextGlobal.init ###")
   loader.load(
     "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/gentilis_regular.typeface.json", //"fonts/helvetiker_bold.typeface.json",
-    (f: typings.three.fontMod.Font) => textFont = f
+    (f: Font) => textFont = f
   )
   init
 }

@@ -8,11 +8,9 @@ import typings.statsJs.mod.{^ => Stats}
 
 import fmgp.geo._
 import fmgp.Utils
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import java.awt.geom.Dimension2D
-import org.scalajs.dom.raw.{Event, Element}
 
 import scala.util.chaining._
 
@@ -22,7 +20,7 @@ object Main {
 
   def main(args: Array[String]): Unit = {
     WebGLTextGlobal.init
-    dom.document.body.appendChild(webGLHelper.renderer.domElement)
+    org.scalajs.dom.document.body.appendChild(webGLHelper.renderer.domElement)
     webGLHelper.renderer.domElement.style = "position: fixed; top: 0px; left: 0px;"
     js.timers.setTimeout(1000)(webGLHelper.init) //milliseconds FIXME
     ()
@@ -57,7 +55,7 @@ object Fabio {
 
   /** $m_Lfmgp_Fabio$().test */
   @JSExport
-  var test: Event = _
+  var test: org.scalajs.dom.raw.Event = _
   @JSExport
   var any: Any = _
 

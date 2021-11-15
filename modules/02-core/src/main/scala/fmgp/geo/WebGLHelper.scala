@@ -8,7 +8,7 @@ import org.scalajs.dom
 
 import typings.three.loaderMod.Loader
 import typings.three.mod.{Shape => _, _}
-import typings.three.anon.{X => AnonX}
+import typings.three.anon.{Y => AnonY}
 import typings.three.webGLRendererMod.WebGLRendererParameters
 import typings.statsJs.mod.{^ => Stats}
 
@@ -18,15 +18,18 @@ import fmgp.{Log, Websocket, Utils}
 
 import _root_.fmgp.Websocket
 import fmgp.WebsocketJSLive
+import typings.three.textGeometryMod.TextGeometry
+import typings.three.eventDispatcherMod.Event
+import typings.three.raycasterMod.Intersection
 
 case class InteractiveMesh(mesh: typings.three.meshMod.Mesh[_, _], onSelected: () => Unit = () => ()) {
   def id = mesh.id
 }
 
-class WebGLHelper(topPadding: Int, modelToAnimate: Object3D = new Object3D()) {
+class WebGLHelper(topPadding: Int, modelToAnimate: Object3D[Event] = new Object3D()) {
 
   val webGLGlobal = new WebGLGlobal
-  var uiEvent: Option[AnonX] = None
+  var uiEvent: Option[AnonY] = None
 
   def height = -5 + dom.window.innerHeight - topPadding
   def width = dom.window.innerWidth
@@ -51,12 +54,12 @@ class WebGLHelper(topPadding: Int, modelToAnimate: Object3D = new Object3D()) {
     // calculate mouse position in normalized device coordinates (-1 to +1) for both components
     val x = (event.clientX / dom.window.innerWidth) * 2 - 1
     val y = -((event.clientY - topPadding) / dom.window.innerHeight) * 2 + 1
-    this.uiEvent = Some(AnonX(x, y))
+    this.uiEvent = Some(AnonY(x, y))
   }
   def onTouchEvent(event: dom.TouchEvent) = {
     val x = (event.touches(0).screenX / dom.window.innerWidth) * 2 - 1
     val y = -((event.touches(0).screenY - topPadding) / dom.window.innerHeight) * 2 + 1
-    this.uiEvent = Some(AnonX(x, y))
+    this.uiEvent = Some(AnonY(x, y))
   }
 
   /** Must be call after init */
@@ -136,7 +139,7 @@ class WebGLHelper(topPadding: Int, modelToAnimate: Object3D = new Object3D()) {
       textParameters.height = 0
       textParameters.curveSegments = 12
 
-      val geometry = new TextBufferGeometry(WebsocketJSLive.wsUrl, textParameters).translate(0.01, -0.02, 0)
+      val geometry = new TextGeometry(WebsocketJSLive.wsUrl, textParameters).translate(0.01, -0.02, 0)
       val basicMarerial = new typings.three.meshBasicMaterialMod.MeshBasicMaterial()
       basicMarerial.color = new typings.three.colorMod.Color(0x444444)
       val mesh = new typings.three.mod.Mesh(geometry, basicMarerial)
@@ -185,9 +188,10 @@ class WebGLHelper(topPadding: Int, modelToAnimate: Object3D = new Object3D()) {
     StatsComponent.stats.begin()
 
     this.uiEvent.foreach { event =>
-      val intersects = webGLGlobal.raycaster
-        .tap(_.setFromCamera(event, webGLGlobal.cameraUI.get))
-        .intersectObjects(webGLGlobal.sceneUI.children, true)
+      val intersects: js.Array[Intersection[typings.three.object3DMod.Object3D[Event]]] =
+        webGLGlobal.raycaster
+          .tap(_.setFromCamera(event, webGLGlobal.cameraUI.get))
+          .intersectObjects(webGLGlobal.sceneUI.children, true)
       webGLGlobal.scene.raycast(webGLGlobal.raycaster, intersects)
       intersects
         .map(_.`object`.id.toInt)

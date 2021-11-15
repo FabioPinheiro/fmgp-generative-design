@@ -3,19 +3,20 @@ package fmgp.geo
 import typings.three.mod.Object3D
 import fmgp.geo
 import zio._
+import typings.three.eventDispatcherMod.Event
 
 trait Mesher {
-  def generateObj3D(shapes: => Seq[geo.Shape]): UIO[Object3D]
+  def generateObj3D(shapes: => Seq[geo.Shape]): UIO[Object3D[Event]]
 }
 
 // Accessor Methods Inside the Companion Object
 object Mesher {
-  def generateObj3D(shapes: => Seq[geo.Shape]): URIO[Has[Mesher], Object3D] =
+  def generateObj3D(shapes: => Seq[geo.Shape]): URIO[Has[Mesher], Object3D[Event]] =
     ZIO.serviceWith(_.generateObj3D(shapes))
 }
 
 class MesherLive extends Mesher {
-  def generateObj3D(shapes: => Seq[geo.Shape]): UIO[Object3D] =
+  def generateObj3D(shapes: => Seq[geo.Shape]): UIO[Object3D[Event]] =
     UIO(WorldImprovements.generateObj3D(shapes))
 }
 

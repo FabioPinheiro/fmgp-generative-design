@@ -2,6 +2,7 @@ package fmgp.geo
 
 import zio._
 import typings.three.mod.Object3D
+import typings.three.eventDispatcherMod.Event
 
 trait Visualizer {
   def update(world: => World): UIO[Unit]
@@ -35,7 +36,7 @@ case class VisualizerJSLive(mesher: Mesher) extends Visualizer {
 }
 
 object VisualizerJSLive {
-  val modelToAnimate: Object3D = new Object3D()
+  val modelToAnimate: Object3D[Event] = new Object3D()
   val webGLHelper = new WebGLHelper(topPadding = 64, modelToAnimate)
   var callbackHack: World => Unit = (_) => () //FIXME
 

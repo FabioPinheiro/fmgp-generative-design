@@ -26,14 +26,16 @@ object GeometryExamples {
 
   def shapesDemo2D: WorldState = World.w2D(
     Seq(
-      LinePath(Seq(XYZ(-8, 0), XYZ(0, 8), XYZ(8, 0), XYZ(0, 4), XYZ(-8, 0))),
+      LinePath(
+        Seq(XYZ(-8, 0), XYZ(0, 8), XYZ(8, 0), XYZ(0, 4), XYZ(-8, 0))
+      ),
       TransformationShape(
         Circle(3),
-        TransformMatrix(Matrix.translate(0, -10, 0))
+        TransformMatrix(Matrix.translate(0, -3, 0))
       ),
       TransformationShape(
         Circle(1, XYZ(2, 2)),
-        TransformMatrix(Matrix.translate(0, -10, 0))
+        TransformMatrix(Matrix.translate(0, -3, 0))
       )
     )
   )

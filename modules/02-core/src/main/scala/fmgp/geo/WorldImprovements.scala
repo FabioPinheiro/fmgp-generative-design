@@ -4,6 +4,9 @@ import typings.three.loaderMod.Loader
 import typings.three.mod._
 import typings.three.webGLRendererMod.WebGLRendererParameters
 import typings.three.lineBasicMaterialMod.LineBasicMaterialParameters
+import typings.three.eventDispatcherMod.Event
+import typings.three.constantsMod.BuiltinShaderAttributeName
+import typings.three.textGeometryMod.TextGeometry
 
 import fmgp._
 import scala.scalajs.js
@@ -18,7 +21,14 @@ import fmgp.geo.{Vec, XYZ}
 
 import scala.util.chaining._
 
+import scala.scalajs.js.annotation.JSExportTopLevel
+import scala.scalajs.js.annotation.JSExport
+
+@JSExportTopLevel("WorldImprovements")
 object WorldImprovements {
+
+  @JSExport
+  var any: js.Any = _
 
   def matrix2matrix(m: geo.Matrix): Matrix4 = {
     val aux = new Matrix4
@@ -48,6 +58,9 @@ object WorldImprovements {
     new scala.scalajs.js.typedarray.Float32Array(points.toJSIterable)
       .asInstanceOf[typings.std.ArrayLike[Double]] //FIXME ... TS
 
+  @inline def arrayLike2Float(array: typings.std.ArrayLike[Double]): Array[Float] =
+    array.asInstanceOf[scala.scalajs.js.typedarray.Float32Array].jsIterator.toIterator.toArray
+
   @inline def float2BufferAttribute(points: Seq[Float]): BufferAttribute =
     new BufferAttribute(float2ArrayLike(points), 3)
 
@@ -64,7 +77,7 @@ object WorldImprovements {
   val materialLineGreen = new LineBasicMaterial(parametersLine(0x00ff00, 3))
   val materialLineBlue = new LineBasicMaterial(parametersLine(0x0000ff, 3))
 
-  def generateObj3D(world: geo.WorldState): Object3D = world.dimensions match {
+  def generateObj3D(world: geo.WorldState): Object3D[Event] = world.dimensions match {
     case geo.Dimensions.D2 => generateObj3D(world.shapes)
     case geo.Dimensions.D3 => generateObj3D(world.shapes)
   }
@@ -77,19 +90,19 @@ object WorldImprovements {
     def withMaterial(material: typings.three.materialMod.Material): GenerateOP = copy(material = material)
     def toObj3D(
         geometry: typings.three.bufferGeometryMod.BufferGeometry
-    ): Object3D = {
+    ): Object3D[Event] = {
       if (wireframe) {
         val wireframe = new WireframeGeometry(geometry)
-        new LineSegments(wireframe).asInstanceOf[Object3D]
-      } else new Mesh(geometry, material).asInstanceOf[Object3D]
+        new LineSegments(wireframe).asInstanceOf[Object3D[Event]]
+      } else new Mesh(geometry, material).asInstanceOf[Object3D[Event]]
     }
     def toObj3D(
         geometry: typings.three.geometryMod.Geometry
-    ): Object3D = {
+    ): Object3D[Event] = {
       if (wireframe) {
         val wireframe = new WireframeGeometry(geometry)
-        new LineSegments(wireframe).asInstanceOf[Object3D]
-      } else new Mesh(geometry, material).asInstanceOf[Object3D]
+        new LineSegments(wireframe).asInstanceOf[Object3D[Event]]
+      } else new Mesh(geometry, material).asInstanceOf[Object3D[Event]]
     }
   }
 
@@ -187,12 +200,12 @@ object WorldImprovements {
   }
 
   //FIXME change Object3D to typings.three.object3DMod.Object3D and remove the asInstanceOf
-  def generateObj3D(shapes: Seq[geo.Shape]): Object3D = {
-    def generateShape(shape: geo.Shape, state: GenerateOP): Object3D = shape match {
+  def generateObj3D(shapes: Seq[geo.Shape]): Object3D[Event] = {
+    def generateShape(shape: geo.Shape, state: GenerateOP): Object3D[Event] = shape match {
       case geo.Wireframe(shape) =>
         generateShape(shape, state.withWireframe)
       case geo.ShapeSeq(shapes) =>
-        shapes.map(generateShape(_, state)).fold(new Object3D)((z, n) => z.add(n))
+        shapes.map(generateShape(_, state)).fold(new Object3D[Event])((z, n) => z.add(n))
       case geo.TransformationShape(shape, transformation) =>
         val aux = generateShape(shape, state)
         aux.applyMatrix4(matrix2matrix(transformation.matrix).multiply(aux.matrixWorld))
@@ -203,8 +216,8 @@ object WorldImprovements {
           float2ArrayLike(points.flatMap(p => Seq(p.x.toFloat, p.y.toFloat, p.z.toFloat))),
           3
         )
-        val geometryPoint = new BufferGeometry().tap(_.setAttribute("position", aux))
-        new Points(geometryPoint, geo.SceneGraph.pointMat).asInstanceOf[Object3D]
+        val geometryPoint = new BufferGeometry().tap(_.setAttribute(BuiltinShaderAttributeName.position, aux))
+        new Points(geometryPoint, geo.SceneGraph.pointMat).asInstanceOf[Object3D[Event]]
 
       case box: geo.Box =>
         val obj = state.toObj3D(boxGeom)
@@ -226,7 +239,7 @@ object WorldImprovements {
           radiusTop = cylinder.topRadius,
           radiusBottom = cylinder.bottomRadius,
           height = cylinder.height,
-          radiusSegments = cylinder.radialSegments.map(_.toDouble).orUndefined,
+          radialSegments = cylinder.radialSegments.map(_.toDouble).orUndefined,
           heightSegments = cylinder.heightSegments.map(_.toDouble).orUndefined,
           openEnded = cylinder.openEnded.orUndefined,
           thetaStart = cylinder.thetaStart.orUndefined,
@@ -269,7 +282,7 @@ object WorldImprovements {
         val shape = multiPath2ShapePath(multiPath)
         shape.holes = holes.map(e => multiPath2Path(e)).toJSArray
         val geometry = new ShapeBufferGeometry(shape)
-        new Mesh(geometry, geo.SceneGraph.basicMat).asInstanceOf[Object3D]
+        new Mesh(geometry, geo.SceneGraph.basicMat).asInstanceOf[Object3D[Event]]
 
       case geo.SurfaceGridShape(points: Array[Array[XYZ]]) =>
         def xyzMatrix2Triangles(a: Array[Array[XYZ]]) = {
@@ -284,7 +297,7 @@ object WorldImprovements {
         }.flatten
         val t = xyzMatrix2Triangles(points)
         val geometry = new BufferGeometry()
-          .tap(_.setAttribute("position", float2BufferAttribute(t)))
+          .tap(_.setAttribute(BuiltinShaderAttributeName.position, float2BufferAttribute(t)))
           //.tap(_.setAttribute("normal", float2BufferAttribute(n.toSeqFloat)))
           .tap(_.computeVertexNormals())
 
@@ -296,11 +309,16 @@ object WorldImprovements {
           case multiPath: geo.MultiPath =>
             val points = multiPath2Curve(multiPath).getPoints()
             val bg = new BufferGeometry().setFromPoints(points.map(e => e))
-            new Line(bg, materialLine).asInstanceOf[Object3D]
+            new Line(bg, materialLine).asInstanceOf[Object3D[Event]]
           case geo.LinePath(vertices) =>
-            val geometryLine = new Geometry()
-            vertices.foreach(v => geometryLine.vertices.push(new Vector3(v.x, v.y, v.z)))
-            new Line(geometryLine, materialLine).asInstanceOf[Object3D]
+            val geometryLine = new BufferGeometry()
+              .tap(
+                _.setAttribute(
+                  BuiltinShaderAttributeName.position,
+                  float2BufferAttribute(vertices.map(e => Seq(e.x.toFloat, e.y.toFloat, e.z.toFloat)).flatten)
+                )
+              )
+            new Line(geometryLine, materialLine).asInstanceOf[Object3D[Event]]
           case geo.CubicBezierPath(a, af, bf, b) =>
             val curve = new CubicBezierCurve3(
               new Vector3(a.x, a.y, a.z),
@@ -309,30 +327,35 @@ object WorldImprovements {
               new Vector3(b.x, b.y, b.z)
             )
             val geometry = new BufferGeometry().setFromPoints(curve.getPoints(50).map(x => x))
-            new Line(geometry, materialLine).asInstanceOf[Object3D]
+            new Line(geometry, materialLine).asInstanceOf[Object3D[Event]]
         }
       case c: geo.Circle =>
         val geometry = new CircleGeometry(c.radius, 32)
         val obj = if (c.fill) {
           state.withMaterial(materialLine).toObj3D(geometry)
         } else {
-          geometry.vertices.shift() //Remove center vertex
-          new LineLoop(geometry, materialLine).asInstanceOf[Object3D]
+          val positionHack = geometry
+            .getAttribute(BuiltinShaderAttributeName.position)
+            .asInstanceOf[typings.three.bufferAttributeMod.BufferAttribute]
+          val ccc: Seq[Float] = arrayLike2Float(positionHack.array).toIndexedSeq.drop(3) // drop one point (group of 3)
+          val geometryAux = new BufferGeometry()
+            .tap(_.setAttribute(BuiltinShaderAttributeName.position, float2BufferAttribute(ccc)))
+          new LineLoop(geometryAux, materialLine).asInstanceOf[Object3D[Event]] //same as Line (we have the last point)
         }
         obj.position.set(c.center.x, c.center.y, c.center.z)
         obj
 
       case geo.TriangleShape(t: geo.Triangle[XYZ], n: geo.Triangle[Vec]) =>
         val geometry = new BufferGeometry()
-          .tap(_.setAttribute("position", float2BufferAttribute(t.toSeqFloat)))
-          .tap(_.setAttribute("normal", float2BufferAttribute(n.toSeqFloat)))
+          .tap(_.setAttribute(BuiltinShaderAttributeName.position, float2BufferAttribute(t.toSeqFloat)))
+          .tap(_.setAttribute(BuiltinShaderAttributeName.normal, float2BufferAttribute(n.toSeqFloat)))
         //.tap(_.computeVertexNormals())
 
         //val op = state.withMaterial(geo.SceneGraph.surfaceNormalMat)
         state.toObj3D(geometry)
 
       case geo.Arrow(to: Vec, from: XYZ) =>
-        val obj = new Object3D
+        val obj = new Object3D[Event]
         val mid = to.-(to.-(from.asVec).norm * 0.3).toXYZ
         obj.add(generateShape(geo.Cylinder.fromVerticesRadius(from, mid, 0.03), state))
         obj.add(
@@ -360,7 +383,7 @@ object WorldImprovements {
           generateShape(geo.Arrow(Vec(0, 0, 1)), op)
         }
 
-        val obj = new Object3D
+        val obj = new Object3D[Event]
         obj.add(ccc)
         obj.add(rrr)
         obj.add(ggg)
@@ -374,11 +397,11 @@ object WorldImprovements {
         textParameters.size = size
         textParameters.height = 0
         textParameters.curveSegments = 12
-        val geometry = new TextBufferGeometry(text, textParameters)
+        val geometry = new TextGeometry(text, textParameters)
         val basicMarerial = new typings.three.meshBasicMaterialMod.MeshBasicMaterial()
         basicMarerial.color = new typings.three.colorMod.Color(0x444444)
         val mesh = new typings.three.mod.Mesh(geometry, basicMarerial)
-        mesh.asInstanceOf[Object3D]
+        mesh.asInstanceOf[Object3D[Event]]
 
       case geo.TestShape() =>
         val line = geo.LinePath(vertices = (10 to 16).map(i => XYZ(i, 0, 0)))
@@ -436,14 +459,15 @@ object WorldImprovements {
             (topSide, sideTriangles(line.vertices.head.asVec), sideTriangles(line.vertices.last.asVec).map(_.invert))
           }
 
+        //val aaaa: String & js.Object = "position"
         val topSideGeometry = new BufferGeometry()
-          .tap(_.setAttribute("position", float2BufferAttribute(topSideVertices)))
+          .tap(_.setAttribute(BuiltinShaderAttributeName.position, float2BufferAttribute(topSideVertices)))
           .tap(_.computeVertexNormals())
 
         val innerSideGeometry = new BufferGeometry()
           .tap(
             _.setAttribute(
-              "position",
+              BuiltinShaderAttributeName.position,
               float2BufferAttribute(innerSideSurface.pipe {
                 _.flatMap(_.toSeqFloat)
               })
@@ -451,7 +475,7 @@ object WorldImprovements {
           )
           .tap(
             _.setAttribute(
-              "normal",
+              BuiltinShaderAttributeName.normal,
               float2BufferAttribute(innerSideSurface.pipe {
                 _.flatMap(_.map(_.forceX0Z).toSeqFloat)
               })
@@ -461,7 +485,7 @@ object WorldImprovements {
         val outerSideGeometry = new BufferGeometry()
           .tap(
             _.setAttribute(
-              "position",
+              BuiltinShaderAttributeName.position,
               float2BufferAttribute(outerSideSurface.pipe {
                 _.flatMap(_.toSeqFloat)
               })
@@ -469,7 +493,7 @@ object WorldImprovements {
           )
           .tap(
             _.setAttribute(
-              "normal",
+              BuiltinShaderAttributeName.normal,
               float2BufferAttribute(outerSideSurface.pipe {
                 _.flatMap(_.map(_.forceX0Z).toSeqFloat)
               })
@@ -492,9 +516,9 @@ object WorldImprovements {
         obj
     }
 
-    val tmp: Seq[Object3D] = shapes.map { s => generateShape(s, GenerateOP()) }
+    val tmp: Seq[Object3D[Event]] = shapes.map { s => generateShape(s, GenerateOP()) }
 
-    val parent = new Object3D
+    val parent = new Object3D[Event]
     tmp.foreach(e => parent.add(e))
     parent
   }

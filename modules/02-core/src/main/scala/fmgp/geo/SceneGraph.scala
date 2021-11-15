@@ -8,7 +8,7 @@ import scala.scalajs.js
 
 import scala.util.chaining._
 
-object SceneGraph extends Color with DefaultMaterials with MakeMatrixTransformedObject3D with PolygonSurface
+object SceneGraph extends Color with DefaultMaterials with MakeMatrixTransformedObject3D // with PolygonSurface
 
 /** @see [[https://github.com/pafalium/gd-web-env/blob/master/src/SceneGraph/color.js]] */
 trait Color {
@@ -64,17 +64,17 @@ trait MakeMatrixTransformedObject3D {
   }
 }
 
-/** @see [[https://github.com/pafalium/gd-web-env/blob/master/src/SceneGraph/polygon-surface.js]] */
+/*/** @see [[https://github.com/pafalium/gd-web-env/blob/master/src/SceneGraph/polygon-surface.js]] */
 trait PolygonSurface extends DefaultMaterials {
 
   private def polygonSurfaceGeometry(vertices: js.Array[Vector3]) = {
-    val geom = new Geometry()
+    val geom = new BufferGeometry()
     geom.vertices = vertices.map(e => e: typings.three.vector3Mod.Vector3) // set vertices
     val v0 = 0 // set faces (GL_TRIANGLE_FAN)
 
     (1 to vertices.length).map(v1 => geom.faces.push(new Face3(v0, v1, v1 + 1)))
 
-    geom.computeFaceNormals() // set normals
+    //FIXME geom.computeFaceNormals() // set normals
     geom.computeVertexNormals() // set normals
     geom.computeBoundingSphere() // set bounding sphere
     geom
@@ -90,6 +90,7 @@ trait PolygonSurface extends DefaultMaterials {
   }
   def polygonSurface = toThreePolygonSurface _
 }
+ */
 
 case class Primitive(name: String, args: Int)
 case class Registry(

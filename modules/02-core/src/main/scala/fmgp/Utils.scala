@@ -7,6 +7,7 @@ import typings.three.webGLRendererMod.WebGLRendererParameters
 import fmgp.threejs._
 import fmgp.threejs.extras.OrbitControls
 import fmgp.geo._
+import typings.three.eventDispatcherMod.Event
 
 object Utils {
   def computeStaticThreeObjects = {
@@ -27,7 +28,7 @@ object Utils {
       //   println(s"Dimensions $d Unrecognized in computeStaticThreeObjects")
     }
 
-    val staticRoot = new Object3D()
+    val staticRoot = new Object3D[Event]()
     staticRoot.add(sunLight, belowLight, hemiLight, gridHelper, axisHelper)
     //BUG Seq(sunLight, belowLight, hemiLight, gridHelper, axisHelper).foreach(e => staticRoot.add(e)) //BUG see https://github.com/scala-js/scala-js/issues/4548
     staticRoot
