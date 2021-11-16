@@ -18,7 +18,7 @@ import scala.scalajs.js.annotation.{JSImport}
 @JSImport(
   "three/examples/jsm/controls/FlyControls",
   "FlyControls",
-  "Three.FlyControls"
+  //"Three.FlyControls"
 )
 class FlyControls(`object`: Camera, domElement: HTMLElement) extends js.Object {
 

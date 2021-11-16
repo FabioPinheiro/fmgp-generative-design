@@ -14,7 +14,6 @@ import typings.three.webGLRendererMod.WebGLRendererParameters
 
 import fmgp._
 import fmgp.geo._
-import fmgp.threejs.extras.FlyControls
 import com.raquo.laminar.keys.ReactiveEventProp
 
 @JSExportTopLevel("GeoApp")

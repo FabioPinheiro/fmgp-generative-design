@@ -12,8 +12,6 @@ import typings.three.anon.{Y => AnonY}
 import typings.three.webGLRendererMod.WebGLRendererParameters
 import typings.statsJs.mod.{^ => Stats}
 
-import fmgp.threejs._
-import fmgp.threejs.extras.{FirstPersonControls, FlyControls, OrbitControls}
 import fmgp.{Log, Websocket, Utils}
 
 import _root_.fmgp.Websocket
@@ -21,6 +19,7 @@ import fmgp.WebsocketJSLive
 import typings.three.textGeometryMod.TextGeometry
 import typings.three.eventDispatcherMod.Event
 import typings.three.raycasterMod.Intersection
+import typings.three.flyControlsMod.FlyControls
 
 case class InteractiveMesh(mesh: typings.three.meshMod.Mesh[_, _], onSelected: () => Unit = () => ()) {
   def id = mesh.id

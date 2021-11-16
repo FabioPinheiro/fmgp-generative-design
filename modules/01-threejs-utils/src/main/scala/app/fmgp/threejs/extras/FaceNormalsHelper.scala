@@ -15,7 +15,7 @@ import scala.scalajs.js.annotation.JSImport
 @JSImport(
   "three/examples/jsm/helpers/FaceNormalsHelper",
   "FaceNormalsHelper",
-  "Three.FaceNormalsHelper"
+  //"Three.FaceNormalsHelper"
 )
 class FaceNormalsHelper(`object`: BufferGeometry, size: Double, color: Color, linewidth: Double)
     extends LineSegments[typings.three.bufferGeometryMod.BufferGeometry, typings.three.materialMod.Material] {

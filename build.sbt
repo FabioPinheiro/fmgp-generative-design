@@ -107,7 +107,7 @@ lazy val buildInfoConfigure: Project => Project = _.enablePlugins(BuildInfoPlugi
 
 lazy val modules: List[ProjectReference] =
   List(
-    threeUtils,
+    //REMOVE threeUtils,
     modelJVM,
     modelJS,
     controller,
@@ -179,15 +179,16 @@ lazy val model = crossProject(JSPlatform, JVMPlatform)
   )
   .settings(publishSettings)
 
-lazy val threeUtils = project
-  .in(file("modules/01-threejs-utils"))
-  .settings(name := "fmgp-threejs-utils")
-  .configure(scalaJSBundlerConfigure)
-  .settings(
-    Compile / npmDependencies ++= threeNpmDependencies,
-    webpackBundlingMode := BundlingMode.LibraryOnly(),
-  )
-  .settings(noPublishSettings)
+//REMOVE
+// lazy val threeUtils = project
+//   .in(file("modules/01-threejs-utils"))
+//   .settings(name := "fmgp-threejs-utils")
+//   .configure(scalaJSBundlerConfigure)
+//   .settings(
+//     Compile / npmDependencies ++= threeNpmDependencies,
+//     webpackBundlingMode := BundlingMode.LibraryOnly(),
+//   )
+//   .settings(noPublishSettings)
 
 lazy val modelJS = model.js
 lazy val modelJVM = model.jvm
@@ -211,7 +212,7 @@ lazy val geometryCoreJS = project
     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
   )
-  .dependsOn(threeUtils, modelJS)
+  .dependsOn(modelJS)
   .settings(publishSettings)
 
 lazy val syntax = crossProject(JSPlatform, JVMPlatform)
@@ -347,7 +348,7 @@ lazy val webapp = project
       // .withModuleID("clientGRPC")
     },
   )
-  .dependsOn(threeUtils, modelJS, prebuiltJS, geometryCoreJS, protosJS)
+  .dependsOn(modelJS, prebuiltJS, geometryCoreJS, protosJS)
   .settings(noPublishSettings)
 
 // ##############

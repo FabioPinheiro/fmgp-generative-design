@@ -4,8 +4,6 @@ import typings.three.loaderMod.Loader
 import typings.three.mod._
 import typings.three.webGLRendererMod.WebGLRendererParameters
 
-import fmgp.threejs._
-import fmgp.threejs.extras.OrbitControls
 import fmgp.geo._
 import typings.three.eventDispatcherMod.Event
 

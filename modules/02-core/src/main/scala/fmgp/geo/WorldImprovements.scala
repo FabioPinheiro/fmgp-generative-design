@@ -16,7 +16,6 @@ import scala.scalajs.js.UndefOrOps
 import fmgp.geo.LinePath
 import fmgp.geo.CubicBezierPath
 import fmgp.geo.MultiPath
-import fmgp.threejs.extras.FaceNormalsHelper
 import fmgp.geo.{Vec, XYZ}
 
 import scala.util.chaining._
