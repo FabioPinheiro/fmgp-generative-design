@@ -119,10 +119,11 @@ object AppUtils {
               i(
                 className("material-icons mdc-list-item__graphic"),
                 aria.hidden(true),
-                page match {
+                page match { //https://fonts.google.com/icons?selected=Material+Icons+Outlined
                   case _: HomePage.type        => "home"
-                  case _: ConfigPage.type      => "streetview"
                   case _: GeoPage.type         => "explore"
+                  case _: MermaidPage.type     => "share"
+                  case _: ConfigPage.type      => "streetview"
                   case _: ShowGeoJsonPage.type => "precision_manufacturing"
                   case _: ShowGeoHtmlPage.type => "dashboard"
                 }

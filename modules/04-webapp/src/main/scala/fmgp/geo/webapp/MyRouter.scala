@@ -9,8 +9,9 @@ object MyRouter {
   sealed abstract class Page(val title: String)
 
   case object HomePage extends Page("Home")
-  case object ConfigPage extends Page("Config")
   case object GeoPage extends Page("GeoApp")
+  case object MermaidPage extends Page("MermaidApp")
+  case object ConfigPage extends Page("Config")
   case object ShowGeoJsonPage extends Page("ShowGeoJson")
   case object ShowGeoHtmlPage extends Page("ShowGeoHTML")
 
@@ -23,8 +24,9 @@ object MyRouter {
 
   private val routes = List(
     Route.static(HomePage, root / endOfSegments, Router.localFragmentBasePath),
-    Route.static(ConfigPage, root / "config" / endOfSegments, Router.localFragmentBasePath),
     Route.static(GeoPage, root / "geo" / endOfSegments, Router.localFragmentBasePath),
+    Route.static(MermaidPage, root / "mermaid" / endOfSegments, Router.localFragmentBasePath),
+    Route.static(ConfigPage, root / "config" / endOfSegments, Router.localFragmentBasePath),
     Route.static(ShowGeoJsonPage, root / "json" / endOfSegments, Router.localFragmentBasePath),
     Route.static(ShowGeoHtmlPage, root / "html" / endOfSegments, Router.localFragmentBasePath),
   )

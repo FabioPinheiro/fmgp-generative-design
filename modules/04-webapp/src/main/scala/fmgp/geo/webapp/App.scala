@@ -39,14 +39,16 @@ object App {
   private val $selectedApp = SplitRender(MyRouter.router.$currentPage)
     .collectStatic(HomePage)(Home())
     .collectStatic(ConfigPage)(ConfigApp())
+    .collectStatic(MermaidPage)(MermaidApp())
     .collectStatic(GeoPage)(GeoApp())
     .collectStatic(ShowGeoJsonPage)(ShowGeo(true))
     .collectStatic(ShowGeoHtmlPage)(ShowGeo(false))
 
   private val linkPages: List[Page] = List(
     HomePage,
-    ConfigPage,
     GeoPage,
+    MermaidPage,
+    ConfigPage,
     ShowGeoJsonPage,
     ShowGeoHtmlPage,
   )

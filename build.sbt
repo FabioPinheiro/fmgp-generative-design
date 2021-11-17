@@ -138,17 +138,13 @@ val akkaHttpVersion = "10.2.4"
 val munitVersion = "0.7.26"
 val zioVersion = "2.0.0-M5" //https://mvnrepository.com/artifact/dev.zio/zio
 
-val threeJsVersion = "0.134.0" // https://www.npmjs.com/package/three
-val statsJsVersion = "0.17.0" // https://www.npmjs.com/package/@types/three
-
-val threeNpmDependencies = Seq(
-  "three" -> threeJsVersion,
-  "@types/three" -> threeJsVersion // https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/three
-)
-val myNpmDependencies = threeNpmDependencies ++ Seq(
-  "stats.js" -> statsJsVersion,
-  "@types/stats.js" -> statsJsVersion, // https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
-)
+// https://www.npmjs.com/package/three and https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/three
+val threeNpmDependencies = Seq("three", "@types/three").map(_ -> "0.134.0")
+// https://www.npmjs.com/package/stats and https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
+val statsNpmDependencies = Seq("stats.js", "@types/stats.js").map(_ -> "0.17.0")
+//https://www.npmjs.com/package/@types/d3
+//val d3NpmDependencies = Seq("d3", "@types/d3").map(_ -> "7.1.0")
+val mermaidNpmDependencies = Seq("mermaid" -> "8.13.3", "@types/mermaid" -> "8.2.7")
 
 // #####################################################################################################################
 
@@ -206,7 +202,7 @@ lazy val geometryCoreJS = project
       "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
       "io.circe" %%% "circe-parser" % circeVersion,
     ),
-    Compile / npmDependencies ++= myNpmDependencies,
+    Compile / npmDependencies ++= threeNpmDependencies ++ statsNpmDependencies,
     scalaJSUseMainModuleInitializer := true,
     //mainClass := Some("fmgp.Main"),
     //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
@@ -325,7 +321,7 @@ lazy val webapp = project
       "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
       "io.circe" %%% "circe-parser" % circeVersion,
     ),
-    Compile / npmDependencies ++= myNpmDependencies ++ Seq(
+    Compile / npmDependencies ++= threeNpmDependencies ++ statsNpmDependencies ++ mermaidNpmDependencies ++ Seq(
       "grpc-web" -> "1.2.1", //"1.3.0", //https://github.com/scalapb/scalapb-grpcweb/blob/master/build.sbt#L93
       //Material Design
       "material-components-web" -> materialComponentsVersion,

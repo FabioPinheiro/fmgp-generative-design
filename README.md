@@ -36,7 +36,27 @@ The webbapp visualizer uses the [threejs](https://threejs.org/) library on the b
 ┌┐└┼┘├┤►▲▼◄^<v>
 ```
 
-[![](https://mermaid.ink/img/eyJjb2RlIjoiZ3JhcGhcbk1vZGVsIC0tPiBzeW50YXhcbk1vZGVsIC0tPiBnZW9tZXRyeUNvcmVcblByb3RvIC0tPiBzeW50YXhcblByb3RvIC0tPiBnZW9tZXRyeUNvcmVcblRocmVlVXRpbHNcbnN5bnRheCAtLT4gZGVtb1xuc3ludGF4IC0tPiBjb250cm9sbGVyXG5zeW50YXggLS0-IHByZWJ1aWxkXG5zeW50YXggLS0-IHdlYmFwcFxuZ2VvbWV0cnlDb3JlIC0tPiB3ZWJhcHBcbmNvbnRyb2xsZXIgLS0-IHJlcGxcbnByZWJ1aWxkIC0tPiByZXBsXG5wcmVidWlsZCAtLT4gd2ViYXBwXG53ZWJhcHAgPT0-fHVzZXwgY29udHJvbGxlciIsIm1lcm1haWQiOnsidGhlbWUiOiJkZWZhdWx0In0sInVwZGF0ZUVkaXRvciI6ZmFsc2UsImF1dG9TeW5jIjp0cnVlLCJ1cGRhdGVEaWFncmFtIjpmYWxzZX0)](https://mermaid-js.github.io/mermaid-live-editor/edit/#eyJjb2RlIjoiZ3JhcGhcbk1vZGVsIC0tPiBzeW50YXhcbk1vZGVsIC0tPiBnZW9tZXRyeUNvcmVcblByb3RvIC0tPiBzeW50YXhcblByb3RvIC0tPiBnZW9tZXRyeUNvcmVcblRocmVlVXRpbHNcbnN5bnRheCAtLT4gZGVtb1xuc3ludGF4IC0tPiBjb250cm9sbGVyXG5zeW50YXggLS0-IHByZWJ1aWxkXG5zeW50YXggLS0-IHdlYmFwcFxuZ2VvbWV0cnlDb3JlIC0tPiB3ZWJhcHBcbmNvbnRyb2xsZXIgLS0-IHJlcGxcbnByZWJ1aWxkIC0tPiByZXBsXG5wcmVidWlsZCAtLT4gd2ViYXBwXG53ZWJhcHAgPT0-fHVzZXwgY29udHJvbGxlciIsIm1lcm1haWQiOiJ7XG4gIFwidGhlbWVcIjogXCJkZWZhdWx0XCJcbn0iLCJ1cGRhdGVFZGl0b3IiOmZhbHNlLCJhdXRvU3luYyI6dHJ1ZSwidXBkYXRlRGlhZ3JhbSI6ZmFsc2V9)
+```mermaid #graph/flowchart
+flowchart TD;
+  subgraph library
+    Model --> syntax;
+    Model --> geometryCore;
+    Proto --> syntax;
+    Proto --> geometryCore;
+    ThreeUtils;
+    syntax --> controller;
+    syntax --> prebuild;
+    syntax --> webapp;
+    geometryCore --> webapp;
+    controller --> repl;
+    prebuild --> repl;
+    prebuild --> webapp;
+    webapp ==>|use| controller;
+  end
+  subgraph library client
+    syntax -.->|import lib| demo;
+  end
+```
 
 ## How to use?
 
