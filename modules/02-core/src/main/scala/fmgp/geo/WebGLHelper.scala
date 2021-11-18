@@ -25,6 +25,11 @@ case class InteractiveMesh(mesh: typings.three.meshMod.Mesh[_, _], onSelected: (
   def id = mesh.id
 }
 
+@JSExportTopLevel("WebGLHelper")
+object WebGLHelper {
+  @JSExport
+  var test: js.Any = _
+}
 class WebGLHelper(topPadding: Int, modelToAnimate: Object3D[Event] = new Object3D()) {
 
   val webGLGlobal = new WebGLGlobal
@@ -51,13 +56,13 @@ class WebGLHelper(topPadding: Int, modelToAnimate: Object3D[Event] = new Object3
 
   def onClickEvent(event: dom.MouseEvent) = {
     // calculate mouse position in normalized device coordinates (-1 to +1) for both components
-    val x = (event.clientX / dom.window.innerWidth) * 2 - 1
-    val y = -((event.clientY - topPadding) / dom.window.innerHeight) * 2 + 1
+    val x = (event.clientX / width) * 2 - 1
+    val y = -((event.clientY - topPadding) / height) * 2 + 1
     this.uiEvent = Some(AnonY(x, y))
   }
   def onTouchEvent(event: dom.TouchEvent) = {
-    val x = (event.touches(0).screenX / dom.window.innerWidth) * 2 - 1
-    val y = -((event.touches(0).screenY - topPadding) / dom.window.innerHeight) * 2 + 1
+    val x = (event.touches(0).screenX / width) * 2 - 1
+    val y = -((event.touches(0).screenY - topPadding) / height) * 2 + 1
     this.uiEvent = Some(AnonY(x, y))
   }
 
@@ -186,17 +191,29 @@ class WebGLHelper(topPadding: Int, modelToAnimate: Object3D[Event] = new Object3
   val animate: js.Function1[Double, Unit] = (d: Double) => {
     StatsComponent.stats.begin()
 
-    this.uiEvent.foreach { event =>
+    this.uiEvent.foreach { mouseEvent =>
+      val ray = webGLGlobal.raycaster.ray
+      val dir = ray.direction.tap(_.normalize())
+      val arrowHelper = new ArrowHelper(dir, ray.origin, 10, 0x550055, headLength = 0.5, headWidth = 0.05);
+      webGLGlobal.scene.add(arrowHelper);
+
       val intersects: js.Array[Intersection[typings.three.object3DMod.Object3D[Event]]] =
         webGLGlobal.raycaster
-          .tap(_.setFromCamera(event, webGLGlobal.cameraUI.get))
-          .intersectObjects(webGLGlobal.sceneUI.children, true)
+          // update the picking ray with the camera and mouse position
+          .tap(_.setFromCamera(mouseEvent, webGLGlobal.camera.get))
+          // calculate objects intersecting the picking ray
+          .intersectObjects(webGLGlobal.scene.children, true)
+
       webGLGlobal.scene.raycast(webGLGlobal.raycaster, intersects)
-      intersects
-        .map(_.`object`.id.toInt)
-        .toSet
-        .tap(e => println(s"click on: $e"))
-        .map { (id: Int) => webGLGlobal.uiElements.get(id).map(_.onSelected()) }
+
+      WebGLHelper.test = intersects
+      //TODO intersects.foreach(_.`object`.asInstanceOf[js.Dynamic].material.color.set(0xff0000))
+      val ids = intersects.map(o => s"${o.`object`.id}").mkString("[", ", ", "]")
+      println(s"UI EVENT! intersects (${intersects.size}) : $ids")
+    // .map(_.`object`.id.toInt)
+    // .toSet
+    // .tap(e => println(s"click on: $e"))
+    // .map { (id: Int) => webGLGlobal.uiElements.get(id).map(_.onSelected()) }
     }
     this.uiEvent = None
 
