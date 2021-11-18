@@ -20,6 +20,7 @@ import typings.three.textGeometryMod.TextGeometry
 import typings.three.eventDispatcherMod.Event
 import typings.three.raycasterMod.Intersection
 import typings.three.flyControlsMod.FlyControls
+import scala.util.Random
 
 case class InteractiveMesh(mesh: typings.three.meshMod.Mesh[_, _], onSelected: () => Unit = () => ()) {
   def id = mesh.id
@@ -27,10 +28,11 @@ case class InteractiveMesh(mesh: typings.three.meshMod.Mesh[_, _], onSelected: (
 
 @JSExportTopLevel("WebGLHelper")
 object WebGLHelper {
+  //WebGLHelper.test[2].object.material.color.set(0x00ff00)
   @JSExport
   var test: js.Any = _
 }
-class WebGLHelper(topPadding: Int, modelToAnimate: Object3D[Event] = new Object3D()) {
+class WebGLHelper(topPadding: Int, modelToAnimate: Group = new Group) {
 
   val webGLGlobal = new WebGLGlobal
   var uiEvent: Option[AnonY] = None
@@ -74,6 +76,7 @@ class WebGLHelper(topPadding: Int, modelToAnimate: Object3D[Event] = new Object3
     Log.info(s"### INIT ###")
     webGLGlobal.sceneUI = new Scene()
     webGLGlobal.scene = new Scene()
+    WebGLTextGlobal.scene = webGLGlobal.scene //TODO REMOVE
 
     val dimensions: Dimensions = Dimensions.D3
 
@@ -207,7 +210,8 @@ class WebGLHelper(topPadding: Int, modelToAnimate: Object3D[Event] = new Object3
       webGLGlobal.scene.raycast(webGLGlobal.raycaster, intersects)
 
       WebGLHelper.test = intersects
-      //TODO intersects.foreach(_.`object`.asInstanceOf[js.Dynamic].material.color.set(0xff0000))
+      val color = Random.between(0, 0xffffff)
+      intersects.foreach(_.`object`.asInstanceOf[js.Dynamic].material.color.set(color))
       val ids = intersects.map(o => s"${o.`object`.id}").mkString("[", ", ", "]")
       println(s"UI EVENT! intersects (${intersects.size}) : $ids")
     // .map(_.`object`.id.toInt)

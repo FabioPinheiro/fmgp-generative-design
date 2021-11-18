@@ -32,20 +32,20 @@ trait Color {
 
 /** @see [[https://github.com/pafalium/gd-web-env/blob/master/src/SceneGraph/default-materials.js]] */
 trait DefaultMaterials {
-  val solidMat = new MeshStandardMaterial()
-  val surfaceMatOneSide = new MeshStandardMaterial()
-  val surfaceMat = new MeshStandardMaterial().tap(_.side = DoubleSide)
+  def solidMat() = new MeshStandardMaterial()
+  def surfaceMatOneSide() = new MeshStandardMaterial()
+  def surfaceMat() = new MeshStandardMaterial().tap(_.side = DoubleSide)
   def surfaceMatWithColor(color: Double) =
     new MeshStandardMaterial().tap(_.side = DoubleSide).tap(_.color = new typings.three.colorMod.Color(color))
-  val surfaceNormalMat = new MeshNormalMaterial()
-  val basicMat = new MeshBasicMaterial(
+  def surfaceNormalMat() = new MeshNormalMaterial()
+  def basicMat() = new MeshBasicMaterial(
     js.Dynamic.literal().asInstanceOf[typings.three.meshBasicMaterialMod.MeshBasicMaterialParameters].pipe { o =>
       o.color = 0x00ff00
       o.side = DoubleSide
       o
     }
   )
-  val pointMat = new typings.three.materialsMod.PointsMaterial(
+  def pointMat() = new typings.three.materialsMod.PointsMaterial(
     js.Dynamic.literal().asInstanceOf[typings.three.pointsMaterialMod.PointsMaterialParameters].pipe { o =>
       o.color = 0x5416b4
       o.size = 0.3

@@ -1,6 +1,6 @@
 package fmgp.geo
 
-import typings.three.mod.Object3D
+import typings.three.object3DMod.Object3D
 import fmgp.geo
 import zio._
 import typings.three.eventDispatcherMod.Event

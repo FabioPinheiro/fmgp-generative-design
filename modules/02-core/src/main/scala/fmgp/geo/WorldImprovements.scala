@@ -2,6 +2,7 @@ package fmgp.geo
 
 import typings.three.loaderMod.Loader
 import typings.three.mod._
+import typings.three.object3DMod.Object3D
 import typings.three.webGLRendererMod.WebGLRendererParameters
 import typings.three.lineBasicMaterialMod.LineBasicMaterialParameters
 import typings.three.eventDispatcherMod.Event
@@ -71,10 +72,10 @@ object WorldImprovements {
       .literal("color" -> color, "linewidth" -> width)
       .asInstanceOf[LineBasicMaterialParameters]
 
-  val materialLine = new LineBasicMaterial(parametersLine(0x999999, 1))
-  val materialLineRed = new LineBasicMaterial(parametersLine(0xff0000, 3))
-  val materialLineGreen = new LineBasicMaterial(parametersLine(0x00ff00, 3))
-  val materialLineBlue = new LineBasicMaterial(parametersLine(0x0000ff, 3))
+  def materialLine = new LineBasicMaterial(parametersLine(0x999999, 1))
+  def materialLineRed = new LineBasicMaterial(parametersLine(0xff0000, 3))
+  def materialLineGreen = new LineBasicMaterial(parametersLine(0x00ff00, 3))
+  def materialLineBlue = new LineBasicMaterial(parametersLine(0x0000ff, 3))
 
   def generateObj3D(world: geo.WorldState): Object3D[Event] = world.dimensions match {
     case geo.Dimensions.D2 => generateObj3D(world.shapes)
@@ -83,26 +84,27 @@ object WorldImprovements {
 
   case class GenerateOP(
       wireframe: Boolean = false,
-      material: typings.three.materialMod.Material = geo.SceneGraph.surfaceMat
+      fMaterial: () => typings.three.materialMod.Material = () => geo.SceneGraph.surfaceMat()
   ) {
     def withWireframe: GenerateOP = copy(wireframe = true)
-    def withMaterial(material: typings.three.materialMod.Material): GenerateOP = copy(material = material)
+    def withMaterial(material: () => typings.three.materialMod.Material): GenerateOP = copy(fMaterial = material)
     def toObj3D(
         geometry: typings.three.bufferGeometryMod.BufferGeometry
     ): Object3D[Event] = {
       if (wireframe) {
         val wireframe = new WireframeGeometry(geometry)
         new LineSegments(wireframe).asInstanceOf[Object3D[Event]]
-      } else new Mesh(geometry, material).asInstanceOf[Object3D[Event]]
+      } else new Mesh(geometry, fMaterial()).asInstanceOf[Object3D[Event]]
     }
-    def toObj3D(
-        geometry: typings.three.geometryMod.Geometry
-    ): Object3D[Event] = {
-      if (wireframe) {
-        val wireframe = new WireframeGeometry(geometry)
-        new LineSegments(wireframe).asInstanceOf[Object3D[Event]]
-      } else new Mesh(geometry, material).asInstanceOf[Object3D[Event]]
-    }
+    // REMOVE No longer needed
+    // def toObj3D(
+    //     geometry: typings.three.geometryMod.Geometry
+    // ): Object3D[Event] = {
+    //   if (wireframe) {
+    //     val wireframe = new WireframeGeometry(geometry)
+    //     new LineSegments(wireframe).asInstanceOf[Object3D[Event]]
+    //   } else new Mesh(geometry, material).asInstanceOf[Object3D[Event]]
+    // }
   }
 
   def multiPath2ShapePath(multiPath: geo.MultiPath): typings.three.shapeMod.Shape = {
@@ -204,7 +206,7 @@ object WorldImprovements {
       case geo.Wireframe(shape) =>
         generateShape(shape, state.withWireframe)
       case geo.ShapeSeq(shapes) =>
-        shapes.map(generateShape(_, state)).fold(new Object3D[Event])((z, n) => z.add(n))
+        shapes.map(generateShape(_, state)).fold(new Group)((z, n) => z.add(n))
       case geo.TransformationShape(shape, transformation) =>
         val aux = generateShape(shape, state)
         aux.applyMatrix4(matrix2matrix(transformation.matrix).multiply(aux.matrixWorld))
@@ -216,7 +218,7 @@ object WorldImprovements {
           3
         )
         val geometryPoint = new BufferGeometry().tap(_.setAttribute(BuiltinShaderAttributeName.position, aux))
-        new Points(geometryPoint, geo.SceneGraph.pointMat).asInstanceOf[Object3D[Event]]
+        new Points(geometryPoint, geo.SceneGraph.pointMat()).asInstanceOf[Object3D[Event]]
 
       case box: geo.Box =>
         val obj = state.toObj3D(boxGeom)
@@ -281,7 +283,7 @@ object WorldImprovements {
         val shape = multiPath2ShapePath(multiPath)
         shape.holes = holes.map(e => multiPath2Path(e)).toJSArray
         val geometry = new ShapeBufferGeometry(shape)
-        new Mesh(geometry, geo.SceneGraph.basicMat).asInstanceOf[Object3D[Event]]
+        new Mesh(geometry, geo.SceneGraph.basicMat()).asInstanceOf[Object3D[Event]]
 
       case geo.SurfaceGridShape(points: Array[Array[XYZ]]) =>
         def xyzMatrix2Triangles(a: Array[Array[XYZ]]) = {
@@ -331,7 +333,7 @@ object WorldImprovements {
       case c: geo.Circle =>
         val geometry = new CircleGeometry(c.radius, 32)
         val obj = if (c.fill) {
-          state.withMaterial(materialLine).toObj3D(geometry)
+          state.withMaterial(() => materialLine).toObj3D(geometry)
         } else {
           val positionHack = geometry
             .getAttribute(BuiltinShaderAttributeName.position)
@@ -366,19 +368,19 @@ object WorldImprovements {
         obj
       case geo.Axes(m: geo.Matrix) =>
         val ccc = {
-          val op = state.withMaterial(geo.SceneGraph.surfaceMat)
+          val op = state.withMaterial(() => geo.SceneGraph.surfaceMat())
           generateShape(geo.Sphere(0.1, XYZ.origin), op)
         }
         val rrr = {
-          val op = state.withMaterial(geo.SceneGraph.surfaceMatWithColor(0xff0000))
+          val op = state.withMaterial(() => geo.SceneGraph.surfaceMatWithColor(0xff0000))
           generateShape(geo.Arrow(Vec(1, 0, 0)), op)
         }
         val ggg = {
-          val op = state.withMaterial(geo.SceneGraph.surfaceMatWithColor(0x00ff00))
+          val op = state.withMaterial(() => geo.SceneGraph.surfaceMatWithColor(0x00ff00))
           generateShape(geo.Arrow(Vec(0, 1, 0)), op)
         }
         val bbb = {
-          val op = state.withMaterial(geo.SceneGraph.surfaceMatWithColor(0x0000ff))
+          val op = state.withMaterial(() => geo.SceneGraph.surfaceMatWithColor(0x0000ff))
           generateShape(geo.Arrow(Vec(0, 0, 1)), op)
         }
 
@@ -500,7 +502,7 @@ object WorldImprovements {
           )
 
         // ### OBJ ###
-        val op = state.withMaterial(geo.SceneGraph.surfaceNormalMat)
+        val op = state.withMaterial(() => geo.SceneGraph.surfaceNormalMat())
         val obj = op.toObj3D(topSideGeometry)
         obj.add(op.toObj3D(innerSideGeometry))
         obj.add(op.toObj3D(outerSideGeometry))
@@ -517,7 +519,7 @@ object WorldImprovements {
 
     val tmp: Seq[Object3D[Event]] = shapes.map { s => generateShape(s, GenerateOP()) }
 
-    val parent = new Object3D[Event]
+    val parent = new Group
     tmp.foreach(e => parent.add(e))
     parent
   }

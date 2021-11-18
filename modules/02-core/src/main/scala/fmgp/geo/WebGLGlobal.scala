@@ -10,6 +10,10 @@ import typings.three.flyControlsMod.FlyControls
 import fmgp.Websocket
 
 import fmgp.Log
+import scala.scalajs.js.annotation.JSExportTopLevel
+import scala.scalajs.js.annotation.JSExport
+
+@JSExportTopLevel("WebGLTextGlobal")
 object WebGLTextGlobal {
   var textFont: Font = _
   val loader = new FontLoader()
@@ -19,6 +23,9 @@ object WebGLTextGlobal {
     (f: Font) => textFont = f
   )
   init
+
+  @JSExport
+  var scene: Scene = _
 }
 
 class WebGLGlobal {
