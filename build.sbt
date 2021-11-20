@@ -136,7 +136,7 @@ val scalajsDomVersion = "1.2.0" // https://mvnrepository.com/artifact/org.scala-
 val akkaVersion = "2.6.15"
 val akkaHttpVersion = "10.2.4"
 val munitVersion = "0.7.26"
-val zioVersion = "2.0.0-M5" //https://mvnrepository.com/artifact/dev.zio/zio
+val zioVersion = "2.0.0-M6-2" //https://mvnrepository.com/artifact/dev.zio/zio
 
 // https://www.npmjs.com/package/three and https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/three
 val threeNpmDependencies = Seq("three", "@types/three").map(_ -> "0.134.0")

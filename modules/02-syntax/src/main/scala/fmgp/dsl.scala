@@ -11,7 +11,7 @@ object dsl extends CoordinatesDsl {
 
   trait Dsl {
     def emptyShape: UIO[Shape]
-    def zShapes(shapesSeq: URIO[Has[Dsl], Shape]*): URIO[Has[Dsl], Shape]
+    def zShapes(shapesSeq: URIO[Dsl, Shape]*): URIO[Dsl, Shape]
     def box(width: Double, height: Double, depth: Double): UIO[Box]
     def sphere(center: => XYZ, radius: => Double): UIO[Sphere]
     def shapes(shapes: Shape*): UIO[Shape]
@@ -24,7 +24,7 @@ object dsl extends CoordinatesDsl {
 
   case class DslLive() extends Dsl {
     def emptyShape: UIO[Shape] = ZIO.succeed(ShapeSeq(Seq()))
-    def zShapes(shapesSeq: URIO[Has[Dsl], Shape]*): URIO[Has[Dsl], Shape] = {
+    def zShapes(shapesSeq: URIO[Dsl, Shape]*): URIO[Dsl, Shape] = {
       shapesSeq.reduce((a, b) => a.zipPar(b).flatMap(e => shapes(e._1, e._2)))
     }
 
@@ -48,52 +48,52 @@ object dsl extends CoordinatesDsl {
       ZIO.succeed(SurfaceGridShape(points.map(_.toArray).toArray))
   }
   object DslLive {
-    val layer: ULayer[Has[Dsl]] = (() => DslLive()).toServiceBuilder[Dsl]
+    val layer: ULayer[Dsl] = (() => DslLive()).toLayer[Dsl]
   }
 
   // Accessor Methods
-  def emptyShape: URIO[Has[Dsl], Shape] =
-    ZIO.serviceWith(_.emptyShape)
+  def emptyShape: URIO[Dsl, Shape] =
+    ZIO.serviceWithZIO(_.emptyShape)
 
-  def zShapes(shapesSeq: URIO[Has[Dsl], Shape]*): URIO[Has[Dsl], Shape] =
-    ZIO.serviceWith(_.zShapes(shapesSeq: _*))
+  def zShapes(shapesSeq: URIO[Dsl, Shape]*): URIO[Dsl, Shape] =
+    ZIO.serviceWithZIO(_.zShapes(shapesSeq: _*))
 
-  def box(width: => Double, height: => Double, depth: => Double): URIO[Has[Dsl], Box] =
-    ZIO.serviceWith(_.box(width, height, depth))
+  def box(width: => Double, height: => Double, depth: => Double): URIO[Dsl, Box] =
+    ZIO.serviceWithZIO(_.box(width, height, depth))
 
-  def sphere(center: => XYZ, radius: => Double): URIO[Has[Dsl], Sphere] =
-    ZIO.serviceWith(_.sphere(center, radius))
+  def sphere(center: => XYZ, radius: => Double): URIO[Dsl, Sphere] =
+    ZIO.serviceWithZIO(_.sphere(center, radius))
 
-  def shapes(shapes: Shape*): URIO[Has[Dsl], Shape] =
-    ZIO.serviceWith(_.shapes(shapes: _*))
+  def shapes(shapes: Shape*): URIO[Dsl, Shape] =
+    ZIO.serviceWithZIO(_.shapes(shapes: _*))
 
-  def cylinder(radius: Double, height: Double): URIO[Has[Dsl], Cylinder] =
-    ZIO.serviceWith(_.cylinder(radius, height))
+  def cylinder(radius: Double, height: Double): URIO[Dsl, Cylinder] =
+    ZIO.serviceWithZIO(_.cylinder(radius, height))
 
-  def cylinder(bottom: XYZ, top: XYZ, bottomRadius: Double): URIO[Has[Dsl], TransformationShape] =
-    ZIO.serviceWith(_.cylinder(bottom, top, bottomRadius))
+  def cylinder(bottom: XYZ, top: XYZ, bottomRadius: Double): URIO[Dsl, TransformationShape] =
+    ZIO.serviceWithZIO(_.cylinder(bottom, top, bottomRadius))
 
-  def line(vertices: Seq[XYZ], closeLine: Boolean = false): URIO[Has[Dsl], LinePath] =
-    ZIO.serviceWith(_.line(vertices, closeLine))
+  def line(vertices: Seq[XYZ], closeLine: Boolean = false): URIO[Dsl, LinePath] =
+    ZIO.serviceWithZIO(_.line(vertices, closeLine))
 
-  def circle(radius: Double, center: XYZ = XYZ.origin): URIO[Has[Dsl], Circle] =
-    ZIO.serviceWith(_.circle(radius, center))
+  def circle(radius: Double, center: XYZ = XYZ.origin): URIO[Dsl, Circle] =
+    ZIO.serviceWithZIO(_.circle(radius, center))
 
-  def surface_grid(points: Seq[Seq[XYZ]]): URIO[Has[Dsl], SurfaceGridShape] =
-    ZIO.serviceWith(_.surface_grid(points))
+  def surface_grid(points: Seq[Seq[XYZ]]): URIO[Dsl, SurfaceGridShape] =
+    ZIO.serviceWithZIO(_.surface_grid(points))
 
   // Macros Methods
   import scala.quoted.*
   import meta.MacroUtils.getMetaImpl
   import meta.MacroUtils.MetaValue
 
-  inline def _box(width: Double, height: Double, depth: Double): RIO[Has[Dsl], MetaValue[Box]] =
+  inline def _box(width: Double, height: Double, depth: Double): RIO[Dsl, MetaValue[Box]] =
     ${ _boxImpl('width, 'height, 'depth) }
 
   private def _boxImpl(
       widthExpr: Expr[Double],
       heightExpr: Expr[Double],
       depthExpr: Expr[Double]
-  )(using Quotes): Expr[RIO[Has[Dsl], (MetaValue[Box])]] =
+  )(using Quotes): Expr[RIO[Dsl, (MetaValue[Box])]] =
     '{ box($widthExpr, $heightExpr, $depthExpr).map(o => ${ getMetaImpl() }.withValue[Box](o)) }
 }

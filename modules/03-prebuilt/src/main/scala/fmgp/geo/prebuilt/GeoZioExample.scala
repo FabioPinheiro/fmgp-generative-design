@@ -11,7 +11,7 @@ import scala.util.Random
 
 object GeoZioExample {
 
-  val program: zio.ZIO[Has[Dsl], Throwable, fmgp.geo.Shape] =
+  val program: zio.ZIO[Dsl, Throwable, fmgp.geo.Shape] =
     for {
       _ <- ZIO.unit
       //points = pts_circle(XYZ.origin, r = 2, alfa_init = 0, alfa_end = Pi, n = 10)

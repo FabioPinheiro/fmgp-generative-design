@@ -30,7 +30,7 @@ def Main(args: String*): Unit =
   println("SingleRequest End")
 end Main
 
-def program: ZIO[Has[Dsl], Nothing, fmgp.geo.Shape] =
+def program: ZIO[Dsl, Nothing, fmgp.geo.Shape] =
   for {
     _ <- ZIO.unit
     isenberg = Isenberg(

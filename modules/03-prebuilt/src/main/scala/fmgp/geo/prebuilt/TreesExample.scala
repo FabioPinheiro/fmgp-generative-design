@@ -202,8 +202,8 @@ object TreesExample {
   }
 
   object TreeLive {
-    val layer: URLayer[Has[Random] with Has[Dsl], Has[Tree]] =
-      (TreeLive(_, _)).toServiceBuilder[Tree]
+    val layer: URLayer[Random with Dsl, Tree] =
+      (TreeLive(_, _)).toLayer[Tree]
   }
 
   // Accessor Methods
@@ -215,7 +215,7 @@ object TreesExample {
       reductionFactor: Double,
       iterations: Int = 6,
       leafRadius: Double = 0.1
-  ): URIO[Has[Tree], fmgp.geo.Shape] = ZIO.serviceWith(
+  ): URIO[Tree, fmgp.geo.Shape] = ZIO.serviceWithZIO(
     _.tree2d(base, length, angle, deltaAngle, reductionFactor, iterations, leafRadius)
   )
 
@@ -229,7 +229,7 @@ object TreesExample {
       maxReductionFactor: Double,
       maxIterations: Int = 100,
       leafRadius: Double = 0.1
-  ): URIO[Has[Tree], fmgp.geo.Shape] = ZIO.serviceWith(
+  ): URIO[Tree, fmgp.geo.Shape] = ZIO.serviceWithZIO(
     _.tree2dRandom(
       base,
       length,
@@ -254,7 +254,7 @@ object TreesExample {
       maxIterations: Int = 10,
       leafRadius: Double = 0.1,
       previousVec: Vec = Vec(0, 1, 0)
-  ): URIO[Has[Tree], fmgp.geo.Shape] = ZIO.serviceWith(
+  ): URIO[Tree, fmgp.geo.Shape] = ZIO.serviceWithZIO(
     _.tree3dRandom(
       base,
       length,
@@ -269,7 +269,7 @@ object TreesExample {
     )
   )
 
-  val program: zio.ZIO[zio.Has[Tree] with zio.Has[Dsl], Throwable, fmgp.geo.Shape] = {
+  val program: zio.ZIO[Tree with Dsl, Throwable, fmgp.geo.Shape] = {
     for {
       a1 <- tree2d(xyz(-10, 0), 5, Pi / 2, Pi / 8, 0.6, iterations = 7)
       a2 <- tree2d(xyz(0, 0), 5, Pi / 2, Pi / 8, 0.8, iterations = 7)

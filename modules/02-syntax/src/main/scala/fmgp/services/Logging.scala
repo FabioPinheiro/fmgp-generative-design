@@ -1,7 +1,7 @@
 package fmgp
 
 import zio._
-import zio.{Clock, Console, Has}
+import zio.{Clock, Console}
 
 trait Logging {
   def log(line: String): UIO[Unit]
@@ -9,7 +9,7 @@ trait Logging {
 
 // Accessor Methods Inside the Companion Object
 object Logging {
-  def log(line: => String): URIO[Has[Logging], Unit] = ZIO.serviceWith(_.log(line))
+  def log(line: => String): URIO[Logging, Unit] = ZIO.serviceWithZIO(_.log(line))
 }
 
 case class LoggingLive(console: Console, clock: Clock) extends Logging {
@@ -21,6 +21,6 @@ case class LoggingLive(console: Console, clock: Clock) extends Logging {
 }
 
 object LoggingLive {
-  val layer: URLayer[Has[Console] with Has[Clock], Has[Logging]] =
-    (LoggingLive(_, _)).toServiceBuilder[Logging]
+  val layer: URLayer[Console with Clock, Logging] =
+    (LoggingLive(_, _)).toLayer[Logging]
 }

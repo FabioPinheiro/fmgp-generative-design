@@ -11,7 +11,7 @@ trait Websocket {
   def start: URIO[Any, Websocket] // interface: String, port: Int
   def isStoped: UIO[Boolean]
   def stop: URIO[Any, Unit]
-  def stopAfterKeystroke: URIO[Has[Console], Unit]
+  def stopAfterKeystroke: URIO[Console, Unit]
 
   def send[T <: Shape](t: T): Task[T]
   def sendFile(file: MyFile): Task[MyFile]
@@ -20,14 +20,14 @@ trait Websocket {
 
 // Accessor Methods Inside the Companion Object
 object Websocket {
-  def clearWorld: RIO[Has[Websocket], Unit] =
-    ZIO.serviceWith(e => e.clearWorld)
-  def send[T <: Shape](shape: => T): RIO[Has[Websocket], T] =
-    ZIO.serviceWith(_.send(shape))
-  def sendFile(file: => MyFile): RIO[Has[Websocket], MyFile] =
-    ZIO.serviceWith(_.sendFile(file))
-  def stopWebsocket: URIO[Has[Websocket], Unit] =
-    ZIO.serviceWith(_.stop)
+  def clearWorld: RIO[Websocket, Unit] =
+    ZIO.serviceWithZIO(e => e.clearWorld)
+  def send[T <: Shape](shape: => T): RIO[Websocket, T] =
+    ZIO.serviceWithZIO(_.send(shape))
+  def sendFile(file: => MyFile): RIO[Websocket, MyFile] =
+    ZIO.serviceWithZIO(_.sendFile(file))
+  def stopWebsocket: URIO[Websocket, Unit] =
+    ZIO.serviceWithZIO(_.stop)
 }
 
 case class WebsocketLive(console: Console) extends Websocket {
@@ -54,7 +54,7 @@ case class WebsocketLive(console: Console) extends Websocket {
   override def start: URIO[Any, Websocket] = ZIO.fromFuture(ex => server.start).map(_ => this).orDie
 
   override def isStoped: UIO[Boolean] =
-    ZIO.access(_ => isTerminated)
+    ZIO.environmentWith(_ => isTerminated)
 
   override def stop: URIO[Any, Unit] =
     isStoped.flatMap {
@@ -66,7 +66,7 @@ case class WebsocketLive(console: Console) extends Websocket {
         } yield ()).orDie
     }
 
-  override def stopAfterKeystroke: URIO[Has[Console], Unit] =
+  override def stopAfterKeystroke: URIO[Console, Unit] =
     isStoped.flatMap {
       case true => ZIO.unit
       case false =>
@@ -79,5 +79,5 @@ case class WebsocketLive(console: Console) extends Websocket {
 }
 
 object WebsocketLive {
-  lazy val layer: URLayer[Has[Console], Has[Websocket]] = (WebsocketLive(_)).toServiceBuilder[Websocket]
+  lazy val layer: URLayer[Console, Websocket] = (WebsocketLive(_)).toLayer[Websocket]
 }

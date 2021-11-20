@@ -11,8 +11,8 @@ trait Mesher {
 
 // Accessor Methods Inside the Companion Object
 object Mesher {
-  def generateObj3D(shapes: => Seq[geo.Shape]): URIO[Has[Mesher], Object3D[Event]] =
-    ZIO.serviceWith(_.generateObj3D(shapes))
+  def generateObj3D(shapes: => Seq[geo.Shape]): URIO[Mesher, Object3D[Event]] =
+    ZIO.serviceWithZIO(_.generateObj3D(shapes))
 }
 
 class MesherLive extends Mesher {
@@ -21,6 +21,6 @@ class MesherLive extends Mesher {
 }
 
 object MesherLive {
-  val live: Layer[Nothing, Has[Mesher]] =
-    ZServiceBuilder.succeed[Mesher](new MesherLive) //(Tag[Mesher], Tracer.newTrace)
+  val live: Layer[Nothing, Mesher] =
+    ZLayer.succeed[Mesher](new MesherLive) //(Tag[Mesher], Tracer.newTrace)
 }

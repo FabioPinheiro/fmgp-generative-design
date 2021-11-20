@@ -11,8 +11,8 @@ trait Visualizer {
 
 // Accessor Methods Inside the Companion Object
 object Visualizer {
-  def update(world: => World): URIO[Has[Visualizer], Unit] = ZIO.serviceWith(_.update(world))
-  def clean: URIO[Has[Visualizer], Unit] = ZIO.serviceWith(_.clean)
+  def update(world: => World): URIO[Visualizer, Unit] = ZIO.serviceWithZIO(_.update(world))
+  def clean: URIO[Visualizer, Unit] = ZIO.serviceWithZIO(_.clean)
 }
 
 case class VisualizerJSLive(mesher: Mesher) extends Visualizer {
@@ -40,6 +40,6 @@ object VisualizerJSLive {
   val webGLHelper = new WebGLHelper(topPadding = 64, modelToAnimate)
   var callbackHack: World => Unit = (_) => () //FIXME
 
-  lazy val live: URLayer[Has[Mesher], Has[Visualizer]] =
-    (VisualizerJSLive(_)).toServiceBuilder[Visualizer]
+  lazy val live: URLayer[Mesher, Visualizer] =
+    (VisualizerJSLive(_)).toLayer[Visualizer]
 }
