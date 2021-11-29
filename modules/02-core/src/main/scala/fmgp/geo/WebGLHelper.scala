@@ -21,6 +21,12 @@ import typings.three.eventDispatcherMod.Event
 import typings.three.raycasterMod.Intersection
 import typings.three.flyControlsMod.FlyControls
 import scala.util.Random
+import typings.std.KeyboardEvent
+import typings.std.stdStrings.window
+
+import zio._
+import zio.stream._
+import zio.Console._
 
 case class InteractiveMesh(mesh: typings.three.meshMod.Mesh[_, _], onSelected: () => Unit = () => ()) {
   def id = mesh.id
@@ -29,8 +35,8 @@ case class InteractiveMesh(mesh: typings.three.meshMod.Mesh[_, _], onSelected: (
 @JSExportTopLevel("WebGLHelper")
 object WebGLHelper {
   //WebGLHelper.test[2].object.material.color.set(0x00ff00)
-  @JSExport
-  var test: js.Any = _
+  //@JSExport var test: js.Any = _
+  //@JSExport var test2: js.Any = _
 }
 class WebGLHelper(topPadding: Int, modelToAnimate: Group = new Group) {
 
@@ -74,43 +80,24 @@ class WebGLHelper(topPadding: Int, modelToAnimate: Group = new Group) {
 
   def init = {
     Log.info(s"### INIT ###")
+    KeyboardUtils.app
     webGLGlobal.sceneUI = new Scene()
     webGLGlobal.scene = new Scene()
     WebGLTextGlobal.scene = webGLGlobal.scene //TODO REMOVE
 
     val dimensions: Dimensions = Dimensions.D3
 
-    webGLGlobal.camera = Some(
-      Utils
-        .newCamera(width, height)
-        .tap(_.position.set(0, 0, 10))
-        .tap(_.lookAt(new Vector3(0, 0, 0)))
-    )
-    webGLGlobal.controls = webGLGlobal.camera.map { c =>
-      //val orbit = new OrbitControls(c, renderer.domElement)
-      //orbit.keyPanSpeed = 30 //pixes
-      //orbit.panSpeed = 3
-      val fly = new FlyControls(c, renderer.domElement)
+    webGLGlobal.controls = Some {
+      val fly = new FlyControls(KeyboardUtils.hack.camera2, renderer.domElement)
       fly.dragToLook = true
       fly.rollSpeed = 0.015
       fly.movementSpeed = 0.3
-      //val firstPerson = new FirstPersonControls(c, renderer.domElement)
-      //firstPerson.lookSpeed = 0.01
-      //firstPerson.movementSpeed = 0.5
-      // dimensions match {
-      //   case Dimensions.D2 =>
-      //   //orbit.enableRotate = false
-      //   //orbit.screenSpacePanning = true
-      //   case Dimensions.D3 =>
-      //     //######################################################################
-      //     if (webGLGlobal.masterWorld.dimensions.isD3) (() => Some(webGLGlobal.masterWorld.generateObj3D))
-      //     else () => None
-      // }
-      fly //orbit //firstPerson
+      fly
     }
 
+    val cameraHelper = new CameraHelper(KeyboardUtils.hack.camera1)
+    webGLGlobal.scene.add(cameraHelper)
     webGLGlobal.scene.add(modelToAnimate)
-
     webGLGlobal.cameraUI = {
 
       val proportions /*aspect*/ = height / width
@@ -193,6 +180,7 @@ class WebGLHelper(topPadding: Int, modelToAnimate: Group = new Group) {
   @JSExport
   val animate: js.Function1[Double, Unit] = (d: Double) => {
     StatsComponent.stats.begin()
+    KeyboardUtils.appCamera
 
     this.uiEvent.foreach { mouseEvent =>
       val ray = webGLGlobal.raycaster.ray
@@ -203,30 +191,26 @@ class WebGLHelper(topPadding: Int, modelToAnimate: Group = new Group) {
       val intersects: js.Array[Intersection[typings.three.object3DMod.Object3D[Event]]] =
         webGLGlobal.raycaster
           // update the picking ray with the camera and mouse position
-          .tap(_.setFromCamera(mouseEvent, webGLGlobal.camera.get))
+          .tap(_.setFromCamera(mouseEvent, KeyboardUtils.hack.camera))
           // calculate objects intersecting the picking ray
           .intersectObjects(webGLGlobal.scene.children, true)
 
       webGLGlobal.scene.raycast(webGLGlobal.raycaster, intersects)
 
-      WebGLHelper.test = intersects
-      val color = Random.between(0, 0xffffff)
-      intersects.foreach(_.`object`.asInstanceOf[js.Dynamic].material.color.set(color))
+      //REMOVE WebGLHelper.test = intersects
+      //TODO val color = Random.between(0, 0xffffff)
+      //TODO intersects.foreach(_.`object`.asInstanceOf[js.Dynamic].material.color.set(color))
       val ids = intersects.map(o => s"${o.`object`.id}").mkString("[", ", ", "]")
       println(s"UI EVENT! intersects (${intersects.size}) : $ids")
-    // .map(_.`object`.id.toInt)
-    // .toSet
-    // .tap(e => println(s"click on: $e"))
-    // .map { (id: Int) => webGLGlobal.uiElements.get(id).map(_.onSelected()) }
     }
     this.uiEvent = None
 
     //webGLGlobal.modelToAnimate().foreach(Utils.updateFunction _)
     webGLGlobal.animateFrameId = Some(dom.window.requestAnimationFrame(animate))
-    webGLGlobal.controls.foreach(
-      _.update(1)
-    ) // required if controls.enableDamping or controls.autoRotate are set to true
-    webGLGlobal.camera.foreach(renderer.render(webGLGlobal.scene, _))
+    webGLGlobal.controls.foreach(_.update(1))
+    // required if controls.enableDamping or controls.autoRotate are set to true
+
+    renderer.render(webGLGlobal.scene, KeyboardUtils.hack.camera)
     renderer.clearDepth()
     webGLGlobal.cameraUI.foreach(renderer.render(webGLGlobal.sceneUI, _))
 

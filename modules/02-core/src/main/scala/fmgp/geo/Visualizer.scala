@@ -16,8 +16,6 @@ object Visualizer {
 }
 
 case class VisualizerJSLive(mesher: Mesher) extends Visualizer {
-  // onWorldUpdate: (world: World) => Unit
-
   def update(world: => World): UIO[Unit] = {
     UIO(VisualizerJSLive.callbackHack(world)) <&>
       mesher
@@ -38,6 +36,9 @@ case class VisualizerJSLive(mesher: Mesher) extends Visualizer {
 object VisualizerJSLive {
   val modelToAnimate: Group = new Group
   val webGLHelper = new WebGLHelper(topPadding = 64, modelToAnimate)
+  def height = webGLHelper.height
+  def width = webGLHelper.width
+
   var callbackHack: World => Unit = (_) => () //FIXME
 
   lazy val live: URLayer[Mesher, Visualizer] =

@@ -165,7 +165,7 @@ lazy val model = crossProject(JSPlatform, JVMPlatform)
     )
   )
   .settings(
-    libraryDependencies += "dev.zio" %%% "zio" % zioVersion
+    libraryDependencies += "dev.zio" %%% "zio" % zioVersion,
   )
   .jsSettings( //Need for ZIO
     libraryDependencies ++= Seq(
@@ -193,6 +193,7 @@ lazy val geometryCoreJS = project
   .in(file("modules/02-core"))
   .settings(name := "fmgp-geometry-core")
   .configure(scalaJSBundlerConfigure)
+  .settings(libraryDependencies += "dev.zio" %%% "zio-streams" % zioVersion)
   .settings(
     libraryDependencies += ("org.scala-js" %%% "scalajs-dom" % scalajsDomVersion).cross(CrossVersion.for3Use2_13),
     //libraryDependencies += ("org.scala-js" %% "scalajs-logging" % scalajsLoggingVersion), //jsDependencies FIXME
@@ -215,6 +216,7 @@ lazy val syntax = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("modules/02-syntax"))
   .settings(name := "fmgp-geometry-syntax")
+  .settings(libraryDependencies += "dev.zio" %%% "zio-streams" % zioVersion)
   //.enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
   .settings(setupTestConfig: _*)

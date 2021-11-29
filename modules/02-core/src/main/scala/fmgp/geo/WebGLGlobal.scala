@@ -33,7 +33,6 @@ class WebGLGlobal {
   var scene: Scene = _
   var sceneUI: Scene = _
   var animateFrameId: Option[Int] = None
-  var camera: Option[Camera] = None
   var cameraUI: Option[Camera] = None
   var controls: Option[FlyControls] = None
 
