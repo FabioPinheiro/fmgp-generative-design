@@ -122,6 +122,10 @@ lazy val modules: List[ProjectReference] =
     protosJS,
   )
 
+addCommandAlias("testJVM", ";modelJVM/test;syntaxJVM/test")
+addCommandAlias("testJS", ";modelJS/test;syntaxJS/test")
+addCommandAlias("testAll", ";testJVM;testJS")
+
 lazy val root = project
   .in(file("."))
   .aggregate(modules: _*)
@@ -193,6 +197,7 @@ lazy val geometryCoreJS = project
   .in(file("modules/02-core"))
   .settings(name := "fmgp-geometry-core")
   .configure(scalaJSBundlerConfigure)
+  .settings(jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv())
   .settings(libraryDependencies += "dev.zio" %%% "zio-streams" % zioVersion)
   .settings(
     libraryDependencies += ("org.scala-js" %%% "scalajs-dom" % scalajsDomVersion).cross(CrossVersion.for3Use2_13),

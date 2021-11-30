@@ -22,7 +22,6 @@ import typings.three.raycasterMod.Intersection
 import typings.three.flyControlsMod.FlyControls
 import scala.util.Random
 import typings.std.KeyboardEvent
-import typings.std.stdStrings.window
 
 import zio._
 import zio.stream._
