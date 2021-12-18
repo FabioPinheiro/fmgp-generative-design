@@ -344,9 +344,9 @@ lazy val webapp = project
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
     //MODUELS
     //scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) },
-    //scalaJSLinkerConfig ~= (_.withModuleSplitStyle(ModuleSplitStyle.SmallestModules)),
+    //scalaJSLinkerConfig ~= (_.withModuleSplitStyle(org.scalajs.linker.interface.ModuleSplitStyle.SmallestModules)),
     Compile / scalaJSModuleInitializers += {
-      ModuleInitializer.mainMethod("fmgp.geo.webapp.App", "main")
+      org.scalajs.linker.interface.ModuleInitializer.mainMethod("fmgp.geo.webapp.App", "main")
       // .withModuleID("app_print")
       // .withModuleID("clientGRPC")
     },
@@ -357,8 +357,6 @@ lazy val webapp = project
 // ##############
 // ###  GRPC  ###
 // ##############
-import org.scalajs.linker.interface.ModuleSplitStyle
-import org.scalajs.linker.interface.ModuleInitializer
 
 lazy val protos =
   crossProject(JSPlatform, JVMPlatform)
@@ -368,8 +366,7 @@ lazy val protos =
       Compile / PB.protoSources := Seq( //show protosJVM/protocSources
         (ThisBuild / baseDirectory).value / "modules" / "01-protos" / "src" / "main" / "protobuf"
       ),
-      libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
-      //IS this needed? //libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf"
+      libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf",
     )
     .jvmSettings(
       libraryDependencies += "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion,
@@ -377,17 +374,12 @@ lazy val protos =
     )
     .jsSettings(
       // publish locally and update the version for test
-      libraryDependencies += (
-        "com.thesamet.scalapb.grpcweb" %%% "scalapb-grpcweb" % scalapb.grpcweb.BuildInfo.version
-      ).cross(CrossVersion.for3Use2_13),
+      libraryDependencies += "com.thesamet.scalapb.grpcweb" %%% "scalapb-grpcweb" % scalapb.grpcweb.BuildInfo.version,
       Compile / PB.targets := Seq(
         scalapb.gen(grpc = false) -> (Compile / sourceManaged).value,
         scalapb.grpcweb.GrpcWebCodeGenerator -> (Compile / sourceManaged).value
       )
     )
-
-  libraryDependencies ++= Seq(
-  )
 
 lazy val protosJS = protos.js
 lazy val protosJVM = protos.jvm
