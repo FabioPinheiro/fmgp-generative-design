@@ -9,7 +9,7 @@ import fmgp.geo.*
 import fmgp.geo.EncoderDecoder.given_Encoder_Shape
 import fmgp.geo.EncoderDecoder.given_Encoder_World
 import com.raquo.laminar.nodes.ReactiveHtmlElement
-import org.scalajs.dom.raw.HTMLElement
+import org.scalajs.dom.HTMLElement
 
 import typings.mermaid
 import scala.scalajs.js.annotation.JSExport

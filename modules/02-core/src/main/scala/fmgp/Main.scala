@@ -55,7 +55,7 @@ object Fabio {
 
   /** $m_Lfmgp_Fabio$().test */
   @JSExport
-  var test: org.scalajs.dom.raw.Event = _
+  var test: org.scalajs.dom.Event = _
   @JSExport
   var any: Any = _
 

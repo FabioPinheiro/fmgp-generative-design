@@ -135,12 +135,12 @@ lazy val root = project
 val materialComponentsVersion = "12.0.0" // https://www.npmjs.com/package/material-components-web
 val circeVersion = "0.15.0-M1" // https://mvnrepository.com/artifact/io.circe/circe-core
 // scalajsDomVersion 2.0.0 need to update sbt-converter to 37?
-val scalajsDomVersion = "1.2.0" // https://mvnrepository.com/artifact/org.scala-js/scalajs-dom
+val scalajsDomVersion = "2.0.0" // https://mvnrepository.com/artifact/org.scala-js/scalajs-dom
 //FIXME val scalajsLoggingVersion = "1.1.2-SNAPSHOT" //"1.1.2"
 val akkaVersion = "2.6.15"
 val akkaHttpVersion = "10.2.4"
 val munitVersion = "0.7.26"
-val zioVersion = "2.0.0-M6-2" //https://mvnrepository.com/artifact/dev.zio/zio
+val zioVersion = "2.0.0-RC1" //https://mvnrepository.com/artifact/dev.zio/zio
 
 // https://www.npmjs.com/package/three and https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/three
 val threeNpmDependencies = Seq("three", "@types/three").map(_ -> "0.134.0")
@@ -200,7 +200,7 @@ lazy val geometryCoreJS = project
   .settings(jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv())
   .settings(libraryDependencies += "dev.zio" %%% "zio-streams" % zioVersion)
   .settings(
-    libraryDependencies += ("org.scala-js" %%% "scalajs-dom" % scalajsDomVersion).cross(CrossVersion.for3Use2_13),
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion,
     //libraryDependencies += ("org.scala-js" %% "scalajs-logging" % scalajsLoggingVersion), //jsDependencies FIXME
     //  .cross(CrossVersion.for3Use2_13),
     libraryDependencies ++= Seq(
@@ -319,9 +319,9 @@ lazy val webapp = project
   .configure(scalaJSBundlerConfigure)
   .configure(buildInfoConfigure)
   .settings(
-    libraryDependencies += ("org.scala-js" %%% "scalajs-dom" % scalajsDomVersion).cross(CrossVersion.for3Use2_13),
-    libraryDependencies += "com.raquo" %%% "laminar" % "0.13.1",
-    libraryDependencies += "com.raquo" %%% "waypoint" % "0.4.1",
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion,
+    libraryDependencies += "com.raquo" %%% "laminar" % "0.14.2",
+    libraryDependencies += "com.raquo" %%% "waypoint" % "0.5.0",
     libraryDependencies += "com.lihaoyi" %%% "upickle" % "1.3.13",
     libraryDependencies ++= Seq(
       "io.circe" %%% "circe-core" % circeVersion,

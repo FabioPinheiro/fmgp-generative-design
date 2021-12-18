@@ -1,6 +1,6 @@
 package fmgp
 
-import org.scalajs.dom.raw.{CloseEvent, Event, MessageEvent, WebSocket}
+import org.scalajs.dom.{CloseEvent, Event, MessageEvent, WebSocket}
 //import org.scalajs.logging.Logger
 
 import fmgp.geo._
@@ -38,6 +38,9 @@ object Websocket {
 
     def getState: State.State = ws.map(e => State(e.readyState)).getOrElse(State.CLOSED)
 
+    private def wsLayer =
+      ZLayer.make[WebsocketJS](WebsocketJSLive.layer, VisualizerJSLive.live, MesherLive.live)
+
     /** @see https://japgolly.github.io/scalajs-react/#examples/websockets */
     private def connect(delay: Int): Unit = {
       log.info(s"WS try reconect to $wsUrl (in ${delay / 1000} s)")
@@ -48,25 +51,19 @@ object Websocket {
 
         tmpWS.onopen = { (ev: Event) =>
           zio.Runtime.global.unsafeRunToFuture(
-            WebsocketJS
-              .onOpen(ev.`type`)
-              .inject(WebsocketJSLive.layer, VisualizerJSLive.live, MesherLive.live)
+            WebsocketJS.onOpen(ev.`type`).provide(wsLayer)
           )
         }
         tmpWS.onclose = { (ev: CloseEvent) =>
           zio.Runtime.global
             .unsafeRunToFuture(
-              WebsocketJS
-                .onClose(ev.reason)
-                .inject(WebsocketJSLive.layer, VisualizerJSLive.live, MesherLive.live)
+              WebsocketJS.onClose(ev.reason).provide(wsLayer)
             )
             .map(_ => connect(defualtReconnectDelay))
         }
         tmpWS.onmessage = { (ev: MessageEvent) =>
           zio.Runtime.global.unsafeRunToFuture(
-            WebsocketJS
-              .onMessage(message = ev.data.toString)
-              .inject(WebsocketJSLive.layer, VisualizerJSLive.live, MesherLive.live)
+            WebsocketJS.onMessage(message = ev.data.toString).provide(wsLayer)
           )
         }
         tmpWS.onerror = { (ev: Event) => //TODO ErrorEvent
@@ -76,9 +73,7 @@ object Websocket {
             .asInstanceOf[js.UndefOr[String]]
             .fold("")("Error: " + _)
           zio.Runtime.global.unsafeRunToFuture(
-            WebsocketJS
-              .onError(ev.`type`, message)
-              .inject(WebsocketJSLive.layer, VisualizerJSLive.live, MesherLive.live)
+            WebsocketJS.onError(ev.`type`, message).provide(wsLayer)
           )
         }
       }

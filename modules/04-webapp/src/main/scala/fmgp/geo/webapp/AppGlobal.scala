@@ -19,6 +19,6 @@ object AppGlobal {
   def setWorld(world: World) =
     zio.Runtime.global.unsafeRunToFuture(
       (if (world.shapes.isEmpty) clean else update(world))
-        .inject(VisualizerJSLive.live, MesherLive.live)
+        .provide(VisualizerJSLive.live, MesherLive.live)
     )
 }

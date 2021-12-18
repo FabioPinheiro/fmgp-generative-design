@@ -2,7 +2,7 @@ package fmgp.threejs.extras
 
 import typings.three.loaderMod.Loader
 import typings.three.mod._
-import org.scalajs.dom.raw.{Event, HTMLElement}
+import org.scalajs.dom.{Event, HTMLElement}
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport

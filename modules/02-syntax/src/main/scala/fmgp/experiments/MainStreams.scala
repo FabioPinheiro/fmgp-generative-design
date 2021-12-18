@@ -16,7 +16,7 @@ import zio.Console._
 
   // val a = ZIO.fail("Boom!")
   // /Runtime.global.unsafeRun(aaa.foreach(printLine(_)))
-  val testLayer = ZLayer.wire[Console](Console.live, ZLayer.Debug.mermaid)
+  val testLayer = ZLayer.make[Console](Console.live)
 
   Runtime.unsafeFromLayer(testLayer).unsafeRun(p)
 

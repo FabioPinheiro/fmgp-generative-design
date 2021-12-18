@@ -24,7 +24,7 @@ object ZioApp extends zio.ZIOAppDefault {
   // lazy val env = Console.live ++ Clock.live ++ envLog ++ DslLive.layer ++ envWS
 
   def run = program
-    .inject(
+    .provide(
       Console.live,
       Clock.live,
       LoggingLive.layer,

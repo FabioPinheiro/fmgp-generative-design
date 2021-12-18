@@ -73,15 +73,15 @@ object KeyboardUtils {
     }
     .filter(!_.repeat)
 
-  val keySink: ZSink[KeyboardState, Throwable, KeyEvent, Throwable, KeyEvent, Unit] =
+  val keySink: ZSink[KeyboardState, RuntimeException, KeyEvent, Nothing, Unit] =
     ZSink.foreach { (i: KeyEvent) =>
-      ZIO.serviceWithZIO[KeyboardState](state =>
+      ZIO.serviceWithZIO[KeyboardState] { state =>
         i.eventType match {
           case "keydown" => UIO { state.keys = state.keys + (i.keyCode -> i) }
           case "keyup"   => UIO { state.keys = state.keys.removed(i.keyCode) }
           case eventType => ZIO.fail(new RuntimeException(s"unknow event time $eventType"))
         }
-      )
+      }
     }
 
   val keyboardApp: ZIO[ZEnv & KeyboardState, Throwable, Unit] =
@@ -132,7 +132,7 @@ object KeyboardUtils {
 
   val aux = Runtime.default
   val layer = ZLayer.fromZIO(UIO(hack))
-  def app = aux.unsafeRunAsync(keyboardApp.injectCustom(layer))
-  def appPrinter = aux.unsafeRunAsync(keyboardStatePrinter.injectCustom(layer))
-  def appCamera = aux.unsafeRunAsync(keyboardStateCameraUpdate.injectCustom(layer))
+  def app = aux.unsafeRunAsync(keyboardApp.provideSomeLayer(layer))
+  def appPrinter = aux.unsafeRunAsync(keyboardStatePrinter.provideSomeLayer(layer))
+  def appCamera = aux.unsafeRunAsync(keyboardStateCameraUpdate.provideSomeLayer(layer))
 }
