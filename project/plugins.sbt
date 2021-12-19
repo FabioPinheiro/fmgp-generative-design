@@ -42,7 +42,7 @@ addSbtPlugin("com.geirsson" % "sbt-ci-release" % "1.5.3")
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.5.1") // sbt> dependencyUpdates
 
 // PUBLISH
-addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.8.1")
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.10")
 addSbtPlugin("com.jsuereth" % "sbt-pgp" % "2.0.0") //https://github.com/sbt/sbt-pgp#sbt-pgp
 
 // Revolver use for command 'reStart' (like the command 'run' but run on the backgroun by forking the app from sbt)
