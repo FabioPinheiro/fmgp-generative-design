@@ -38,7 +38,7 @@ addSbtPlugin("org.scalablytyped.converter" % "sbt-converter" % "1.0.0-beta36+41-
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.10.0")
 
 // CI
-addSbtPlugin("com.geirsson" % "sbt-ci-release" % "1.5.3")
+addSbtPlugin("com.geirsson" % "sbt-ci-release" % "1.5.7")
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.5.1") // sbt> dependencyUpdates
 
 // PUBLISH
