@@ -34,7 +34,7 @@ val V = new {
 
   val laminar = "0.14.2"
   val waypoint = "0.5.0"
-  val upickle = "1.3.13"
+  val upickle = "1.3.15"
   // https://www.npmjs.com/package/material-components-web
   val materialComponents = "12.0.0"
 }
