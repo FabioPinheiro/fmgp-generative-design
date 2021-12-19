@@ -9,7 +9,7 @@ inThisBuild(
 /** Versions */
 val V = new {
 
-  val munit = "0.7.26"
+  val munit = "0.7.29"
 
   // https://mvnrepository.com/artifact/io.circe/circe-core
   val circe = "0.15.0-M1"
