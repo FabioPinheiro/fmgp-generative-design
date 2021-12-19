@@ -17,7 +17,7 @@ object MyRouter {
 
   given HomePageRW: ReadWriter[HomePage.type] = macroRW
   given ConfigPageRW: ReadWriter[ConfigPage.type] = macroRW
-  //given GeoAppPageRW: ReadWriter[GeoAppPage.type] = macroRW
+  // given GeoAppPageRW: ReadWriter[GeoAppPage.type] = macroRW
   given ShowGeoJsonPageRW: ReadWriter[ShowGeoJsonPage.type] = macroRW
 
   given rw: ReadWriter[Page] = macroRW

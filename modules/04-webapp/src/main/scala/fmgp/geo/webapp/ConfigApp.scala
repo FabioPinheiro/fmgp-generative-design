@@ -55,7 +55,7 @@ object ConfigApp {
   //   radio
   // }
 
-  //List
+  // List
   private def createListElement(group: String, id: String, text: String, vVar: Var[String], selected: Boolean = false) =
     li(
       className("mdc-list-item"),
@@ -159,11 +159,11 @@ object ConfigApp {
                   "Use custom URL:"
                 ),
                 label(
-                  //className("mdc-list-item__text"),
+                  // className("mdc-list-item__text"),
                   className("mdc-text-field mdc-text-field--filled"),
                   customHtmlAttr("for", StringAsIsCodec)(s"custom-url"),
                   span(className("mdc-text-field__ripple")),
-                  //span(className("mdc-floating-label"), idAttr("my-label-id"), "Hint text"),
+                  // span(className("mdc-floating-label"), idAttr("my-label-id"), "Hint text"),
                   child <-- protocolVar.signal.map {
                     case `websocket` =>
                       input(

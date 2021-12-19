@@ -22,5 +22,5 @@ class MesherLive extends Mesher {
 
 object MesherLive {
   val live: Layer[Nothing, Mesher] =
-    ZLayer.succeed[Mesher](new MesherLive) //(Tag[Mesher], Tracer.newTrace)
+    ZLayer.succeed[Mesher](new MesherLive) // (Tag[Mesher], Tracer.newTrace)
 }

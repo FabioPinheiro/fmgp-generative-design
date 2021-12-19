@@ -11,7 +11,7 @@ import scala.scalajs.js.annotation.{JSImport}
 @JSImport(
   "three/examples/jsm/controls/OrbitControls",
   "OrbitControls",
-  //"Three.OrbitControls"
+  // "Three.OrbitControls"
 )
 class OrbitControls(camera: Camera, element: HTMLElement) extends js.Object {
 
@@ -51,9 +51,9 @@ class OrbitControls(camera: Camera, element: HTMLElement) extends js.Object {
   var autoRotateSpeed: Double = js.native
 
   var enableKeys: Boolean = js.native
-  //keys: { LEFT: Double = js.native UP: Double = js.native RIGHT: Double = js.native BOTTOM: Double = js.native };
-  //mouseButtons: { LEFT: MOUSE; MIDDLE: MOUSE; RIGHT: MOUSE;  };
-  //touches: { ONE: TOUCH; TWO: TOUCH };
+  // keys: { LEFT: Double = js.native UP: Double = js.native RIGHT: Double = js.native BOTTOM: Double = js.native };
+  // mouseButtons: { LEFT: MOUSE; MIDDLE: MOUSE; RIGHT: MOUSE;  };
+  // touches: { ONE: TOUCH; TWO: TOUCH };
 
   def rotateLeft(angle: Double): Unit = js.native
   def rotateUp(angle: Double): Unit = js.native

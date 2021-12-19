@@ -22,7 +22,7 @@ object World {
   def addition(shape: Shape): WorldAddition = WorldAddition(Seq(shape))
   def w2D(shapes: ShapeSeq): WorldState = WorldState(shapes, dimensions = Dimensions.D2)
   def w3D(shapes: ShapeSeq): WorldState = WorldState(shapes, dimensions = Dimensions.D3)
-  //def w3D(shape: Shape): WorldState = w3D(ShapeSeq(shape))
+  // def w3D(shape: Shape): WorldState = w3D(ShapeSeq(shape))
   def w3DEmpty: World = w3D(Seq.empty)
 }
 
@@ -89,7 +89,7 @@ final case class Polar(rho: Double, phi: Double) extends Coordinate2D {
 
   def x = rho * Math.cos(phi)
   def y = rho * Math.sin(phi)
-  def z = 0 //FIXME
+  def z = 0 // FIXME
 }
 
 object Polar {
@@ -173,7 +173,7 @@ final case class Vec(x: Double = 0, y: Double = 0, z: Double = 0) extends Coordi
 object Vec {
   def origin: Vec = Vec(0, 0, 0)
   def apply(from: XYZ, to: XYZ) = to.pointMinusPoint(from).asVec
-  def cross(a: XYZ, b: XYZ, c: XYZ) = (b - a).asVec.cross((c - a).asVec) //(B - A) x (C - A)
+  def cross(a: XYZ, b: XYZ, c: XYZ) = (b - a).asVec.cross((c - a).asVec) // (B - A) x (C - A)
 }
 
 // final case class Axis(origin: XYZ, abscissa: Vec, ordinate: Vec) {
@@ -215,7 +215,7 @@ final case class Matrix(
     } yield t.mkString("[", ", ", "]")).mkString("Matrix(", " ; ", ")")
   }
 
-  @inline def center: XYZ = XYZ(m03, m13, m23) //dot(Vex(0, 0, 0))
+  @inline def center: XYZ = XYZ(m03, m13, m23) // dot(Vex(0, 0, 0))
 
   def extractTranslation: XYZ = center
   def extractScale: (Double, Double, Double) = {
@@ -246,9 +246,9 @@ final case class Matrix(
       if (math.abs(cosPitch) > 0 /*EPSILON*/ ) (r.m21 / cosPitch, r.m22 / cosPitch, r.m10 / cosPitch, r.m00 / cosPitch)
       else (-r.m12, r.m11, 0, 1)
 
-    val yaw = math.atan2(sinYaw, cosYaw) //* 180 / math.Pi
-    val pitch = math.atan2(sinPitch, cosPitch) //* 180 / math.Pi
-    val roll = math.atan2(sinRoll, cosRoll) //* 180 / math.Pi
+    val yaw = math.atan2(sinYaw, cosYaw) // * 180 / math.Pi
+    val pitch = math.atan2(sinPitch, cosPitch) // * 180 / math.Pi
+    val roll = math.atan2(sinRoll, cosRoll) // * 180 / math.Pi
     (yaw, pitch, roll)
   }
 
@@ -256,7 +256,7 @@ final case class Matrix(
     x = m00 * v.x + m01 * v.y + m02 * v.z + /*w * v.w*/ m03,
     y = m10 * v.x + m11 * v.y + m12 * v.z + /*w * v.w*/ m13,
     z = m20 * v.x + m21 * v.y + m22 * v.z + /*w * v.w*/ m23,
-    //w = m30 * v.x + m31 * v.y + m32 * v.z + w * v.w
+    // w = m30 * v.x + m31 * v.y + m32 * v.z + w * v.w
   )
   @inline def dot(v: Vec): XYZ = this * v
 
@@ -405,7 +405,7 @@ object Matrix {
     val s = Math.sin(angle)
     val c = Math.cos(angle)
     val t = 1 - c
-    val norm = axisVector.normalized //must be normalized.
+    val norm = axisVector.normalized // must be normalized.
     val x = norm.x
     val y = norm.y
     val z = norm.z
@@ -427,7 +427,7 @@ object Matrix {
   )
   // format: on
 
-  //def multiply(m1: Matrix4, m2: Matrix4) = m1.clone().multiply(m2)
+  // def multiply(m1: Matrix4, m2: Matrix4) = m1.clone().multiply(m2)
 //  def basis(xVector: Vector, yVector: Vector, zVector: Vector, origin: XYZ = XYZ.origin) = {
 //    val tmp = new Matrix4
 //    tmp.makeBasis(xVector.toVector3, yVector.toVector3, zVector.toVector3)
@@ -459,9 +459,9 @@ object Matrix {
   }
   def alignFromAxisToAxis(fromAxis: Vec, toAxis: Vec) = {
     val dot = fromAxis * toAxis
-    val cross = fromAxis.cross(toAxis) //(new Vector3()).crossVectors(fromAxis.toVector3, toAxis.toVector3)
+    val cross = fromAxis.cross(toAxis) // (new Vector3()).crossVectors(fromAxis.toVector3, toAxis.toVector3)
     val crossLength = cross.length
-    //TODO Improve vector colinearity check. Use approximate equality.
+    // TODO Improve vector colinearity check. Use approximate equality.
     val areColinear = crossLength == 0.0
     val matrix = if (areColinear) {
       val axis = Vec(1.0, 0.0, 0.0)

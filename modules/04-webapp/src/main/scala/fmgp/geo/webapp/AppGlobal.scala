@@ -14,7 +14,7 @@ object AppGlobal {
     AppGlobal.worldVar.set(world)
   }
 
-  VisualizerJSLive.callbackHack = onWorldUpdate _ //HACK
+  VisualizerJSLive.callbackHack = onWorldUpdate _ // HACK
 
   def setWorld(world: World) =
     zio.Runtime.global.unsafeRunToFuture(

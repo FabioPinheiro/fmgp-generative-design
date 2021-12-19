@@ -21,7 +21,7 @@ object MermaidApp {
   @JSExport
   def hack = mermaid.mod.default
 
-  def apply(): HtmlElement = //rootElement
+  def apply(): HtmlElement = // rootElement
     div(child <-- AppGlobal.worldVar.signal.map(e => getHtml(e.shapes)))
 
   AppGlobal.worldVar.signal.map(_ => update)
@@ -29,8 +29,8 @@ object MermaidApp {
   @JSExport
   def update = {
     println("MermaidApp Update!!")
-    //val config = mermaid.mermaidAPIMod.mermaidAPI.Config().setStartOnLoad(false)
-    //mermaid.mod.default.initialize(config)
+    // val config = mermaid.mermaidAPIMod.mermaidAPI.Config().setStartOnLoad(false)
+    // mermaid.mod.default.initialize(config)
     mermaid.mod.default.init("div.mermaid")
   }
 

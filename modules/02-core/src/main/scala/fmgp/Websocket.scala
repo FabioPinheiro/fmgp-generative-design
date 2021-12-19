@@ -46,7 +46,7 @@ object Websocket {
       log.info(s"WS try reconect to $wsUrl (in ${delay / 1000} s)")
       js.timers.setTimeout(delay) {
         WebsocketJSLive.onStateChange(getState)
-        val tmpWS = new WebSocket(wsUrl) //TODO Add a timeout here
+        val tmpWS = new WebSocket(wsUrl) // TODO Add a timeout here
         ws = tmpWS
 
         tmpWS.onopen = { (ev: Event) =>
@@ -66,7 +66,7 @@ object Websocket {
             WebsocketJS.onMessage(message = ev.data.toString).provide(wsLayer)
           )
         }
-        tmpWS.onerror = { (ev: Event) => //TODO ErrorEvent
+        tmpWS.onerror = { (ev: Event) => // TODO ErrorEvent
           val message = ev
             .asInstanceOf[js.Dynamic]
             .message

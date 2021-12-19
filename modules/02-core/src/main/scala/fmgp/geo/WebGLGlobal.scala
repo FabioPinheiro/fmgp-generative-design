@@ -19,7 +19,7 @@ object WebGLTextGlobal {
   val loader = new FontLoader()
   def init = Log.info(s"### WebGLTextGlobal.init ###")
   loader.load(
-    "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/gentilis_regular.typeface.json", //"fonts/helvetiker_bold.typeface.json",
+    "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/gentilis_regular.typeface.json", // "fonts/helvetiker_bold.typeface.json",
     (f: Font) => textFont = f
   )
   init

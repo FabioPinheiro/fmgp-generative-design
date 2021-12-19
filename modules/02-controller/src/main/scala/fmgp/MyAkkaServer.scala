@@ -45,7 +45,7 @@ class MyAkkaServer(interface: String, port: Int)(using
       handleWebSocketMessages(browserFlow)
     }
 
-    //curl -X POST 'http://localhost:8888/add' -d '{"WorldState":{"shapes":[],"dimensions":"D2"}}'
+    // curl -X POST 'http://localhost:8888/add' -d '{"WorldState":{"shapes":[],"dimensions":"D2"}}'
     val addRoute = path("add") {
       concat(
         post {
@@ -72,7 +72,7 @@ class MyAkkaServer(interface: String, port: Int)(using
     val appRoutes = {
       import scala.io.Source
       val serveIndex =
-        Try(Source.fromResource("index.html").iter.mkString) match { //getFromResourceDirectory("index.html")
+        Try(Source.fromResource("index.html").iter.mkString) match { // getFromResourceDirectory("index.html")
           case Failure(ex)   => failWith(ex)
           case Success(data) => complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, data))
         }
@@ -99,7 +99,7 @@ class MyAkkaServer(interface: String, port: Int)(using
       )
     }
 
-    val myServer = Http().newServerAt(interface, port) //.bindAndHandle(route, interface, port)
+    val myServer = Http().newServerAt(interface, port) // .bindAndHandle(route, interface, port)
     logger.info(s"Server is now online at [$interface:$port]")
     myServer.bind(concat(wsRoute, addRoute, appRoutes))
   }
@@ -140,7 +140,7 @@ class MyAkkaServer(interface: String, port: Int)(using
           logger.warn(s"BrowserFlow(Binary): ${bm.toString}")
           Future.successful(())
       }
-      .via(Flow.fromSinkAndSource(sinkDumy, geoSource)) //.filterNot(_.shapes.isEmpty)
+      .via(Flow.fromSinkAndSource(sinkDumy, geoSource)) // .filterNot(_.shapes.isEmpty)
       .map { world => TextMessage(world.asJson.noSpaces) }
   }
 

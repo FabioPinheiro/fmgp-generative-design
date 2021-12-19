@@ -26,13 +26,13 @@ object Main extends com.typesafe.scalalogging.LazyLogging {
   )
 
   var server: Option[LocalAkkaServer] = None
-  //def myAkkaServer: LocalAkkaServer = server.get
+  // def myAkkaServer: LocalAkkaServer = server.get
 
   var serverGRPC: Option[io.grpc.Server] = None
 
-  def startLocal = { //(interface: String, port: Int)
+  def startLocal = { // (interface: String, port: Int)
     if (server.isEmpty) {
-      server = Some(new LocalAkkaServer) //Some(fmgp.MyAkkaServer(interface = interface, port = port))
+      server = Some(new LocalAkkaServer) // Some(fmgp.MyAkkaServer(interface = interface, port = port))
       server.map(_.start)
       logger.info("LocalAkka server starting")
     } else {
@@ -48,7 +48,7 @@ object Main extends com.typesafe.scalalogging.LazyLogging {
   }
 
   def stop = {
-    //import actorSystem.dispatcher
+    // import actorSystem.dispatcher
     logger.info("LocalAkka stoping")
     server.map { s =>
       val a = Await.result(s.stop, 10.seconds)
@@ -65,7 +65,7 @@ object Main extends com.typesafe.scalalogging.LazyLogging {
   }
 
   def main(args: Array[String]): Unit = {
-    startLocal //(interface = "127.0.0.1", port = 8888)
+    startLocal // (interface = "127.0.0.1", port = 8888)
 
     // if (args.isEmpty) {
     //   logger.info("Press RETURN to stop...")

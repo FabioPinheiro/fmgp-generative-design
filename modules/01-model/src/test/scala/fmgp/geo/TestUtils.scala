@@ -16,7 +16,7 @@ object TestUtils {
     a.zip(b).foreach { case (aa, bb) => assertClose(aa, bb, `+-`) }
   }
 
-  //circe json
+  // circe json
   inline def assertEncoder[A](a: A, s: String)(using Encoder[A]) =
     assertEquals(a.asJson.noSpaces.replaceAll("\\.0", ""), s)
 

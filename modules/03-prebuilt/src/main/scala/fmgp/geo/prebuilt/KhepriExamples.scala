@@ -199,7 +199,7 @@ trait KhepriExamples extends OldSyntax {
     }
   }
 
-  //def tree3d
+  // def tree3d
 
   // ### Trusses ### 6.7.1 Modeling Trusses
   object Truss {
@@ -208,7 +208,7 @@ trait KhepriExamples extends OldSyntax {
       Cylinder.fromVerticesRadius(p0, p1, trussStrutRadius)
     def trussNodes(ps: Seq[XYZ]): ShapeSeq = ps.map(p => trussNode(p))
     def trussStruts(ps: Seq[XYZ], qs: Seq[XYZ]): ShapeSeq =
-      ps.zip(qs).map { case (p, q) => trussStrut(p, q) } //truss_bar(p, q)
+      ps.zip(qs).map { case (p, q) => trussStrut(p, q) } // truss_bar(p, q)
 
     def truss(as: Seq[XYZ], bs: Seq[XYZ], cs: Seq[XYZ]): ShapeSeq =
       trussNodes(as) ++ trussNodes(bs) ++ trussNodes(cs) ++
@@ -228,7 +228,7 @@ trait KhepriExamples extends OldSyntax {
           psi1,
           dpsi
         )
-        //[p+vsph(r, phi, psi0), arc_positions(p, r, phi, psi0+dpsi, psi1, dpsi)...]
+        // [p+vsph(r, phi, psi0), arc_positions(p, r, phi, psi0+dpsi, psi1, dpsi)...]
       }
 
     def arcTruss(center: XYZ, rac: Double, rb: Double, phi: Double, psi0: Double, psi1: Double, l: Double, n: Int) = {
@@ -309,7 +309,7 @@ trait KhepriExamples extends OldSyntax {
     }
   }
 
-  //### 7.6 Extrusions
+  // ### 7.6 Extrusions
   object Heart {
     def path(x: Double = 0, y: Double = 0, size: Double = 1): MultiPath = {
       PathBuilder(XYZ(x, y).scale(size))
@@ -345,9 +345,9 @@ trait KhepriExamples extends OldSyntax {
     )
   }
 
-  //def sinusoidalWall ### 7.6.2 Extrusion Along a Path
+  // def sinusoidalWall ### 7.6.2 Extrusion Along a Path
 
-  //7.7 Gaudí’s Columns
+  // 7.7 Gaudí’s Columns
   // ### 8 Transformations ###
   // 8.2 Translation - move(sphere(), vxyz(1, 2, 3))
   // 8.3 Scale - scale(papal_cross(), 3)
@@ -357,7 +357,7 @@ trait KhepriExamples extends OldSyntax {
 
   object ScalaStairs {
     val path = PathBuilder(XYZ(0, 0)).lineTo(XYZ(3, 0)).lineTo(XYZ(3, 0.01)).lineTo(XYZ(0, 0.01)).build
-    //addShape(path)
+    // addShape(path)
 
     val extrudePath = PathBuilder(XYZ(0, 0, 0))
       .lineTo(XYZ(0, 1, 0))
@@ -365,6 +365,6 @@ trait KhepriExamples extends OldSyntax {
       .lineTo(XYZ(0, 2, -1))
       .lineTo(XYZ(0, 2, -2.2))
       .build
-    //addShape(extrudePath)
+    // addShape(extrudePath)
   }
 }

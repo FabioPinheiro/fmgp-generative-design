@@ -32,7 +32,7 @@ case class WebsocketJSLive(vissualizer: Visualizer) extends WebsocketJS {
     UIO(WebsocketJSLive.onStateChange(Websocket.State.CLOSED)) <&>
       UIO { Log.info(s"WS Closed because '${reason}'") }
   override def onMessage(message: String): UIO[Unit] =
-    decode[WorldOrFile](message) match { //TODO user ZIO.fromEither
+    decode[WorldOrFile](message) match { // TODO user ZIO.fromEither
       case Left(ex) =>
         UIO(Log.debug(message)).map(_ => Log.error(s"Error parsing the obj World: $ex"))
       case Right(value: World)  => vissualizer.update(value)

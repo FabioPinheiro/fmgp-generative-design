@@ -24,11 +24,11 @@ object KeyboardUtils {
       val camera1: typings.three.mod.Camera = Utils
         .newCamera(VisualizerJSLive.width, VisualizerJSLive.height, far = 100)
         .tap(_.position.set(0, 0, 5)),
-      //.tap(_.lookAt(new typings.three.mod.Vector3(0, 0.3, -1)))
+      // .tap(_.lookAt(new typings.three.mod.Vector3(0, 0.3, -1)))
       val camera2: typings.three.mod.Camera = Utils
         .newCamera(VisualizerJSLive.width, VisualizerJSLive.height)
         .tap(_.position.set(0, 0, 10)),
-      //.tap(_.lookAt(new Vector3(0, 0, 0)))
+      // .tap(_.lookAt(new Vector3(0, 0, 0)))
       var cameraIndex: Int = 1
   ) {
     def camera = cameraIndex match {
@@ -50,24 +50,25 @@ object KeyboardUtils {
       onEvent: KeyboardEvent => Unit,
       onError: Throwable => Unit
   ): Unit = {
-    println(s"RegisterCallback EventListener on 'keydown' & 'keyup'") //element.domElement.addEventListener
+    println(s"RegisterCallback EventListener on 'keydown' & 'keyup'") // element.domElement.addEventListener
     dom.window.addEventListener("keydown", (ev: KeyboardEvent) => onEvent(ev))
     dom.window.addEventListener("keyup", (ev: KeyboardEvent) => onEvent(ev))
   }
 
-  //Lifting an Asynchronous API to ZStream
+  // Lifting an Asynchronous API to ZStream
   val keyboardStream = ZStream
     .async[Clock, Throwable, KeyEvent] { cb =>
       registerCallback(
         event =>
           val ret: ZIO[Clock, Option[Throwable], Chunk[KeyEvent]] = localDateTime.map(ts =>
             val keyEvent = KeyEvent(event.key, event.keyCode.toInt, event.repeat, ts.toString, event.`type`)
-            //Chunk(s"$ts: keyCode:${event.keyCode}; key:${event.key}; type:${event.`type`}; repeat:${event.repeat}")
+            // Chunk(s"$ts: keyCode:${event.keyCode}; key:${event.key}; type:${event.`type`}; repeat:${event.repeat}")
             Chunk(keyEvent)
           )
-          //val aux = s"keyCode:${event.keyCode}; key:${event.key}; type:${event.`type`}; repeat:${event.repeat}"
-          //val ret = ZIO.succeed(Chunk(aux))
-          cb(ret),
+          // val aux = s"keyCode:${event.keyCode}; key:${event.key}; type:${event.`type`}; repeat:${event.repeat}"
+          // val ret = ZIO.succeed(Chunk(aux))
+          cb(ret)
+        ,
         error => cb(ZIO.fail(error).mapError(Some(_)))
       )
     }
@@ -85,7 +86,7 @@ object KeyboardUtils {
     }
 
   val keyboardApp: ZIO[ZEnv & KeyboardState, Throwable, Unit] =
-    keyboardStream.run(keySink) //.injectCustom(ZState.makeLayer(KeyboardUtils.KeyboardState()))
+    keyboardStream.run(keySink) // .injectCustom(ZState.makeLayer(KeyboardUtils.KeyboardState()))
 
   val keyboardStatePrinter: ZIO[Console & KeyboardState, Throwable, Unit] = {
     for {
@@ -102,28 +103,28 @@ object KeyboardUtils {
         ZIO
           .foreachDiscard(state.keys)((id, key) =>
             key.key match {
-              //UIO(state.matrix = state.matrix.postTranslate(0.1, 0, 0).postRotate(1, Vec(1, 1, 1))) *>
-              //UIO(GeoImprovements.matrix2matrix(state.matrix, state.camera.matrix))
-              case "i" => UIO(state.camera1.translateZ(-0.1)) //Move forward
-              case "k" => UIO(state.camera1.translateZ(0.1)) //Move backwards
-              case "j" => UIO(state.camera1.rotateY(0.025)) //Look LEFT
-              case "l" => UIO(state.camera1.rotateY(-0.025)) //Look RIGHT
+              // UIO(state.matrix = state.matrix.postTranslate(0.1, 0, 0).postRotate(1, Vec(1, 1, 1))) *>
+              // UIO(GeoImprovements.matrix2matrix(state.matrix, state.camera.matrix))
+              case "i" => UIO(state.camera1.translateZ(-0.1)) // Move forward
+              case "k" => UIO(state.camera1.translateZ(0.1)) // Move backwards
+              case "j" => UIO(state.camera1.rotateY(0.025)) // Look LEFT
+              case "l" => UIO(state.camera1.rotateY(-0.025)) // Look RIGHT
 
-              case "y" => UIO(state.camera1.translateY(0.1)) //Move UP
-              case "h" => UIO(state.camera1.translateY(-0.1)) //Move DOWN
-              case "u" => UIO(state.camera1.translateX(0.1)) //Move LEFT
-              case "o" => UIO(state.camera1.translateX(-0.1)) //Move RIGHT
+              case "y" => UIO(state.camera1.translateY(0.1)) // Move UP
+              case "h" => UIO(state.camera1.translateY(-0.1)) // Move DOWN
+              case "u" => UIO(state.camera1.translateX(0.1)) // Move LEFT
+              case "o" => UIO(state.camera1.translateX(-0.1)) // Move RIGHT
 
               case "p" => UIO(state.camera1.rotateX(0.025))
               case ";" => UIO(state.camera1.rotateX(-0.025))
               case "m" => UIO(state.camera1.rotateZ(0.025))
               case "," => UIO(state.camera1.rotateZ(-0.025))
 
-              //Camera!
+              // Camera!
               case "1" => UIO(state.cameraIndex = 1)
               case "2" => UIO(state.cameraIndex = 2)
 
-              case any => ZIO.unit //Console.printLine(s"key with no effect: $any")
+              case any => ZIO.unit // Console.printLine(s"key with no effect: $any")
             }
           )
       )

@@ -97,12 +97,12 @@ object TreesExample {
         top = base + Polar(rho = length, phi = angle).asVec
         branch <- line(Seq(base, top))
         leafOrLeftRight <-
-          if (length < 0.5 || maxIterations < 1) circle(leafRadius, top) //leaf
+          if (length < 0.5 || maxIterations < 1) circle(leafRadius, top) // leaf
           else {
             for {
               leftReductionFactor <- randomReductionFactor
               leftDeltaAngle <- randomDeltaAngle
-              left <- tree2dRandom( //left
+              left <- tree2dRandom( // left
                 top,
                 length * leftReductionFactor,
                 angle - leftDeltaAngle,
@@ -115,7 +115,7 @@ object TreesExample {
               )
               rightReductionFactor <- randomReductionFactor
               rightDeltaAngle <- randomDeltaAngle
-              right <- tree2dRandom( //right
+              right <- tree2dRandom( // right
                 top,
                 length * rightReductionFactor,
                 angle + rightDeltaAngle,
@@ -129,7 +129,7 @@ object TreesExample {
               leftRight <- shapes(left, right)
             } yield (leftRight)
           }
-        model <- shapes(branch, leafOrLeftRight) //, left, right)
+        model <- shapes(branch, leafOrLeftRight) // , left, right)
       } yield (model)
     }
 
@@ -162,12 +162,12 @@ object TreesExample {
         thickness = max(log(maxIterations), 0.5) * 0.05
         branch <- cylinder(base, top, thickness)
         leafOrLeftRight <-
-          if (length < 0.5 || maxIterations < 1) sphere(top, leafRadius) //leaf
+          if (length < 0.5 || maxIterations < 1) sphere(top, leafRadius) // leaf
           else {
             for {
               leftReductionFactor <- randomReductionFactor
               leftDeltaAngle <- randomDeltaAngle
-              left <- tree3dRandom( //left
+              left <- tree3dRandom( // left
                 top,
                 length * leftReductionFactor,
                 angle - leftDeltaAngle,
@@ -181,7 +181,7 @@ object TreesExample {
               )
               rightReductionFactor <- randomReductionFactor
               rightDeltaAngle <- randomDeltaAngle
-              right <- tree3dRandom( //right
+              right <- tree3dRandom( // right
                 top,
                 length * rightReductionFactor,
                 angle + rightDeltaAngle,

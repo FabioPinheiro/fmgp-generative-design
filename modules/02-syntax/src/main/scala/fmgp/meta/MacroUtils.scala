@@ -45,7 +45,7 @@ object MacroUtils {
       startColumn: Int,
       endColumn: Int,
       sourceCode: Option[String],
-      //showExpr: String,
+      // showExpr: String,
       value: T
   ) extends MetaBase(start, end, sourceFile, startLine, endLine, startColumn, endColumn, sourceCode) {
     def prettyPrint =
@@ -95,7 +95,7 @@ object MacroUtils {
     import quotes.reflect.*
 
     val tree: Term = expr.asTerm
-    //report.info("tree:" + tree.toString)
+    // report.info("tree:" + tree.toString)
     // tree match
     //   case Inlined(_, _, Literal(BooleanConstant(n))) =>
     //     tree.asExprOf[Boolean]
@@ -103,7 +103,7 @@ object MacroUtils {
     //     report.info("Parameter must be a known boolean constant")
     //     '{ false }
 
-    val pos: Position = tree.pos //Position.ofMacroExpansion
+    val pos: Position = tree.pos // Position.ofMacroExpansion
 
     '{
       MetaValue(

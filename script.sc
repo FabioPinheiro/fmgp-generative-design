@@ -140,7 +140,7 @@ clear
 
 {
   val m0 = Axes(Matrix().postRotate(-1, Vec(-1, 1, 1)))
-  //addShape(m0)
+  // addShape(m0)
   val v1 = Vec(0, 0, -20)
   val c1 = BezierCurves
     .steps(30)
@@ -152,13 +152,13 @@ clear
   draw(c1)
   draw(c2)
   def draw(mmm: Seq[Matrix]) = {
-    //addShape(Axes(mmm.head))
-    //addShape(Axes(mmm.last))
+    // addShape(Axes(mmm.head))
+    // addShape(Axes(mmm.last))
     addShape(ShapeSeq(mmm.map(m => Axes(m))))
     val ppp = mmm
       .map(m => (Seq(m.dot(Vec(-1, 1, 0)), m.dot(Vec(1, 1, 0))), Seq(m.dot(Vec(-1, 0, 0)), m.dot(Vec(1, 0, 0)))))
-    //addShape(Points(ppp.map(_._2).flatten))
-    //addShape(Points(ppp.map(_._1.toXYZ)))
+    // addShape(Points(ppp.map(_._2).flatten))
+    // addShape(Points(ppp.map(_._1.toXYZ)))
     addShape(ShapeSeq(ppp.zip(ppp.drop(1)).flatMap { case (a, b) =>
       val t1 =
         TriangleShape(
@@ -173,8 +173,8 @@ clear
       Seq(t1, t2)
     }))
   }
-  //addShape(LinePath(mmm.map(_.center)))
-  //addShape(ShapeSeq(mmm /*.drop(1).dropRight(1)*/.map(m => Axes(m))))
+  // addShape(LinePath(mmm.map(_.center)))
+  // addShape(ShapeSeq(mmm /*.drop(1).dropRight(1)*/.map(m => Axes(m))))
 
 }
 

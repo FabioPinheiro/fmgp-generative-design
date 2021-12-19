@@ -9,7 +9,7 @@ object GeometryExamples {
       Sphere(0.3, XYZ(3, 3, -1)),
       Sphere(0.2, XYZ(2, 2, -1)),
       Sphere(0.1, XYZ(1, 1, -1)),
-      //Cylinder(0.2, 2),
+      // Cylinder(0.2, 2),
       TransformationShape(
         Cylinder(0.2, 2),
         TransformMatrix(Matrix.translate(-1, 0, 1))

@@ -50,7 +50,7 @@ object IsenbergSchoolOfManagementHubExample {
     *   boolean value: is it the first slab? The base slab of the building is the only one whose shape changes at the
     *   alfa_proj angle to accompany the tilted columns
     */
-  //def isenberg_slab(ri: Double, re: Double, alfa_proj: Double, thick: Double, is_first: Boolean): Seq[XY] = ???
+  // def isenberg_slab(ri: Double, re: Double, alfa_proj: Double, thick: Double, is_first: Boolean): Seq[XY] = ???
   class Isenberg(
       center: XY,
       ri: Double,
@@ -61,17 +61,17 @@ object IsenbergSchoolOfManagementHubExample {
       n: Int,
       slabThickness: Double = 0.1,
   ) {
-    //ps𝑖 = ps_circle (c , r𝑖 , 𝛼0 , 𝛼𝑒 , n )
+    // ps𝑖 = ps_circle (c , r𝑖 , 𝛼0 , 𝛼𝑒 , n )
     def psi(n: Int) = pts_circle(center, ri, alfa_init, alfa_end, n)
-    //ps𝑒 = ps_circle (c , r𝑒 , 𝛼0 , 𝛼𝑒 , n )
+    // ps𝑒 = ps_circle (c , r𝑒 , 𝛼0 , 𝛼𝑒 , n )
     def pse(n: Int) = pts_circle(center, re, alfa_init, alfa_end, n)
-    //ps𝑝 = ps_circle (c , r𝑒 , 𝛼0 , 𝛼𝑝 , n )
+    // ps𝑝 = ps_circle (c , r𝑒 , 𝛼0 , 𝛼𝑝 , n )
     def psp(n: Int) = pts_circle(center, re, alfa_init, alfa_proj, n)
 
     // p𝑡 = c + vcyl ( r𝑒 , 𝛼𝑝 , 0)
     // Δ𝛼 = 𝛼𝑒 - 𝛼𝑝
     // v = vpol (Δ𝛼 *2 r𝑒 /𝜋 , 𝛼𝑝 + Δ𝛼)
-    val pr = center + Polar(rho = re, phi = alfa_proj).toXY0 //Cylindrical(rho = re, phi = alfa_proj, 0)
+    val pr = center + Polar(rho = re, phi = alfa_proj).toXY0 // Cylindrical(rho = re, phi = alfa_proj, 0)
     val deltaAlfa = alfa_end - alfa_init
     val v = Polar(deltaAlfa * 2 * re * math.Pi, alfa_proj + deltaAlfa)
 
@@ -103,8 +103,8 @@ object IsenbergSchoolOfManagementHubExample {
         .transformWith(
           Matrix
             .translate(z = h / 2)
-          //.postTranslate(x = re - 3 * slabThickness)
-          //.preRotate(0.1 * math.Pi, Vec(z = 1))
+          // .postTranslate(x = re - 3 * slabThickness)
+          // .preRotate(0.1 * math.Pi, Vec(z = 1))
         )
         .transformWith(Matrix.translate(re - 3 * slabThickness, 0, 0))
         .transformWith(Matrix.rotate(0.1 * math.Pi, Vec(z = 1)))

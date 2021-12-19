@@ -25,7 +25,7 @@ object EncoderDecoder {
     case e: WorldState    => JsonObject(("WorldState", e.asJson)).asJson
     case e: WorldAddition => JsonObject(("WorldAddition", e.asJson)).asJson
   }
-  //given Decoder[World] = List[Decoder[World]](Decoder[WorldAddition].widen, Decoder[WorldState].widen).reduceLeft(_ or _)
+  // given Decoder[World] = List[Decoder[World]](Decoder[WorldAddition].widen, Decoder[WorldState].widen).reduceLeft(_ or _)
   given Decoder[World] = new Decoder[World]:
     override def apply(c: io.circe.HCursor): io.circe.Decoder.Result[World] = {
       c.keys.map(_.toSeq) match {
@@ -48,7 +48,7 @@ object EncoderDecoder {
   given Decoder[WorldOrFile] = new Decoder[WorldOrFile]:
     override def apply(c: io.circe.HCursor): io.circe.Decoder.Result[WorldOrFile] =
       c.keys.map(_.toSeq) match {
-        case Some("World" :: Nil)         => c.downField("WorldState").as[WorldState] //Default
+        case Some("World" :: Nil)         => c.downField("WorldState").as[WorldState] // Default
         case Some("WorldState" :: Nil)    => c.downField("WorldState").as[WorldState]
         case Some("WorldAddition" :: Nil) => c.downField("WorldAddition").as[WorldAddition]
         case Some("MyFile" :: Nil)        => c.downField("MyFile").as[MyFile]
@@ -105,7 +105,7 @@ object EncoderDecoder {
 
   given Decoder[Coordinate] = new Decoder[Coordinate]:
     override def apply(c: io.circe.HCursor): io.circe.Decoder.Result[Coordinate] = {
-      //c.downField("Vec").downField("aa").root
+      // c.downField("Vec").downField("aa").root
       c.keys.map(_.toSeq) match {
         case Some("Vec" :: Nil)         => c.downField("Vec").as[Vec]
         case Some("Polar" :: Nil)       => c.downField("Polar").as[Polar]
@@ -123,15 +123,15 @@ object EncoderDecoder {
     override def apply(c: io.circe.HCursor): io.circe.Decoder.Result[Coordinate3D] =
       summon[Decoder[Coordinate]](c).map(_.asInstanceOf[Coordinate3D])
 
-  //### Transform ###
-  given Encoder[TransformMatrix] = new Encoder[TransformMatrix]: //deriveEncoder[TransformMatrix]
+  // ### Transform ###
+  given Encoder[TransformMatrix] = new Encoder[TransformMatrix]: // deriveEncoder[TransformMatrix]
     override def apply(a: TransformMatrix): io.circe.Json = summon[Encoder[Matrix]](a.matrix)
   given Decoder[TransformMatrix] = new Decoder[TransformMatrix]:
     override def apply(c: io.circe.HCursor): io.circe.Decoder.Result[TransformMatrix] =
       summon[Decoder[Matrix]].map(e => TransformMatrix(e)).apply(c)
 
   given Encoder[Transformation] = Encoder.instance { case e: TransformMatrix => e.asJson }
-  //given Decoder[Transformation] = List[Decoder[Transformation]](Decoder[TransformMatrix].widen).reduceLeft(_ or _)
+  // given Decoder[Transformation] = List[Decoder[Transformation]](Decoder[TransformMatrix].widen).reduceLeft(_ or _)
   given Decoder[Transformation] = new Decoder[Transformation]:
     override def apply(c: io.circe.HCursor): io.circe.Decoder.Result[Transformation] =
       summon[Decoder[Matrix]].map(e => TransformMatrix(e)).apply(c)

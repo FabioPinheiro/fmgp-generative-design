@@ -16,9 +16,9 @@ val V = new {
 
   // https://mvnrepository.com/artifact/org.scala-js/scalajs-dom
   val scalajsDom = "2.0.0" // scalajsDom 2.0.0 need to update sbt-converter to 37?
-  //val scalajsLogging = "1.1.2-SNAPSHOT" //"1.1.2"
+  // val scalajsLogging = "1.1.2-SNAPSHOT" //"1.1.2"
 
-  //https://mvnrepository.com/artifact/dev.zio/zio
+  // https://mvnrepository.com/artifact/dev.zio/zio
   val zio = "2.0.0-RC1"
 
   // https://mvnrepository.com/artifact/io.github.cquiroz/scala-java-time
@@ -44,7 +44,7 @@ val D = new {
   val dom = Def.setting("org.scala-js" %%% "scalajs-dom" % V.scalajsDom)
 
   val circeCore = Def.setting("io.circe" %%% "circe-core" % V.circe)
-  val circeGeneric = Def.setting("io.circe" %%% "circe-generic" % V.circe) //0.14.1 does not work with scala 3
+  val circeGeneric = Def.setting("io.circe" %%% "circe-generic" % V.circe) // 0.14.1 does not work with scala 3
   val circeParser = Def.setting("io.circe" %%% "circe-parser" % V.circe)
 
   val zio = Def.setting("dev.zio" %%% "zio" % V.zio)
@@ -81,14 +81,14 @@ val NPM = new {
   // https://www.npmjs.com/package/stats and https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
   val stats = Seq("stats.js", "@types/stats.js").map(_ -> "0.17.0")
 
-  //https://www.npmjs.com/package/@types/d3
-  //val d3NpmDependencies = Seq("d3", "@types/d3").map(_ -> "7.1.0")
+  // https://www.npmjs.com/package/@types/d3
+  // val d3NpmDependencies = Seq("d3", "@types/d3").map(_ -> "7.1.0")
 
   val mermaid = Seq("mermaid" -> "8.13.3", "@types/mermaid" -> "8.2.7")
 
   val grpcWeb = Seq(
     "grpc-web" -> "1.2.1"
-  ) //"1.3.0", //https://github.com/scalapb/scalapb-grpcweb/blob/master/build.sbt#L93
+  ) // "1.3.0", //https://github.com/scalapb/scalapb-grpcweb/blob/master/build.sbt#L93
 
   val materialDesign = Seq(
     "material-components-web" -> V.materialComponents,
@@ -129,15 +129,15 @@ lazy val settingsFlags: Seq[sbt.Def.SettingsDefinition] = Seq(
     "-unchecked", // warn about unchecked type parameters
     "-feature", // warn about misused language features
     "-Xfatal-warnings",
-    //"-Yexplicit-nulls",
-    //TODO "-Ysafe-init",
+    // "-Yexplicit-nulls",
+    // TODO "-Ysafe-init",
     "-language:implicitConversions",
     "-language:reflectiveCalls",
-    //"-Xsource:3", //https://scalacenter.github.io/scala-3-migration-guide/docs/tooling/migration-tools.html
-    //"-Ytasty-reader",
-    "-Xprint-diff-del", //"-Xprint-diff",
+    // "-Xsource:3", //https://scalacenter.github.io/scala-3-migration-guide/docs/tooling/migration-tools.html
+    // "-Ytasty-reader",
+    "-Xprint-diff-del", // "-Xprint-diff",
     "-Xprint-inline",
-  ) //++ Seq("-rewrite", "-indent", "-source", "future-migration") //++ Seq("-source", "future")
+  ) // ++ Seq("-rewrite", "-indent", "-source", "future-migration") //++ Seq("-source", "future")
 )
 
 val setupTestConfig: Seq[sbt.Def.SettingsDefinition] = Seq(
@@ -184,7 +184,7 @@ lazy val scalaJSBundlerConfigure: Project => Project =
 lazy val buildInfoConfigure: Project => Project = _.enablePlugins(BuildInfoPlugin)
   .settings(
     buildInfoPackage := "fmgp.geo",
-    //buildInfoObject := "BuildInfo",
+    // buildInfoObject := "BuildInfo",
     buildInfoKeys := Seq[BuildInfoKey](
       name,
       version,
@@ -193,13 +193,13 @@ lazy val buildInfoConfigure: Project => Project = _.enablePlugins(BuildInfoPlugi
       BuildInfoKey.action("buildTime") { System.currentTimeMillis }, // re-computed each time at compile
       "serverPort" -> 8888,
       "grpcPort" -> 8889,
-      "grpcWebPort" -> 8890, //DOCKER: `docker run --rm -ti --net=host -v $PWD/envoy.yaml:/etc/envoy/envoy.yaml envoyproxy/envoy:v1.17.0`
+      "grpcWebPort" -> 8890, // DOCKER: `docker run --rm -ti --net=host -v $PWD/envoy.yaml:/etc/envoy/envoy.yaml envoyproxy/envoy:v1.17.0`
     ),
   )
 
 lazy val modules: List[ProjectReference] =
   List(
-    //REMOVE threeUtils,
+    // REMOVE threeUtils,
     modelJVM,
     modelJS,
     controller,
@@ -230,13 +230,13 @@ lazy val model = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("modules/01-model"))
   .settings(name := "fmgp-geometry-model")
-  //.enablePlugins(ScalaJSPlugin)
+  // .enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
   .settings(setupTestConfig: _*)
   .jsSettings(setupTestConfigJS: _*)
   .settings(libraryDependencies ++= Seq(D.circeCore.value, D.circeGeneric.value, D.circeParser.value % Test))
   .settings(libraryDependencies += D.zio.value)
-  .jsSettings(libraryDependencies ++= Seq(D.scalaJavaT.value, D.scalaJavaTZ.value)) //Needed for ZIO
+  .jsSettings(libraryDependencies ++= Seq(D.scalaJavaT.value, D.scalaJavaTZ.value)) // Needed for ZIO
   .settings(publishSettings)
 
 //REMOVE
@@ -260,7 +260,7 @@ lazy val geometryCoreJS = project
   .settings(jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv())
   .settings(
     libraryDependencies ++= Seq(D.dom.value, D.zioStreams.value),
-    //libraryDependencies += ("org.scala-js" %% "scalajs-logging" % scalajsLoggingVersion), //jsDependencies FIXME
+    // libraryDependencies += ("org.scala-js" %% "scalajs-logging" % scalajsLoggingVersion), //jsDependencies FIXME
     //  .cross(CrossVersion.for3Use2_13),
     libraryDependencies ++= Seq(D.circeCore.value, D.circeGeneric.value, D.circeParser.value),
     Compile / npmDependencies ++= NPM.three ++ NPM.stats,
@@ -275,7 +275,7 @@ lazy val syntax = crossProject(JSPlatform, JVMPlatform)
   .in(file("modules/02-syntax"))
   .settings(name := "fmgp-geometry-syntax")
   .settings(libraryDependencies += D.zioStreams.value)
-  //.enablePlugins(ScalaJSPlugin)
+  // .enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
   .settings(setupTestConfig: _*)
   .jsSettings(setupTestConfigJS: _*)
@@ -289,7 +289,7 @@ lazy val prebuilt = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("modules/03-prebuilt"))
   .settings(name := "fmgp-geometry-prebuilt")
-  //.enablePlugins(ScalaJSPlugin)
+  // .enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
   .settings(setupTestConfig: _*)
   .jsSettings(setupTestConfigJS: _*)
@@ -321,16 +321,16 @@ lazy val controller = project //or crossProject(JVMPlatform).crossType(CrossType
     Compile / unmanagedResources += (webapp / target).value /
       ("scala-" + scalaVersion.value) /
       ("scalajs-bundler/main/node_modules/material-components-web/dist/material-components-web.min.css"),
-    //Compile / unmanagedResources :=
+    // Compile / unmanagedResources :=
     // ((Compile / unmanagedResources) dependsOn (webapp / Compile / fastLinkJS)).value,
   )
   .settings(
     libraryDependencies ++= Seq(
-      "io.grpc" % "grpc-netty" % scalapb.compiler.Version.grpcJavaVersion, //GRPC
-      "io.grpc" % "grpc-services" % scalapb.compiler.Version.grpcJavaVersion //GRPC reflection api
+      "io.grpc" % "grpc-netty" % scalapb.compiler.Version.grpcJavaVersion, // GRPC
+      "io.grpc" % "grpc-services" % scalapb.compiler.Version.grpcJavaVersion // GRPC reflection api
     ),
-    javaOptions += "-Dio.netty.tryReflectionSetAccessible=true", //For netty
-    javaOptions += "--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED", //For netty
+    javaOptions += "-Dio.netty.tryReflectionSetAccessible=true", // For netty
+    javaOptions += "--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED", // For netty
   )
   .dependsOn(modelJVM, syntaxJVM, protosJVM)
   .settings(publishSettings)
@@ -368,9 +368,9 @@ lazy val webapp = project
   )
   .settings(
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
-    //MODUELS
-    //scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) },
-    //scalaJSLinkerConfig ~= (_.withModuleSplitStyle(org.scalajs.linker.interface.ModuleSplitStyle.SmallestModules)),
+    // MODUELS
+    // scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) },
+    // scalaJSLinkerConfig ~= (_.withModuleSplitStyle(org.scalajs.linker.interface.ModuleSplitStyle.SmallestModules)),
     Compile / scalaJSModuleInitializers += {
       org.scalajs.linker.interface.ModuleInitializer.mainMethod("fmgp.geo.webapp.App", "main")
       // .withModuleID("app_print")
@@ -389,7 +389,7 @@ lazy val protos =
     .crossType(CrossType.Pure)
     .in(file("modules/01-protos"))
     .settings(
-      Compile / PB.protoSources := Seq( //show protosJVM/protocSources
+      Compile / PB.protoSources := Seq( // show protosJVM/protocSources
         (ThisBuild / baseDirectory).value / "modules" / "01-protos" / "src" / "main" / "protobuf"
       ),
       libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf",

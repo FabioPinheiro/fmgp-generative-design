@@ -22,7 +22,7 @@ object Main {
     WebGLTextGlobal.init
     org.scalajs.dom.document.body.appendChild(webGLHelper.renderer.domElement)
     webGLHelper.renderer.domElement.style = "position: fixed; top: 0px; left: 0px;"
-    js.timers.setTimeout(1000)(webGLHelper.init) //milliseconds FIXME
+    js.timers.setTimeout(1000)(webGLHelper.init) // milliseconds FIXME
     ()
   }
 

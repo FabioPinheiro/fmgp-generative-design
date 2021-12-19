@@ -21,7 +21,7 @@ object ShowGeo {
     def json = textArea(
       width("100%"),
       height("80vh"),
-      //child.text <--
+      // child.text <--
       w.asJson.spaces2
     )
     def html: ReactiveHtmlElement[HTMLElement] = div(w match {
@@ -34,8 +34,8 @@ object ShowGeo {
 
   def getHtml(shape: Shape, indent: Int = 0): ReactiveHtmlElement[HTMLElement] =
     shape match {
-      //case b: Box => label(b.toString)
-      //case todo   => label(s"TODO-$todo")
+      // case b: Box => label(b.toString)
+      // case todo   => label(s"TODO-$todo")
       case s: TransformationShape =>
         div(
           label("TransformationShape:"),

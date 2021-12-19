@@ -7,7 +7,7 @@ import fmgp.dsl._
 import fmgp.syntax.KhepriSyntax
 
 object RhythmicGymnasticsPavilionExample extends RhythmicGymnasticsPavilionUtils {
-  //surface_grid(damped_sin_roof_pts(u0(), 20, 3, 10, 15, pi, 0.03, pi/50, pi/10, 60, 100, 120, 800))
+  // surface_grid(damped_sin_roof_pts(u0(), 20, 3, 10, 15, pi, 0.03, pi/50, pi/10, 60, 100, 120, 800))
 
   import scala.math._
   import fmgp.dsl._

@@ -25,7 +25,7 @@ object BezierCurves {
   /** TODO quadratic bezier curves can be optimized */
   @inline def quadratic(t: Double, p0: Double, p12: Double, p3: Double): Double = cubic(t, p0, p12, p12, p3)
 
-  @inline def linear(t: Double, v0: Double, v1: Double): Double = //cubic(t, p0, p0, p3, p3)
+  @inline def linear(t: Double, v0: Double, v1: Double): Double = // cubic(t, p0, p0, p3, p3)
     (1 - t) * v0 + t * v1
 
   // ### Coordinate ###
@@ -171,7 +171,7 @@ object BezierCurves {
 
       val pa = cubic(t, p0c, p1c, p2c, p3c)
       val pb = cubic(t + tInc, p0c, p1c, p2c, p3c)
-      val r = linear(t, 0, rotate) //FIXME replace '0' with the inicial rotation of p0
+      val r = linear(t, 0, rotate) // FIXME replace '0' with the inicial rotation of p0
       Matrix.lookAt(pa, pb).postRotate(yaw + t * rotate, Vec(0, 0, 1))
     }
   }

@@ -31,7 +31,7 @@ object Websocket {
 }
 
 case class WebsocketLive(console: Console) extends Websocket {
-  implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global //FIXME
+  implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global // FIXME
   given actorSystem: ActorSystem = ActorSystem(
     "websocketServiceLive",
     config = None,
@@ -39,13 +39,13 @@ case class WebsocketLive(console: Console) extends Websocket {
     defaultExecutionContext = None
   )
 
-  val server: MyAkkaServer = new fmgp.experiments.LocalAkkaServer() {} //MyAkkaServer(interface, port)
+  val server: MyAkkaServer = new fmgp.experiments.LocalAkkaServer() {} // MyAkkaServer(interface, port)
 
-  private var isTerminated = false //TODO: this is a hack
+  private var isTerminated = false // TODO: this is a hack
   actorSystem.whenTerminated.map(_ => isTerminated = true)
 
   override def send[T <: Shape](t: T): Task[T] =
-    ZIO.attempt(server.sendShape(t)) //TODO make this beter
+    ZIO.attempt(server.sendShape(t)) // TODO make this beter
   override def sendFile(file: MyFile): Task[MyFile] =
     ZIO.attempt(server.sendFile(file))
   override def clearWorld: Task[Unit] =

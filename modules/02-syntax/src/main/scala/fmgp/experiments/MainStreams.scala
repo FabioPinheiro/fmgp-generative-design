@@ -6,7 +6,7 @@ import zio.Clock._
 import zio.Console._
 
 @main def MainStreams() = {
-  //val stream: ZStream[Clock, Nothing, Unit] = ZStream.tick(1.seconds)
+  // val stream: ZStream[Clock, Nothing, Unit] = ZStream.tick(1.seconds)
 
   def countdown(n: Int) = ZStream.unfold(n) {
     case 0 => None

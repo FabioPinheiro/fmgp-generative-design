@@ -21,14 +21,14 @@ object Utils {
     val gridHelper = new GridHelper(100, 100)
     (Dimensions.D3: Dimensions) match {
       case Dimensions.D2 => gridHelper.rotateX(Math.PI / 2.0)
-      case Dimensions.D3 => //ok as it is
+      case Dimensions.D3 => // ok as it is
       // case Dimensions.Unrecognized(d) =>
       //   println(s"Dimensions $d Unrecognized in computeStaticThreeObjects")
     }
 
     val staticRoot = new Object3D[Event]()
     staticRoot.add(sunLight, belowLight, hemiLight, gridHelper, axisHelper)
-    //BUG Seq(sunLight, belowLight, hemiLight, gridHelper, axisHelper).foreach(e => staticRoot.add(e)) //BUG see https://github.com/scala-js/scala-js/issues/4548
+    // BUG Seq(sunLight, belowLight, hemiLight, gridHelper, axisHelper).foreach(e => staticRoot.add(e)) //BUG see https://github.com/scala-js/scala-js/issues/4548
     staticRoot
   }
 

@@ -7,7 +7,7 @@ import fmgp.geo.TestUtils._
 class MatrixTest extends munit.FunSuite {
 
   // This is necessary to find test methods in Scala.js
-  //scalaJsSupport
+  // scalaJsSupport
 
   // #######################
   // ### Basic assertion ###

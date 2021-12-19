@@ -29,7 +29,7 @@ case class VisualizerJSLive(mesher: Mesher) extends Visualizer {
       UIO {
         VisualizerJSLive.modelToAnimate.children.toList.foreach { o =>
           VisualizerJSLive.modelToAnimate.remove(o)
-        } //toList method is needed because the obj.remove edit over the array we are iterating
+        } // toList method is needed because the obj.remove edit over the array we are iterating
       }
 }
 
@@ -39,7 +39,7 @@ object VisualizerJSLive {
   def height = webGLHelper.height
   def width = webGLHelper.width
 
-  var callbackHack: World => Unit = (_) => () //FIXME
+  var callbackHack: World => Unit = (_) => () // FIXME
 
   lazy val live: URLayer[Mesher, Visualizer] =
     (VisualizerJSLive(_)).toLayer[Visualizer]

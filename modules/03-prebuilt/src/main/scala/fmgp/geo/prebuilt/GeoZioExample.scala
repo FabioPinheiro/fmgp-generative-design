@@ -14,7 +14,7 @@ object GeoZioExample {
   val program: zio.ZIO[Dsl, Throwable, fmgp.geo.Shape] =
     for {
       _ <- ZIO.unit
-      //points = pts_circle(XYZ.origin, r = 2, alfa_init = 0, alfa_end = Pi, n = 10)
+      // points = pts_circle(XYZ.origin, r = 2, alfa_init = 0, alfa_end = Pi, n = 10)
       isenberg = Isenberg(
         XYZ.origin,
         ri = 5,
@@ -32,7 +32,7 @@ object GeoZioExample {
         isenberg.slabFloor,
         floors,
         beams
-      ).transformWith(Matrix.rotate(-Pi / 2, Vec(x = 1))) //Points(points)
+      ).transformWith(Matrix.rotate(-Pi / 2, Vec(x = 1))) // Points(points)
     } yield (shapes)
 
 }

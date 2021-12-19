@@ -7,5 +7,5 @@ lazy val root = project
     scalaVersion := "3.1.0",
     libraryDependencies += "com.softwaremill.sttp.client3" %% "core" % "3.3.18",
     libraryDependencies += "app.fmgp" %% "fmgp-geometry-syntax" % "0.0.0+140-6ddceb07-SNAPSHOT",
-    //libraryDependencies += "app.fmgp" %% "controller" % "0.0.0+140-6ddceb07-SNAPSHOT",
+    // libraryDependencies += "app.fmgp" %% "controller" % "0.0.0+140-6ddceb07-SNAPSHOT",
   )

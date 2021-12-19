@@ -12,7 +12,7 @@ sealed trait Shape extends Any
 
 object Shape {
   // We can use Shapeless lib
-  //type ShapeT[S] = Shape with TransformationShape[S, Transformation]{type SHAPE = S}
+  // type ShapeT[S] = Shape with TransformationShape[S, Transformation]{type SHAPE = S}
 
   implicit class ShapeImprovements(val obj: Shape) {
     def transformWith(transform: Matrix): TransformationShape =
@@ -158,7 +158,7 @@ case class Extrude(
 
 object Extrude {
   case class Options(
-      //UVGenerator: Option[typings.three.extrudeGeometryMod.UVGenerator] = None,
+      // UVGenerator: Option[typings.three.extrudeGeometryMod.UVGenerator] = None,
       bevelEnabled: Option[Boolean] = None,
       bevelOffset: Option[Double] = None,
       bevelSegments: Option[Double] = None,
@@ -190,7 +190,7 @@ case class MultiPath(paths: Seq[MyPath]) extends MyPath with Seq[MyPath] {
 object MultiPath {
   def apply(path: MyPath): MultiPath = MultiPath(Seq(path))
   def apply(): MultiPath = MultiPath(Seq.empty)
-  //implicit def implicitConverter(s: Seq[MyPath]): MultiPath = MultiPath(s)
+  // implicit def implicitConverter(s: Seq[MyPath]): MultiPath = MultiPath(s)
 }
 
 case class CubicBezierPath(a: XYZ, af: Vec, bf: Vec, b: XYZ) extends MyPath //add arcLengthDivisions: Double
@@ -199,7 +199,7 @@ case class Circle(
     radius: Double,
     center: XYZ = XYZ.origin,
     fill: Boolean = false
-) extends Shape //MyPath
+) extends Shape // MyPath
 
 case class TriangleShape(t: Triangle[XYZ], n: Triangle[Vec]) extends Shape
 

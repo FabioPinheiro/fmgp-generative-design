@@ -18,7 +18,7 @@ import scala.scalajs.js.annotation.{JSImport}
 @JSImport(
   "three/examples/jsm/controls/FirstPersonControls",
   "FirstPersonControls",
-  //"Three.FirstPersonControls"
+  // "Three.FirstPersonControls"
 )
 class FirstPersonControls(`object`: Camera, domElement: HTMLElement) extends js.Object {
 

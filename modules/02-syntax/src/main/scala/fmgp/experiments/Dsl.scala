@@ -6,7 +6,7 @@ import fmgp.geo._
 
 object Dsl {
   final case class WorldBox(var v: Seq[Shape]) {
-    //def add(s: Shape) = v = v :+ s
+    // def add(s: Shape) = v = v :+ s
     def add(s: Seq[Shape]) = v = v ++ s
   }
 
@@ -26,7 +26,7 @@ trait Dsl extends ContestSpecificDsl {
   import Dsl.{WorldBox, Warp, Dummy}
   def sideEffect(w: WorldBox): Unit
 
-  //World
+  // World
   def world3d(init: Warp ?=> Unit): WorldBox =
     given worldBox: WorldBox = WorldBox(Seq.empty)
     given warpWorld: Warp = Warp(Seq.empty)
@@ -44,7 +44,7 @@ trait Dsl extends ContestSpecificDsl {
     t.add(w.v)
     w
 
-  //...
+  // ...
   def xyz(x: Double = 0, y: Double = 0, z: Double = 0): XYZ = XYZ(x, y, z)
   def vxyz(x: Double = 0, y: Double = 0, z: Double = 0): Vec = Vec(x, y, z)
 
@@ -80,7 +80,7 @@ trait ContestSpecificDsl {
   import Dsl.{WorldBox, Warp, Dummy}
 
   protected def ms[S <: Shape, W <: Warp | Dummy](s: S)(using w: W): S = w match
-    case e: Warp  => e.add(s); s //ShapeNull()
+    case e: Warp  => e.add(s); s // ShapeNull()
     case e: Dummy => s
 
   def box(width: Double, height: Double, depth: Double)(using

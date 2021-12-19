@@ -33,9 +33,9 @@ case class InteractiveMesh(mesh: typings.three.meshMod.Mesh[_, _], onSelected: (
 
 @JSExportTopLevel("WebGLHelper")
 object WebGLHelper {
-  //WebGLHelper.test[2].object.material.color.set(0x00ff00)
-  //@JSExport var test: js.Any = _
-  //@JSExport var test2: js.Any = _
+  // WebGLHelper.test[2].object.material.color.set(0x00ff00)
+  // @JSExport var test: js.Any = _
+  // @JSExport var test2: js.Any = _
 }
 class WebGLHelper(topPadding: Int, modelToAnimate: Group = new Group) {
 
@@ -50,14 +50,14 @@ class WebGLHelper(topPadding: Int, modelToAnimate: Group = new Group) {
       js.Dynamic.literal().asInstanceOf[WebGLRendererParameters].pipe { o =>
         o.antialias = true
         o.alpha = true
-        //o.context = org.scalajs.dom.raw.WebGLRenderingContext.WEBGL2
+        // o.context = org.scalajs.dom.raw.WebGLRenderingContext.WEBGL2
         o
       }
     )
     aux.domElement.addEventListener("click", ev => onClickEvent(ev))
     aux.domElement.addEventListener("ontouch", ev => onTouchEvent(ev))
     aux.setSize(width, height)
-    aux.autoClear = false //For multi scene
+    aux.autoClear = false // For multi scene
     aux
   }
 
@@ -82,7 +82,7 @@ class WebGLHelper(topPadding: Int, modelToAnimate: Group = new Group) {
     KeyboardUtils.app
     webGLGlobal.sceneUI = new Scene()
     webGLGlobal.scene = new Scene()
-    WebGLTextGlobal.scene = webGLGlobal.scene //TODO REMOVE
+    WebGLTextGlobal.scene = webGLGlobal.scene // TODO REMOVE
 
     val dimensions: Dimensions = Dimensions.D3
 
@@ -125,7 +125,7 @@ class WebGLHelper(topPadding: Int, modelToAnimate: Group = new Group) {
 
       webGLGlobal.addUiElement(InteractiveMesh(mesh, () => material.color = new typings.three.colorMod.Color("blue")))
     }
-    { //text WS URL
+    { // text WS URL
       val textParameters = js.Dynamic.literal().asInstanceOf[typings.three.textGeometryMod.TextGeometryParameters]
       textParameters.font = WebGLTextGlobal.textFont
       textParameters.size = 0.02
@@ -196,15 +196,15 @@ class WebGLHelper(topPadding: Int, modelToAnimate: Group = new Group) {
 
       webGLGlobal.scene.raycast(webGLGlobal.raycaster, intersects)
 
-      //REMOVE WebGLHelper.test = intersects
-      //TODO val color = Random.between(0, 0xffffff)
-      //TODO intersects.foreach(_.`object`.asInstanceOf[js.Dynamic].material.color.set(color))
+      // REMOVE WebGLHelper.test = intersects
+      // TODO val color = Random.between(0, 0xffffff)
+      // TODO intersects.foreach(_.`object`.asInstanceOf[js.Dynamic].material.color.set(color))
       val ids = intersects.map(o => s"${o.`object`.id}").mkString("[", ", ", "]")
       println(s"UI EVENT! intersects (${intersects.size}) : $ids")
     }
     this.uiEvent = None
 
-    //webGLGlobal.modelToAnimate().foreach(Utils.updateFunction _)
+    // webGLGlobal.modelToAnimate().foreach(Utils.updateFunction _)
     webGLGlobal.animateFrameId = Some(dom.window.requestAnimationFrame(animate))
     webGLGlobal.controls.foreach(_.update(1))
     // required if controls.enableDamping or controls.autoRotate are set to true

@@ -39,7 +39,7 @@ object GeoImprovements {
 
   @inline def float2ArrayLike(points: Seq[Float]): typings.std.ArrayLike[Double] =
     new scala.scalajs.js.typedarray.Float32Array(points.toJSIterable)
-      .asInstanceOf[typings.std.ArrayLike[Double]] //FIXME ... TS
+      .asInstanceOf[typings.std.ArrayLike[Double]] // FIXME ... TS
 
   @inline def arrayLike2Float(array: typings.std.ArrayLike[Double]): Array[Float] =
     array.asInstanceOf[scala.scalajs.js.typedarray.Float32Array].jsIterator.toIterator.toArray

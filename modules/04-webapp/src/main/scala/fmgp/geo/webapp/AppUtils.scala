@@ -24,7 +24,7 @@ object AppUtils {
     tmp.open_=(!tmp.open)
   })
 
-  def topBarHeader(title: Signal[String]) = { //(title: String) = {
+  def topBarHeader(title: Signal[String]) = { // (title: String) = {
     val menuButton = button(
       className("material-icons mdc-top-app-bar__navigation-icon mdc-icon-button"),
       aria.label("Options"),
@@ -119,7 +119,7 @@ object AppUtils {
               i(
                 className("material-icons mdc-list-item__graphic"),
                 aria.hidden(true),
-                page match { //https://fonts.google.com/icons?selected=Material+Icons+Outlined
+                page match { // https://fonts.google.com/icons?selected=Material+Icons+Outlined
                   case _: HomePage.type        => "home"
                   case _: GeoPage.type         => "explore"
                   case _: MermaidPage.type     => "share"

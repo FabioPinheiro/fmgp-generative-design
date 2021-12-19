@@ -41,7 +41,10 @@ enum WorldExamplesOption(
   case Cross2D extends WorldExamplesOption(Future.successful(OldSyntaxGeometryExamples.world(_.cross)), "token")
 
   case Polygon2D
-      extends WorldExamplesOption(Future.successful(OldSyntaxGeometryExamples.world(_.polygon(10, 5))), "token") //FIXME
+      extends WorldExamplesOption(
+        Future.successful(OldSyntaxGeometryExamples.world(_.polygon(10, 5))),
+        "token"
+      ) // FIXME
   case Rectangle2D
       extends WorldExamplesOption(
         Future.successful(OldSyntaxGeometryExamples.world(_.rectangle(XYZ(-1, -1, 0), XYZ(1, 1, 0)))),
@@ -99,10 +102,10 @@ enum WorldExamplesOption(
   case Heart3D
       extends WorldExamplesOption(
         Future.successful(OldSyntaxGeometryExamples.world { e =>
-          //e.addShape(e.Heart.path(x = 0, y = 0))
-          //e.addShape(e.Heart.planeShape(x = 0, y = 0))
-          //e.addShape(e.Heart.planeShape(x = 0, y = 0, size = 0.5))
-          //e.addShape(e.Heart.planeShape(holes = Seq(e.Heart.path(x = 0, y = 1, size = 0.5)), x = 0, y = 0, size = 1))
+          // e.addShape(e.Heart.path(x = 0, y = 0))
+          // e.addShape(e.Heart.planeShape(x = 0, y = 0))
+          // e.addShape(e.Heart.planeShape(x = 0, y = 0, size = 0.5))
+          // e.addShape(e.Heart.planeShape(holes = Seq(e.Heart.path(x = 0, y = 1, size = 0.5)), x = 0, y = 0, size = 1))
           e.addShape(e.Heart.extrude(holes = Seq(e.Heart.path(x = 0, y = 1, size = 0.5)), x = 0, y = 0, size = 1))
         }),
         "favorite_border"
@@ -137,7 +140,7 @@ enum WorldExamplesOption(
       className("mdc-list-item"),
       role("menuitem"),
       span(className("mdc-list-item__ripple")),
-      i(className("material-icons mdc-list-item__graphic"), icon), //FIXME icon make a make a clone of icon
+      i(className("material-icons mdc-list-item__graphic"), icon), // FIXME icon make a make a clone of icon
       // span(
       //   className("mdc-list-item__graphic mdc-menu__selection-group-icon"),
       //   i(aria.label("Atomium"), atomiumSVG)
@@ -147,6 +150,6 @@ enum WorldExamplesOption(
     )
 
   def setWorldObserver(world: Future[World]) = {
-    Observer[org.scalajs.dom.MouseEvent](onNext = ev => world.value.map(_.get).map(AppGlobal.setWorld)) //FIXME .get
+    Observer[org.scalajs.dom.MouseEvent](onNext = ev => world.value.map(_.get).map(AppGlobal.setWorld)) // FIXME .get
   }
 }
