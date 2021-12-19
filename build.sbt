@@ -6,22 +6,114 @@ inThisBuild(
   )
 )
 
-lazy val noPublishSettings = skip / publish := true
-lazy val publishSettings = Seq(
-  Test / publishArtifact := false,
-  pomIncludeRepository := (_ => false),
-  homepage := Some(url("https://github.com/FabioPinheiro/fmgp-generative-design")),
-  licenses := Seq("MIT License" -> url("https://github.com/FabioPinheiro/fmgp-generative-design/blob/master/LICENSE")),
-  scmInfo := Some(
-    ScmInfo(
-      url("https://github.com/FabioPinheiro/fmgp-generative-design"),
-      "scm:git:git@github.com:FabioPinheiro/fmgp-generative-design.git"
-    )
-  ),
-  developers := List(
-    Developer("FabioPinheiro", "Fabio Pinheiro", "fabiomgpinheiro@gmail.com", url("http://fmgp.app"))
+/** Versions */
+val V = new {
+
+  val munit = "0.7.26"
+
+  // https://mvnrepository.com/artifact/io.circe/circe-core
+  val circe = "0.15.0-M1"
+
+  // https://mvnrepository.com/artifact/org.scala-js/scalajs-dom
+  val scalajsDom = "2.0.0" // scalajsDom 2.0.0 need to update sbt-converter to 37?
+  //val scalajsLogging = "1.1.2-SNAPSHOT" //"1.1.2"
+
+  //https://mvnrepository.com/artifact/dev.zio/zio
+  val zio = "2.0.0-RC1"
+
+  // https://mvnrepository.com/artifact/io.github.cquiroz/scala-java-time
+  val scalaJavaTime = "2.3.0"
+
+  val akka = "2.6.15"
+  val akkaHttp = "10.2.4"
+  val akkaSlf4j = "2.6.15"
+  val logbackClassic = "1.2.3"
+  val scalaLogging = "3.9.4"
+
+  val sttpClient = "3.3.14"
+
+  val laminar = "0.14.2"
+  val waypoint = "0.5.0"
+  val upickle = "1.3.13"
+  // https://www.npmjs.com/package/material-components-web
+  val materialComponents = "12.0.0"
+}
+
+/** Dependencies */
+val D = new {
+  val dom = Def.setting("org.scala-js" %%% "scalajs-dom" % V.scalajsDom)
+
+  val circeCore = Def.setting("io.circe" %%% "circe-core" % V.circe)
+  val circeGeneric = Def.setting("io.circe" %%% "circe-generic" % V.circe) //0.14.1 does not work with scala 3
+  val circeParser = Def.setting("io.circe" %%% "circe-parser" % V.circe)
+
+  val zio = Def.setting("dev.zio" %%% "zio" % V.zio)
+  val zioStreams = Def.setting("dev.zio" %%% "zio-streams" % V.zio)
+
+  // Needed for ZIO
+  val scalaJavaT = Def.setting("io.github.cquiroz" %%% "scala-java-time" % V.scalaJavaTime)
+  val scalaJavaTZ = Def.setting("io.github.cquiroz" %%% "scala-java-time-tzdb" % V.scalaJavaTime)
+
+  // For munit https://scalameta.org/munit/docs/getting-started.html#scalajs-setup
+  val munit = Def.setting("org.scalameta" %%% "munit" % V.munit % Test)
+
+  // For controller
+  val akkaHttp = Def.setting(("com.typesafe.akka" %% "akka-http" % V.akkaHttp).cross(CrossVersion.for3Use2_13))
+  val akkaStream = Def.setting(("com.typesafe.akka" %% "akka-stream" % V.akka).cross(CrossVersion.for3Use2_13))
+  val akkaSlf4j = Def.setting(("com.typesafe.akka" %% "akka-slf4j" % V.akkaSlf4j).cross(CrossVersion.for3Use2_13))
+  val logbackClassic = Def.setting("ch.qos.logback" % "logback-classic" % V.logbackClassic)
+  val scalaLogging = Def.setting("com.typesafe.scala-logging" %% "scala-logging" % V.scalaLogging)
+
+  // For WEBAPP
+  val laminar = Def.setting("com.raquo" %%% "laminar" % V.laminar)
+  val waypoint = Def.setting("com.raquo" %%% "waypoint" % V.waypoint)
+  val upickle = Def.setting("com.lihaoyi" %%% "upickle" % V.upickle)
+
+  // For
+  val sttpClient = Def.setting("com.softwaremill.sttp.client3" %% "core" % V.sttpClient)
+}
+
+/** NPM Dependencies */
+val NPM = new {
+  // https://www.npmjs.com/package/three and https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/three
+  val three = Seq("three", "@types/three").map(_ -> "0.134.0")
+
+  // https://www.npmjs.com/package/stats and https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
+  val stats = Seq("stats.js", "@types/stats.js").map(_ -> "0.17.0")
+
+  //https://www.npmjs.com/package/@types/d3
+  //val d3NpmDependencies = Seq("d3", "@types/d3").map(_ -> "7.1.0")
+
+  val mermaid = Seq("mermaid" -> "8.13.3", "@types/mermaid" -> "8.2.7")
+
+  val grpcWeb = Seq(
+    "grpc-web" -> "1.2.1"
+  ) //"1.3.0", //https://github.com/scalapb/scalapb-grpcweb/blob/master/build.sbt#L93
+
+  val materialDesign = Seq(
+    "material-components-web" -> V.materialComponents,
+    // "@material/ripple" -> materialComponentsVersion, // https://material.io/develop/web/supporting/ripple
+    // "@material/checkbox" -> materialComponentsVersion,
+    // "@material/drawer" -> materialComponentsVersion,
+    // "@material/form-field" -> materialComponentsVersion,
+    // "@material/top-app-bar" -> materialComponentsVersion,
+    // "@material/switch"
   )
-)
+}
+
+lazy val noPublishSettings = skip / publish := true
+lazy val publishSettings = {
+  val repo = "https://github.com/FabioPinheiro/fmgp-generative-design"
+  val contact = Developer("FabioPinheiro", "Fabio Pinheiro", "fabiomgpinheiro@gmail.com", url("http://fmgp.app"))
+  Seq(
+    Test / publishArtifact := false,
+    pomIncludeRepository := (_ => false),
+    homepage := Some(url(repo)),
+    licenses := Seq("MIT License" -> url(repo + "/blob/master/LICENSE")),
+    scmInfo := Some(ScmInfo(url(repo), "scm:git:git@github.com:FabioPinheiro/fmgp-generative-design.git")),
+    developers := List(contact)
+  )
+}
 // ### PUBLISH ###
 //usePgpKeyHex("E1FC5E4D458BB2DB0B99B285F1CBAB1E3F257949") //This is just a reference of the key
 // must the version //in version := "0.1-M4",
@@ -49,7 +141,7 @@ lazy val settingsFlags: Seq[sbt.Def.SettingsDefinition] = Seq(
 )
 
 val setupTestConfig: Seq[sbt.Def.SettingsDefinition] = Seq(
-  libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test,
+  libraryDependencies += D.munit.value,
 )
 val setupTestConfigJS: Seq[sbt.Def.SettingsDefinition] = Seq(
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
@@ -132,27 +224,8 @@ lazy val root = project
   .settings(commonSettings: _*)
   .settings(noPublishSettings)
 
-val materialComponentsVersion = "12.0.0" // https://www.npmjs.com/package/material-components-web
-val circeVersion = "0.15.0-M1" // https://mvnrepository.com/artifact/io.circe/circe-core
-// scalajsDomVersion 2.0.0 need to update sbt-converter to 37?
-val scalajsDomVersion = "2.0.0" // https://mvnrepository.com/artifact/org.scala-js/scalajs-dom
-//FIXME val scalajsLoggingVersion = "1.1.2-SNAPSHOT" //"1.1.2"
-val akkaVersion = "2.6.15"
-val akkaHttpVersion = "10.2.4"
-val munitVersion = "0.7.26"
-val zioVersion = "2.0.0-RC1" //https://mvnrepository.com/artifact/dev.zio/zio
-
-// https://www.npmjs.com/package/three and https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/three
-val threeNpmDependencies = Seq("three", "@types/three").map(_ -> "0.134.0")
-// https://www.npmjs.com/package/stats and https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
-val statsNpmDependencies = Seq("stats.js", "@types/stats.js").map(_ -> "0.17.0")
-//https://www.npmjs.com/package/@types/d3
-//val d3NpmDependencies = Seq("d3", "@types/d3").map(_ -> "7.1.0")
-val mermaidNpmDependencies = Seq("mermaid" -> "8.13.3", "@types/mermaid" -> "8.2.7")
-
 // #####################################################################################################################
 
-/* For munit https://scalameta.org/munit/docs/getting-started.html#scalajs-setup */
 lazy val model = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("modules/01-model"))
@@ -161,22 +234,9 @@ lazy val model = crossProject(JSPlatform, JVMPlatform)
   .settings(commonSettings: _*)
   .settings(setupTestConfig: _*)
   .jsSettings(setupTestConfigJS: _*)
-  .settings(
-    libraryDependencies ++= Seq(
-      "io.circe" %%% "circe-core" % circeVersion,
-      "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
-      "io.circe" %%% "circe-parser" % circeVersion % Test,
-    )
-  )
-  .settings(
-    libraryDependencies += "dev.zio" %%% "zio" % zioVersion,
-  )
-  .jsSettings( //Need for ZIO
-    libraryDependencies ++= Seq(
-      "io.github.cquiroz" %%% "scala-java-time" % "2.3.0", // https://mvnrepository.com/artifact/io.github.cquiroz/scala-java-time
-      "io.github.cquiroz" %%% "scala-java-time-tzdb" % "2.3.0"
-    )
-  )
+  .settings(libraryDependencies ++= Seq(D.circeCore.value, D.circeGeneric.value, D.circeParser.value % Test))
+  .settings(libraryDependencies += D.zio.value)
+  .jsSettings(libraryDependencies ++= Seq(D.scalaJavaT.value, D.scalaJavaTZ.value)) //Needed for ZIO
   .settings(publishSettings)
 
 //REMOVE
@@ -198,20 +258,13 @@ lazy val geometryCoreJS = project
   .settings(name := "fmgp-geometry-core")
   .configure(scalaJSBundlerConfigure)
   .settings(jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv())
-  .settings(libraryDependencies += "dev.zio" %%% "zio-streams" % zioVersion)
   .settings(
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion,
+    libraryDependencies ++= Seq(D.dom.value, D.zioStreams.value),
     //libraryDependencies += ("org.scala-js" %% "scalajs-logging" % scalajsLoggingVersion), //jsDependencies FIXME
     //  .cross(CrossVersion.for3Use2_13),
-    libraryDependencies ++= Seq(
-      "io.circe" %%% "circe-core" % circeVersion,
-      "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
-      "io.circe" %%% "circe-parser" % circeVersion,
-    ),
-    Compile / npmDependencies ++= threeNpmDependencies ++ statsNpmDependencies,
+    libraryDependencies ++= Seq(D.circeCore.value, D.circeGeneric.value, D.circeParser.value),
+    Compile / npmDependencies ++= NPM.three ++ NPM.stats,
     scalaJSUseMainModuleInitializer := true,
-    //mainClass := Some("fmgp.Main"),
-    //LibraryAndApplication is needed for the index-dev.html to avoid calling webpack all the time
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
   )
   .dependsOn(modelJS)
@@ -221,7 +274,7 @@ lazy val syntax = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("modules/02-syntax"))
   .settings(name := "fmgp-geometry-syntax")
-  .settings(libraryDependencies += "dev.zio" %%% "zio-streams" % zioVersion)
+  .settings(libraryDependencies += D.zioStreams.value)
   //.enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
   .settings(setupTestConfig: _*)
@@ -252,19 +305,10 @@ lazy val controller = project //or crossProject(JVMPlatform).crossType(CrossType
   .configure(buildInfoConfigure)
   .settings(commonSettings: _*)
   .settings(
-    libraryDependencies ++= Seq(
-      "io.circe" %%% "circe-core" % circeVersion,
-      "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
-      "io.circe" %%% "circe-parser" % circeVersion,
-    ),
-    libraryDependencies ++= Seq(
-      ("com.typesafe.akka" %% "akka-http" % akkaHttpVersion).cross(CrossVersion.for3Use2_13),
-      ("com.typesafe.akka" %% "akka-stream" % akkaVersion).cross(CrossVersion.for3Use2_13),
-      "ch.qos.logback" % "logback-classic" % "1.2.3",
-      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
-      ("com.typesafe.akka" %% "akka-slf4j" % "2.6.15").cross(CrossVersion.for3Use2_13),
-    ),
-    libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test,
+    libraryDependencies ++= Seq(D.circeCore.value, D.circeGeneric.value, D.circeParser.value),
+    libraryDependencies ++= Seq(D.akkaHttp.value, D.akkaStream.value),
+    libraryDependencies ++= Seq(D.akkaSlf4j.value, D.logbackClassic.value, D.scalaLogging.value),
+    libraryDependencies += D.munit.value,
   )
   .settings( // compile and merge webapp as a resource
     Compile / unmanagedResources := ((Compile / unmanagedResources) dependsOn (webapp / Compile / fastOptJS / webpack)).value,
@@ -294,7 +338,7 @@ lazy val controller = project //or crossProject(JVMPlatform).crossType(CrossType
 lazy val repl = project //or crossProject(JVMPlatform).crossType(CrossType.Pure)
   .in(file("modules/04-repl"))
   .settings(commonSettings: _*)
-  .settings(libraryDependencies += "com.softwaremill.sttp.client3" %% "core" % "3.3.14")
+  .settings(libraryDependencies += D.sttpClient.value)
   .settings(
     // console / initialCommands += """
     // import scala.math._
@@ -319,26 +363,8 @@ lazy val webapp = project
   .configure(scalaJSBundlerConfigure)
   .configure(buildInfoConfigure)
   .settings(
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % scalajsDomVersion,
-    libraryDependencies += "com.raquo" %%% "laminar" % "0.14.2",
-    libraryDependencies += "com.raquo" %%% "waypoint" % "0.5.0",
-    libraryDependencies += "com.lihaoyi" %%% "upickle" % "1.3.13",
-    libraryDependencies ++= Seq(
-      "io.circe" %%% "circe-core" % circeVersion,
-      "io.circe" %%% "circe-generic" % circeVersion, //0.14.1 does not work with scala 3
-      "io.circe" %%% "circe-parser" % circeVersion,
-    ),
-    Compile / npmDependencies ++= threeNpmDependencies ++ statsNpmDependencies ++ mermaidNpmDependencies ++ Seq(
-      "grpc-web" -> "1.2.1", //"1.3.0", //https://github.com/scalapb/scalapb-grpcweb/blob/master/build.sbt#L93
-      //Material Design
-      "material-components-web" -> materialComponentsVersion,
-      // "@material/ripple" -> materialComponentsVersion, // https://material.io/develop/web/supporting/ripple
-      // "@material/checkbox" -> materialComponentsVersion,
-      // "@material/drawer" -> materialComponentsVersion,
-      // "@material/form-field" -> materialComponentsVersion,
-      // "@material/top-app-bar" -> materialComponentsVersion,
-      // "@material/switch"
-    ),
+    libraryDependencies ++= Seq(D.laminar.value, D.waypoint.value, D.upickle.value),
+    Compile / npmDependencies ++= NPM.three ++ NPM.stats ++ NPM.mermaid ++ NPM.grpcWeb ++ NPM.materialDesign,
   )
   .settings(
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
