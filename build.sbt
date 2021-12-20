@@ -26,7 +26,7 @@ val V = new {
 
   val akka = "2.6.15"
   val akkaHttp = "10.2.7"
-  val akkaSlf4j = "2.6.17"
+  val akkaSlf4j = "2.6.18"
   val logbackClassic = "1.2.9"
   val scalaLogging = "3.9.4"
 
