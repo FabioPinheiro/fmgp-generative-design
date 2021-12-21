@@ -1,7 +1,7 @@
-# This workflow will launch at 00:00 every Sunday
+# This workflow will launch at 20:00 every day # https://crontab.guru/#0_10_*_*_*
 on:
   schedule:
-    - cron: "0 0 * * 0"
+    - cron: "0 20 * * *"
   workflow_dispatch:
 
 name: Scala Steward
