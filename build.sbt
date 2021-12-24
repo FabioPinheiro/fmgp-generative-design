@@ -7,7 +7,7 @@ inThisBuild(
 )
 
 /** Versions */
-val V = new {
+lazy val V = new {
 
   val munit = "0.7.29"
 
@@ -24,23 +24,23 @@ val V = new {
   // https://mvnrepository.com/artifact/io.github.cquiroz/scala-java-time
   val scalaJavaTime = "2.3.0"
 
-  val akka = "2.6.15"
+  val akka = "2.6.18"
   val akkaHttp = "10.2.7"
-  val akkaSlf4j = "2.6.17"
-  val logbackClassic = "1.2.10"
+  val akkaSlf4j = "2.6.18"
+  val logbackClassic = "1.2.9"
   val scalaLogging = "3.9.4"
 
   val sttpClient = "3.3.14"
 
   val laminar = "0.14.2"
   val waypoint = "0.5.0"
-  val upickle = "1.3.15"
+  val upickle = "1.4.3"
   // https://www.npmjs.com/package/material-components-web
   val materialComponents = "12.0.0"
 }
 
 /** Dependencies */
-val D = new {
+lazy val D = new {
   val dom = Def.setting("org.scala-js" %%% "scalajs-dom" % V.scalajsDom)
 
   val circeCore = Def.setting("io.circe" %%% "circe-core" % V.circe)
@@ -74,7 +74,7 @@ val D = new {
 }
 
 /** NPM Dependencies */
-val NPM = new {
+lazy val NPM = new {
   // https://www.npmjs.com/package/three and https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/three
   val three = Seq("three", "@types/three").map(_ -> "0.134.0")
 
@@ -140,10 +140,10 @@ lazy val settingsFlags: Seq[sbt.Def.SettingsDefinition] = Seq(
   ) // ++ Seq("-rewrite", "-indent", "-source", "future-migration") //++ Seq("-source", "future")
 )
 
-val setupTestConfig: Seq[sbt.Def.SettingsDefinition] = Seq(
+lazy val setupTestConfig: Seq[sbt.Def.SettingsDefinition] = Seq(
   libraryDependencies += D.munit.value,
 )
-val setupTestConfigJS: Seq[sbt.Def.SettingsDefinition] = Seq(
+lazy val setupTestConfigJS: Seq[sbt.Def.SettingsDefinition] = Seq(
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
 )
 
