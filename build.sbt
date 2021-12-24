@@ -7,7 +7,7 @@ inThisBuild(
 )
 
 /** Versions */
-val V = new {
+lazy val V = new {
 
   val munit = "0.7.29"
 
@@ -40,7 +40,7 @@ val V = new {
 }
 
 /** Dependencies */
-val D = new {
+lazy val D = new {
   val dom = Def.setting("org.scala-js" %%% "scalajs-dom" % V.scalajsDom)
 
   val circeCore = Def.setting("io.circe" %%% "circe-core" % V.circe)
@@ -74,7 +74,7 @@ val D = new {
 }
 
 /** NPM Dependencies */
-val NPM = new {
+lazy val NPM = new {
   // https://www.npmjs.com/package/three and https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/three
   val three = Seq("three", "@types/three").map(_ -> "0.134.0")
 
@@ -140,10 +140,10 @@ lazy val settingsFlags: Seq[sbt.Def.SettingsDefinition] = Seq(
   ) // ++ Seq("-rewrite", "-indent", "-source", "future-migration") //++ Seq("-source", "future")
 )
 
-val setupTestConfig: Seq[sbt.Def.SettingsDefinition] = Seq(
+lazy val setupTestConfig: Seq[sbt.Def.SettingsDefinition] = Seq(
   libraryDependencies += D.munit.value,
 )
-val setupTestConfigJS: Seq[sbt.Def.SettingsDefinition] = Seq(
+lazy val setupTestConfigJS: Seq[sbt.Def.SettingsDefinition] = Seq(
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
 )
 
