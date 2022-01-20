@@ -1,7 +1,7 @@
 inThisBuild(
   Seq(
     organization := "app.fmgp",
-    scalaVersion := "3.1.0", // Also update docs/publishWebsite.sh and any ref to scala-3.1.0
+    scalaVersion := "3.1.1", // Also update docs/publishWebsite.sh and any ref to scala-3.1.0
     updateOptions := updateOptions.value.withLatestSnapshots(false),
   )
 )
