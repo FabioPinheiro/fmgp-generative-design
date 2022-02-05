@@ -45,7 +45,7 @@ object ShapeSeq {
   implicit def implicitConverter(s: Seq[Shape]): ShapeSeq = ShapeSeq(s)
 }
 
-case class Points(val c: Seq[Coordinate3D]) extends Shape //AnyVal with
+case class Points(val c: Seq[Coordinate3D]) extends Shape // AnyVal with
 
 case class Box(
     width: Double,
@@ -175,7 +175,7 @@ case class PlaneShape(path: MultiPath, holes: Seq[MultiPath] = Seq.empty) extend
 
 case class SurfaceGridShape(points: Array[Array[XYZ]]) extends Shape
 
-sealed trait MyPath extends Shape //val curveSegments: Int = 12
+sealed trait MyPath extends Shape // val curveSegments: Int = 12
 
 case class LinePath(vertices: Seq[XYZ]) extends MyPath
 object LinePath {
@@ -193,7 +193,7 @@ object MultiPath {
   // implicit def implicitConverter(s: Seq[MyPath]): MultiPath = MultiPath(s)
 }
 
-case class CubicBezierPath(a: XYZ, af: Vec, bf: Vec, b: XYZ) extends MyPath //add arcLengthDivisions: Double
+case class CubicBezierPath(a: XYZ, af: Vec, bf: Vec, b: XYZ) extends MyPath // add arcLengthDivisions: Double
 
 case class Circle(
     radius: Double,
