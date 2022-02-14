@@ -25,7 +25,7 @@ lazy val V = new {
   val scalaJavaTime = "2.3.0"
 
   val akka = "2.6.18"
-  val akkaHttp = "10.2.7"
+  val akkaHttp = "10.2.8"
   val akkaSlf4j = "2.6.18"
   val logbackClassic = "1.2.10"
   val scalaLogging = "3.9.4"
