@@ -11,7 +11,7 @@ import fmgp.geo.{Box, Shape}
 import fmgp.geo.MyFile
 import fmgp.geo.prebuilt.TreesExample
 
-extension (m: MetaBase) //{ def sourceFile: String })
+extension (m: MetaBase) // { def sourceFile: String })
   def getFile: zio.Task[fmgp.geo.MyFile] =
     // import reflect.Selectable.reflectiveSelectable
     fmgp.geo.MyFile.readFile(m.sourceFile)
