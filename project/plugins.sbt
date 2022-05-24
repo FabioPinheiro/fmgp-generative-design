@@ -32,7 +32,7 @@ libraryDependencies += "com.thesamet.scalapb.grpcweb" %% "scalapb-grpcweb-code-g
 resolvers += Resolver.bintrayRepo("oyvindberg", "converter")
 // addSbtPlugin("org.scalablytyped.converter" % "sbt-converter" % "1.0.0-beta36")
 resolvers += MavenRepository("sonatype-s01-snapshots", "https://s01.oss.sonatype.org/content/repositories/snapshots")
-addSbtPlugin("org.scalablytyped.converter" % "sbt-converter" % "1.0.0-beta36+41-906a0cad-SNAPSHOT")
+addSbtPlugin("org.scalablytyped.converter" % "sbt-converter" % "1.0.0-beta37+33-45b800b3-SNAPSHOT")
 
 // Utils Buildinfo
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.10.0")
