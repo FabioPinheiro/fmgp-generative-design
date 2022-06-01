@@ -22,7 +22,7 @@ lazy val V = new {
   val zio = "2.0.0-RC1"
 
   // https://mvnrepository.com/artifact/io.github.cquiroz/scala-java-time
-  val scalaJavaTime = "2.3.0"
+  val scalaJavaTime = "2.4.0"
 
   val akka = "2.6.18"
   val akkaHttp = "10.2.7"
