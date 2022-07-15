@@ -24,7 +24,7 @@ lazy val V = new {
   // https://mvnrepository.com/artifact/io.github.cquiroz/scala-java-time
   val scalaJavaTime = "2.3.0"
 
-  val akka = "2.6.19"
+  val akka = "2.6.18"
   val akkaHttp = "10.2.7"
   val akkaSlf4j = "2.6.19"
   val logbackClassic = "1.2.10"
