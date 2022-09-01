@@ -15,7 +15,7 @@ lazy val V = new {
   val circe = "0.15.0-M1"
 
   // https://mvnrepository.com/artifact/org.scala-js/scalajs-dom
-  val scalajsDom = "2.3.0" // scalajsDom 2.0.0 need to update sbt-converter to 37?
+  val scalajsDom = "2.1.0" // scalajsDom 2.0.0 need to update sbt-converter to 37?
   // val scalajsLogging = "1.1.2-SNAPSHOT" //"1.1.2"
 
   // https://mvnrepository.com/artifact/dev.zio/zio
