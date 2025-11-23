@@ -41,7 +41,7 @@ object ConfigApp {
 
   // @JSExport
   // def formField = {
-  //   import typings.materialFormField.mod.MDCFormField
+  //   import fmgp.typings.materialFormField.mod.MDCFormField
   //   val formField = MDCFormField.attachTo(
   //     dom.window.document.querySelector(".mdc-form-field").asInstanceOf[org.scalajs.dom.raw.HTMLElement]
   //   )
@@ -50,7 +50,7 @@ object ConfigApp {
 
   // @JSExport
   // def radio = {
-  //   import typings.materialRadio.mod.MDCRadio
+  //   import fmgp.typings.materialRadio.mod.MDCRadio
   //   val radio = MDCRadio.attachTo(dom.window.document.querySelector(".mdc-radio"));
   //   radio
   // }

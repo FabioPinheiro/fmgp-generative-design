@@ -1,11 +1,11 @@
 package fmgp.geo
 
-import typings.three.loaderMod.Loader
-import typings.three.mod.{Shape => _, _}
-import typings.three.webGLRendererMod.WebGLRendererParameters
-import typings.three.fontLoaderMod.Font
-import typings.three.fontLoaderMod.FontLoader
-import typings.three.flyControlsMod.FlyControls
+import fmgp.typings.three.loaderMod.Loader
+import fmgp.typings.three.mod.{Shape => _, _}
+import fmgp.typings.three.webGLRendererMod.WebGLRendererParameters
+import fmgp.typings.three.fontLoaderMod.Font
+import fmgp.typings.three.fontLoaderMod.FontLoader
+import fmgp.typings.three.flyControlsMod.FlyControls
 
 import fmgp.Websocket
 

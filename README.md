@@ -111,17 +111,10 @@ repl/console //start REPL from the console module
 > //your code...
 ```
 
-### **Open app (core) on browser**
-
-On sbt `core/fastOptJS::webpack`
-
-Open `file:///.../modules/02-core/index-dev.html` on your browser.
-
 ### **Open webapp on browser**
 
-On sbt `webapp/fastOptJS::webpack`
-
-Open `file:///.../modules/04-webapp/index-fastopt.html` on your browser.
+ON SHEEL `npm run dev`
+On sbt `webapp/fastLinkJS`
 
 ## GRPC
 
@@ -134,7 +127,7 @@ This project is licensed under the MIT license, available at
 [http://opensource.org/licenses/mit-license.php](http://opensource.org/licenses/mit-license.php)
 and also in the [LICENSE](LICENSE) file.
 
-Copyright the Fabio Pinheiro, 2021.
+Copyright the Fabio Pinheiro, 2025.
 
 [cats-badge]: https://typelevel.org/cats/img/cats-badge-tiny.png
 [cats-infographic]: https://github.com/tpolecat/cats-infographic

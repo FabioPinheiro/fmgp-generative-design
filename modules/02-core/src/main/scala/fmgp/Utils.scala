@@ -1,11 +1,11 @@
 package fmgp
 
-import typings.three.loaderMod.Loader
-import typings.three.mod._
-import typings.three.webGLRendererMod.WebGLRendererParameters
+import fmgp.typings.three.loaderMod.Loader
+import fmgp.typings.three.mod._
+import fmgp.typings.three.webGLRendererMod.WebGLRendererParameters
 
 import fmgp.geo._
-import typings.three.eventDispatcherMod.Event
+import fmgp.typings.three.eventDispatcherMod.Event
 
 object Utils {
   def computeStaticThreeObjects = {

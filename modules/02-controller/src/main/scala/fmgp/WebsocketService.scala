@@ -79,5 +79,6 @@ case class WebsocketLive(console: Console) extends Websocket {
 }
 
 object WebsocketLive {
-  lazy val layer: URLayer[Console, Websocket] = (WebsocketLive(_)).toLayer[Websocket]
+  lazy val layer: URLayer[Console, Websocket] =
+    ZLayer.fromFunction((c: Console) => WebsocketLive(c))
 }

@@ -13,13 +13,13 @@ import MyRouter._
 object AppUtils {
 
   val menuClickObserver = Observer[dom.MouseEvent](onNext = ev => {
-    import typings.materialDrawer.mod.MDCDrawer
+    import fmgp.typings.materialDrawer.mod.MDCDrawer
     val tmp = MDCDrawer.attachTo(dom.window.document.querySelector(".mdc-drawer"))
     tmp.open_=(!tmp.open)
   })
 
   val optionsClickObserver = Observer[dom.MouseEvent](onNext = ev => {
-    import typings.materialMenu.mod.MDCMenu
+    import fmgp.typings.materialMenu.mod.MDCMenu
     val tmp = MDCMenu.attachTo(dom.window.document.querySelector(".mdc-menu"))
     tmp.open_=(!tmp.open)
   })
@@ -31,7 +31,7 @@ object AppUtils {
       onClick --> menuClickObserver,
       "menu"
     )
-    typings.materialRipple.mod.MDCRipple.attachTo(menuButton.ref)
+    fmgp.typings.materialRipple.mod.MDCRipple.attachTo(menuButton.ref)
 
     val options = {
       div(
@@ -61,7 +61,7 @@ object AppUtils {
       onClick --> optionsClickObserver,
       "more_vert"
     )
-    typings.materialMenu.mod.MDCMenu.attachTo(options.ref)
+    fmgp.typings.materialMenu.mod.MDCMenu.attachTo(options.ref)
 
     header(
       className("mdc-top-app-bar"),

@@ -203,7 +203,12 @@ object TreesExample {
 
   object TreeLive {
     val layer: URLayer[Random with Dsl, Tree] =
-      (TreeLive(_, _)).toLayer[Tree]
+      ZLayer.fromZIO(
+        for {
+          r <- ZIO.service[Random]
+          dsl <- ZIO.service[Dsl]
+        } yield TreeLive(r, dsl): Tree
+      )
   }
 
   // Accessor Methods

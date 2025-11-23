@@ -50,21 +50,28 @@ object Websocket {
         ws = tmpWS
 
         tmpWS.onopen = { (ev: Event) =>
-          zio.Runtime.global.unsafeRunToFuture(
-            WebsocketJS.onOpen(ev.`type`).provide(wsLayer)
-          )
+          Unsafe.unsafe { implicit unsafe => // Run side effect
+            Runtime.default.unsafe.runToFuture(
+              WebsocketJS.onOpen(ev.`type`).provide(wsLayer)
+            )
+          }
         }
         tmpWS.onclose = { (ev: CloseEvent) =>
-          zio.Runtime.global
-            .unsafeRunToFuture(
-              WebsocketJS.onClose(ev.reason).provide(wsLayer)
+          Unsafe.unsafe { implicit unsafe => // Run side effect
+            Runtime.default.unsafe.runToFuture(
+              WebsocketJS
+                .onClose(ev.reason)
+                .provide(wsLayer)
+                .map(_ => connect(defualtReconnectDelay))
             )
-            .map(_ => connect(defualtReconnectDelay))
+          }
         }
         tmpWS.onmessage = { (ev: MessageEvent) =>
-          zio.Runtime.global.unsafeRunToFuture(
-            WebsocketJS.onMessage(message = ev.data.toString).provide(wsLayer)
-          )
+          Unsafe.unsafe { implicit unsafe => // Run side effect
+            Runtime.default.unsafe.runToFuture(
+              WebsocketJS.onMessage(message = ev.data.toString).provide(wsLayer)
+            )
+          }
         }
         tmpWS.onerror = { (ev: Event) => // TODO ErrorEvent
           val message = ev
@@ -72,9 +79,11 @@ object Websocket {
             .message
             .asInstanceOf[js.UndefOr[String]]
             .fold("")("Error: " + _)
-          zio.Runtime.global.unsafeRunToFuture(
-            WebsocketJS.onError(ev.`type`, message).provide(wsLayer)
-          )
+          Unsafe.unsafe { implicit unsafe => // Run side effect
+            Runtime.default.unsafe.runToFuture(
+              WebsocketJS.onError(ev.`type`, message).provide(wsLayer)
+            )
+          }
         }
       }
     }

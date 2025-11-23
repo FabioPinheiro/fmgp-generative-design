@@ -14,7 +14,7 @@ import fmgp.geo.prebuilt.TreesExample
 extension (m: MetaBase) //{ def sourceFile: String })
   def getFile: zio.Task[fmgp.geo.MyFile] =
     // import reflect.Selectable.reflectiveSelectable
-    fmgp.geo.MyFile.readFile(m.sourceFile)
+    fmgp.geo.MyFile.readFile(m.getSourceFile)
 
 object ZioApp extends zio.ZIOAppDefault {
   // TODO Config // val (interface: String, port: Int) = ("127.0.0.1", 8888)
@@ -25,15 +25,15 @@ object ZioApp extends zio.ZIOAppDefault {
 
   def run = program
     .provide(
-      Console.live,
-      Clock.live,
+      ZLayer.succeed(Console.ConsoleLive),
+      ZLayer.succeed(Clock.ClockLive),
       LoggingLive.layer,
       WebsocketLive.layer,
       DslLive.layer,
       // TreesExample.Tree.layer
-      ZLayer.Debug.mermaid,
+      // ZLayer.Debug.mermaid,
     )
-    .exitCode
+  // .exitCode
 
   def program = for {
     _ <- Console.printLine("-")

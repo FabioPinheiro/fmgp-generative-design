@@ -1,5 +1,6 @@
 package fmgp.geo.webapp
 
+import zio._
 import com.raquo.airstream.state.Var
 
 import fmgp.geo.World
@@ -17,8 +18,11 @@ object AppGlobal {
   VisualizerJSLive.callbackHack = onWorldUpdate _ // HACK
 
   def setWorld(world: World) =
-    zio.Runtime.global.unsafeRunToFuture(
-      (if (world.shapes.isEmpty) clean else update(world))
-        .provide(VisualizerJSLive.live, MesherLive.live)
-    )
+    Unsafe.unsafe { implicit unsafe => // Run side effect
+      Runtime.default.unsafe.runToFuture(
+        (if (world.shapes.isEmpty) clean else update(world))
+          .provide(VisualizerJSLive.live, MesherLive.live)
+      )
+    }
+
 }

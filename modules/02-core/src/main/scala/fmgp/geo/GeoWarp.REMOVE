@@ -1,7 +1,7 @@
 /* Is now the Visualizer
 package fmgp.geo
 
-import typings.three.mod._
+import fmgp.typings.three.mod._
 
 
 sealed trait GeoWarp {

@@ -26,25 +26,25 @@ object WebsocketJS {
 }
 case class WebsocketJSLive(vissualizer: Visualizer) extends WebsocketJS {
   override def onOpen(evType: String): UIO[Unit] =
-    UIO(WebsocketJSLive.onStateChange(Websocket.State.OPEN)) <&>
-      UIO { Log.info(s"WS Connected '$evType'") }
+    ZIO.succeed(WebsocketJSLive.onStateChange(Websocket.State.OPEN)) <&>
+      ZIO.succeed { Log.info(s"WS Connected '$evType'") }
   override def onClose(reason: String): UIO[Unit] =
-    UIO(WebsocketJSLive.onStateChange(Websocket.State.CLOSED)) <&>
-      UIO { Log.info(s"WS Closed because '${reason}'") }
+    ZIO.succeed(WebsocketJSLive.onStateChange(Websocket.State.CLOSED)) <&>
+      ZIO.succeed { Log.info(s"WS Closed because '${reason}'") }
   override def onMessage(message: String): UIO[Unit] =
     decode[WorldOrFile](message) match { // TODO user ZIO.fromEither
       case Left(ex) =>
-        UIO(Log.debug(message)).map(_ => Log.error(s"Error parsing the obj World: $ex"))
+        ZIO.succeed(Log.debug(message)).map(_ => Log.error(s"Error parsing the obj World: $ex"))
       case Right(value: World)  => vissualizer.update(value)
-      case Right(value: MyFile) => UIO(Log.warn(s"MyFile: $value"))
+      case Right(value: MyFile) => ZIO.succeed(Log.warn(s"MyFile: $value"))
     }
   override def onError(evType: String, messageError: String): UIO[Unit] =
-    UIO(Log.error(s"WS Error (type:$evType) occurred! " + messageError))
+    ZIO.succeed(Log.error(s"WS Error (type:$evType) occurred! " + messageError))
 }
 
 object WebsocketJSLive {
   val layer: URLayer[Visualizer, WebsocketJS] =
-    (WebsocketJSLive(_)).toLayer[WebsocketJS]
+    ZLayer.fromFunction((v: Visualizer) => WebsocketJSLive(v): WebsocketJS)
 
   var onStateChange: Websocket.State.State => Unit = (_: Websocket.State.State) => ()
   val wsUrl = "ws://127.0.0.1:8888/browser"

@@ -16,9 +16,11 @@ import zio.Console._
 
   // val a = ZIO.fail("Boom!")
   // /Runtime.global.unsafeRun(aaa.foreach(printLine(_)))
-  val testLayer = ZLayer.make[Console](Console.live)
-
-  Runtime.unsafeFromLayer(testLayer).unsafeRun(p)
+  Unsafe.unsafe { implicit unsafe => // Run side effect
+    Runtime.default.unsafe.fork(
+      p
+    )
+  }
 
 //   final case class MyState(counter: Int)
 

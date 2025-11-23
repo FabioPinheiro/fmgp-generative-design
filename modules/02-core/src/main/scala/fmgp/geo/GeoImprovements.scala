@@ -1,7 +1,7 @@
 package fmgp.geo
 
 import fmgp.geo
-import typings.three.mod
+import fmgp.typings.three.mod
 import scala.scalajs.js.JSConverters._
 
 import scala.scalajs.js.annotation.JSExportTopLevel
@@ -10,10 +10,13 @@ import scala.scalajs.js.annotation.JSExport
 @JSExportTopLevel("GeoImprovements")
 object GeoImprovements {
 
-  def matrix2matrix(m: geo.Matrix): typings.three.matrix4Mod.Matrix4 =
-    matrix2matrix(m, new typings.three.matrix4Mod.Matrix4)
+  def matrix2matrix(m: geo.Matrix): fmgp.typings.three.matrix4Mod.Matrix4 =
+    matrix2matrix(m, new fmgp.typings.three.matrix4Mod.Matrix4)
 
-  def matrix2matrix(m: geo.Matrix, aux: typings.three.matrix4Mod.Matrix4): typings.three.matrix4Mod.Matrix4 = {
+  def matrix2matrix(
+      m: geo.Matrix,
+      aux: fmgp.typings.three.matrix4Mod.Matrix4
+  ): fmgp.typings.three.matrix4Mod.Matrix4 = {
     // format: off
     aux.set(
         m.m00, m.m01, m.m02, m.m03,
@@ -25,7 +28,7 @@ object GeoImprovements {
     aux
   }
 
-  def matrixJs2matrix(m: typings.three.matrix4Mod.Matrix4): geo.Matrix = {
+  def matrixJs2matrix(m: fmgp.typings.three.matrix4Mod.Matrix4): geo.Matrix = {
     val aux = m.elements
     // format: off
     geo.Matrix(
@@ -37,11 +40,11 @@ object GeoImprovements {
     // format: on
   }
 
-  @inline def float2ArrayLike(points: Seq[Float]): typings.std.ArrayLike[Double] =
+  @inline def float2ArrayLike(points: Seq[Float]): fmgp.typings.std.ArrayLike[Double] =
     new scala.scalajs.js.typedarray.Float32Array(points.toJSIterable)
-      .asInstanceOf[typings.std.ArrayLike[Double]] // FIXME ... TS
+      .asInstanceOf[fmgp.typings.std.ArrayLike[Double]] // FIXME ... TS
 
-  @inline def arrayLike2Float(array: typings.std.ArrayLike[Double]): Array[Float] =
+  @inline def arrayLike2Float(array: fmgp.typings.std.ArrayLike[Double]): Array[Float] =
     array.asInstanceOf[scala.scalajs.js.typedarray.Float32Array].jsIterator.toIterator.toArray
 
   @inline def float2BufferAttribute(points: Seq[Float]): mod.BufferAttribute =

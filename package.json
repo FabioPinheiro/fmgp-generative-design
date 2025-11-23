@@ -1,8 +1,28 @@
 {
-  "dependencies": {
-    "jsdom": "16.6.0"
+  "name": "fmgp-generative-design",
+  "private": true,
+  "license": "Apache-2.0",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "clean": "rm -rf node_modules",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "devDependencies": {
-    "source-map-support": "0.5.19"
+    "@scala-js/vite-plugin-scalajs": "^1.0.0",
+    "typescript": "^5.9.3",
+    "vite": "^4.1.0"
+  },
+  "dependencies": {
+    "@types/mermaid": "^8.2.7",
+    "@types/stats.js": "^0.17.4",
+    "@types/three": "^0.134.0",
+    "grpc-web": "^2.0.2",
+    "material-components-web": "^12.0.0",
+    "mermaid": "^8.13.3",
+    "stats.js": "^0.17.0",
+    "three": "^0.134.0"
   }
 }

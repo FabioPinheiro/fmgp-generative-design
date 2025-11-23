@@ -1,7 +1,7 @@
 package fmgp.geo
 
-import typings.three.loaderMod.Loader
-import typings.three.mod.{Color => ColorT, _}
+import fmgp.typings.three.loaderMod.Loader
+import fmgp.typings.three.mod.{Color => ColorT, _}
 
 import scala.collection.mutable
 import scala.scalajs.js
@@ -36,17 +36,17 @@ trait DefaultMaterials {
   def surfaceMatOneSide() = new MeshStandardMaterial()
   def surfaceMat() = new MeshStandardMaterial().tap(_.side = DoubleSide)
   def surfaceMatWithColor(color: Double) =
-    new MeshStandardMaterial().tap(_.side = DoubleSide).tap(_.color = new typings.three.colorMod.Color(color))
+    new MeshStandardMaterial().tap(_.side = DoubleSide).tap(_.color = new fmgp.typings.three.colorMod.Color(color))
   def surfaceNormalMat() = new MeshNormalMaterial()
   def basicMat() = new MeshBasicMaterial(
-    js.Dynamic.literal().asInstanceOf[typings.three.meshBasicMaterialMod.MeshBasicMaterialParameters].pipe { o =>
+    js.Dynamic.literal().asInstanceOf[fmgp.typings.three.meshBasicMaterialMod.MeshBasicMaterialParameters].pipe { o =>
       o.color = 0x00ff00
       o.side = DoubleSide
       o
     }
   )
-  def pointMat() = new typings.three.materialsMod.PointsMaterial(
-    js.Dynamic.literal().asInstanceOf[typings.three.pointsMaterialMod.PointsMaterialParameters].pipe { o =>
+  def pointMat() = new fmgp.typings.three.materialsMod.PointsMaterial(
+    js.Dynamic.literal().asInstanceOf[fmgp.typings.three.pointsMaterialMod.PointsMaterialParameters].pipe { o =>
       o.color = 0x5416b4
       o.size = 0.3
       o

@@ -1,6 +1,6 @@
 package fmgp.geo
 
-import typings.statsJs.mod.{^ => Stats}
+import fmgp.typings.statsJs.mod.{^ => Stats}
 
 object StatsComponent {
   lazy val stats: Stats = {
