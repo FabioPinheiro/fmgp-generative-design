@@ -1,6 +1,8 @@
 name: CI
+run-name: CI on ${{ github.ref_name }}
 
 on:
+  workflow_dispatch:
   pull_request:
     branches-ignore:
       - "gh-pages"
@@ -8,22 +10,29 @@ on:
     branches-ignore:
       - "gh-pages"
 
+permissions:
+  contents: read
+
 jobs:
-  Run-Tests:
-    name: CI
+  build-test:
+    name: Build and test
     runs-on: ubuntu-latest
     steps:
-      # https://github.com/japgolly/setup-everything-scala
-      - uses: actions/checkout@v2
-      - name: Setup Java and Scala
-        uses: olafurpg/setup-scala@v13
-      - name: Setup Node
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v7
+      - name: Set up JDK
+        uses: coursier/setup-action@v3
         with:
-          node-version: "16" # or whatever
-      - name: Setup Scala.JS
-        uses: japgolly/setup-scalajs@v1
-      - name: Cache sbt
-        uses: coursier/cache-action@v6.3
-      ### TESTS ###
-      - run: sbt -mem 2048 -J-Xmx5120m testAll
+          jvm: temurin:21
+      - name: Set up sbt
+        uses: sbt/setup-sbt@v1
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Cache Coursier and sbt dependencies
+        uses: coursier/cache-action@v8
+      - name: Install npm dependencies
+        run: npm ci
+      - name: Run JVM and Scala.js tests
+        run: sbt -v -mem 2048 -J-Xmx5120m testAll
