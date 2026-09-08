@@ -43,7 +43,7 @@ This is a Scala-based generative design project with a split architecture:
 ## Code Patterns & Conventions
 
 ### Scala
-- **Version**: Scala 3.9.0
+- **Version**: Scala 3.3.7
 - **Style**: Functional programming with ZIO and Akka.
 - **JSON**: Circe for JSON serialization/deserialization.
 - **Frontend**: Laminar for UI, Scala.js for compilation to JS.

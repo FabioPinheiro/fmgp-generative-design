@@ -4,7 +4,8 @@ import scala.sys.process._
 inThisBuild(
   Seq(
     organization := "app.fmgp",
-    scalaVersion := "3.9.0", // Also update docs/publishWebsite.sh and any ref to scala-3.9.0
+    // ScalablyTyped's sbt-converter currently supports Scala 3.3.x, not Scala 3.9.
+    scalaVersion := "3.3.7",
     updateOptions := updateOptions.value.withLatestSnapshots(false),
   )
 )
@@ -360,7 +361,6 @@ lazy val repl = project //or crossProject(JVMPlatform).crossType(CrossType.Pure)
     // fmgp.experiments.Main.stop
     // """,
   )
-  .settings(reStart / mainClass := Some("fmgp.SingleRequest"))
   .dependsOn(model.jvm, syntax.jvm, prebuilt.jvm, controller)
   .settings(noPublishSettings)
 
