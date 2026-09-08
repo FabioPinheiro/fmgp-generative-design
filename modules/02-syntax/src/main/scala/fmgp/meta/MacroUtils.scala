@@ -28,18 +28,22 @@ object MacroUtils {
   sealed trait MetaBase(
       start: Int,
       end: Int,
-      val sourceFile: String,
+      // val sourceFile: String,
+      sourceFile: String,
       startLine: Int,
       endLine: Int,
       startColumn: Int,
       endColumn: Int,
       sourceCode: Option[String],
-  )
+  ) {
+    def getSourceFile = sourceFile
+  }
 
   case class MetaValue[+T](
       start: Int,
       end: Int,
-      override val sourceFile: String,
+      // override val sourceFile: String,
+      sourceFile: String,
       startLine: Int,
       endLine: Int,
       startColumn: Int,
@@ -65,7 +69,8 @@ object MacroUtils {
   case class Meta(
       start: Int,
       end: Int,
-      override val sourceFile: String,
+      // override val sourceFile: String,
+      sourceFile: String,
       startLine: Int,
       endLine: Int,
       startColumn: Int,
@@ -109,7 +114,7 @@ object MacroUtils {
       MetaValue(
         start = ${ Expr(pos.start) },
         end = ${ Expr(pos.end) },
-        sourceFile = ${ Expr(pos.sourceFile.getJPath.toString) },
+        sourceFile = ${ Expr(pos.sourceFile.path) },
         startLine = ${ Expr(pos.startLine) },
         endLine = ${ Expr(pos.endLine) },
         startColumn = ${ Expr(pos.startColumn) },
@@ -130,7 +135,7 @@ object MacroUtils {
       Meta(
         start = ${ Expr(pos.start) },
         end = ${ Expr(pos.end) },
-        sourceFile = ${ Expr(pos.sourceFile.getJPath.toString) },
+        sourceFile = ${ Expr(pos.sourceFile.path) },
         startLine = ${ Expr(pos.startLine) },
         endLine = ${ Expr(pos.endLine) },
         startColumn = ${ Expr(pos.startColumn) },

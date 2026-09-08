@@ -68,8 +68,6 @@ flowchart TD;
 
 If you want to try I recommend to clone this repository and run it yourself with SBT.
 
-In the future I will publish the Scala3 version!
-
 The old version in publish on:
 https://repo1.maven.org/maven2/app/fmgp/scala-threejs_sjs1.0-RC2_2.13/
 
@@ -81,7 +79,7 @@ libraryDependencies += "app.fmgp" % "fmgp-threejs_2.13" % "0.1-M1"
 
 ### **Run controller (Server)**
 
-On sbt `controller/reStart "Revolver"` (this will run the server on the background)
+On sbt `controller/run` (leave this process running while you use the app)
 
 Open `http://localhost:8888` on your browser.
 
@@ -111,17 +109,10 @@ repl/console //start REPL from the console module
 > //your code...
 ```
 
-### **Open app (core) on browser**
-
-On sbt `core/fastOptJS::webpack`
-
-Open `file:///.../modules/02-core/index-dev.html` on your browser.
-
 ### **Open webapp on browser**
 
-On sbt `webapp/fastOptJS::webpack`
-
-Open `file:///.../modules/04-webapp/index-fastopt.html` on your browser.
+ON SHEEL `npm run dev`
+On sbt `webapp/fastLinkJS`
 
 ## GRPC
 
@@ -134,7 +125,7 @@ This project is licensed under the MIT license, available at
 [http://opensource.org/licenses/mit-license.php](http://opensource.org/licenses/mit-license.php)
 and also in the [LICENSE](LICENSE) file.
 
-Copyright the Fabio Pinheiro, 2021.
+Copyright the Fabio Pinheiro, 2025.
 
 [cats-badge]: https://typelevel.org/cats/img/cats-badge-tiny.png
 [cats-infographic]: https://github.com/tpolecat/cats-infographic

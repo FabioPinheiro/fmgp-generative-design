@@ -1,8 +1,8 @@
 package fmgp.geo
 
 import zio._
-import typings.three.mod.Group
-import typings.three.eventDispatcherMod.Event
+import fmgp.typings.three.mod.Group
+import fmgp.typings.three.eventDispatcherMod.Event
 
 trait Visualizer {
   def update(world: => World): UIO[Unit]
@@ -17,7 +17,7 @@ object Visualizer {
 
 case class VisualizerJSLive(mesher: Mesher) extends Visualizer {
   def update(world: => World): UIO[Unit] = {
-    UIO(VisualizerJSLive.callbackHack(world)) <&>
+    ZIO.succeed(VisualizerJSLive.callbackHack(world)) <&>
       mesher
         .generateObj3D(world.shapes)
         .map(e => VisualizerJSLive.modelToAnimate.add(e))
@@ -25,8 +25,8 @@ case class VisualizerJSLive(mesher: Mesher) extends Visualizer {
   }
   // /.map(e => onWorldUpdate(e))
   def clean: UIO[Unit] =
-    UIO(VisualizerJSLive.callbackHack(World.w3DEmpty)) <&>
-      UIO {
+    ZIO.succeed(VisualizerJSLive.callbackHack(World.w3DEmpty)) <&>
+      ZIO.succeed {
         VisualizerJSLive.modelToAnimate.children.toList.foreach { o =>
           VisualizerJSLive.modelToAnimate.remove(o)
         } // toList method is needed because the obj.remove edit over the array we are iterating
@@ -42,5 +42,5 @@ object VisualizerJSLive {
   var callbackHack: World => Unit = (_) => () // FIXME
 
   lazy val live: URLayer[Mesher, Visualizer] =
-    (VisualizerJSLive(_)).toLayer[Visualizer]
+    ZLayer.fromFunction((m: Mesher) => VisualizerJSLive(m): Visualizer)
 }

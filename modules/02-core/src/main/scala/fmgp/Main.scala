@@ -1,10 +1,10 @@
 package fmgp
 
-import typings.three.loaderMod.Loader
-import typings.three.mod.{Shape => _, _}
-import typings.three.anon.{X => AnonX}
-import typings.three.webGLRendererMod.WebGLRendererParameters
-import typings.statsJs.mod.{^ => Stats}
+import fmgp.typings.three.loaderMod.Loader
+import fmgp.typings.three.mod.{Shape => _, _}
+import fmgp.typings.three.anon.{X => AnonX}
+import fmgp.typings.three.webGLRendererMod.WebGLRendererParameters
+import fmgp.typings.statsJs.mod.{^ => Stats}
 
 import fmgp.geo._
 import fmgp.Utils

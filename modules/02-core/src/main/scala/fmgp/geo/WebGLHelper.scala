@@ -6,28 +6,28 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import org.scalajs.dom
 
-import typings.three.loaderMod.Loader
-import typings.three.mod.{Shape => _, _}
-import typings.three.anon.{Y => AnonY}
-import typings.three.webGLRendererMod.WebGLRendererParameters
-import typings.statsJs.mod.{^ => Stats}
+import fmgp.typings.three.loaderMod.Loader
+import fmgp.typings.three.mod.{Shape => _, _}
+import fmgp.typings.three.anon.{Y => AnonY}
+import fmgp.typings.three.webGLRendererMod.WebGLRendererParameters
+import fmgp.typings.statsJs.mod.{^ => Stats}
 
 import fmgp.{Log, Websocket, Utils}
 
 import _root_.fmgp.Websocket
 import fmgp.WebsocketJSLive
-import typings.three.textGeometryMod.TextGeometry
-import typings.three.eventDispatcherMod.Event
-import typings.three.raycasterMod.Intersection
-import typings.three.flyControlsMod.FlyControls
+import fmgp.typings.three.textGeometryMod.TextGeometry
+import fmgp.typings.three.eventDispatcherMod.Event
+import fmgp.typings.three.raycasterMod.Intersection
+import fmgp.typings.three.flyControlsMod.FlyControls
 import scala.util.Random
-import typings.std.KeyboardEvent
+import fmgp.typings.std.KeyboardEvent
 
 import zio._
 import zio.stream._
 import zio.Console._
 
-case class InteractiveMesh(mesh: typings.three.meshMod.Mesh[_, _], onSelected: () => Unit = () => ()) {
+case class InteractiveMesh(mesh: fmgp.typings.three.meshMod.Mesh[_, _], onSelected: () => Unit = () => ()) {
   def id = mesh.id
 }
 
@@ -113,29 +113,31 @@ class WebGLHelper(topPadding: Int, modelToAnimate: Group = new Group) {
 
     { // WS state
       val circle = new CircleBufferGeometry(0.05, 32)
-      val material = new MeshBasicMaterial(typings.three.meshBasicMaterialMod.MeshBasicMaterialParameters())
-      val mesh = new typings.three.mod.Mesh(circle, material).translateZ(-1)
+      val material = new MeshBasicMaterial(fmgp.typings.three.meshBasicMaterialMod.MeshBasicMaterialParameters())
+      val mesh = new fmgp.typings.three.mod.Mesh(circle, material).translateZ(-1)
       def updateColor(s: Websocket.State.State) = s match {
-        case Websocket.State.CONNECTING => material.color = new typings.three.colorMod.Color("blue")
-        case Websocket.State.OPEN       => material.color = new typings.three.colorMod.Color("green")
-        case Websocket.State.CLOSING    => material.color = new typings.three.colorMod.Color("yellow")
-        case Websocket.State.CLOSED     => material.color = new typings.three.colorMod.Color("red")
+        case Websocket.State.CONNECTING => material.color = new fmgp.typings.three.colorMod.Color("blue")
+        case Websocket.State.OPEN       => material.color = new fmgp.typings.three.colorMod.Color("green")
+        case Websocket.State.CLOSING    => material.color = new fmgp.typings.three.colorMod.Color("yellow")
+        case Websocket.State.CLOSED     => material.color = new fmgp.typings.three.colorMod.Color("red")
       }
       WebsocketJSLive.onStateChange = updateColor _
 
-      webGLGlobal.addUiElement(InteractiveMesh(mesh, () => material.color = new typings.three.colorMod.Color("blue")))
+      webGLGlobal.addUiElement(
+        InteractiveMesh(mesh, () => material.color = new fmgp.typings.three.colorMod.Color("blue"))
+      )
     }
     { // text WS URL
-      val textParameters = js.Dynamic.literal().asInstanceOf[typings.three.textGeometryMod.TextGeometryParameters]
+      val textParameters = js.Dynamic.literal().asInstanceOf[fmgp.typings.three.textGeometryMod.TextGeometryParameters]
       textParameters.font = WebGLTextGlobal.textFont
       textParameters.size = 0.02
       textParameters.height = 0
       textParameters.curveSegments = 12
 
       val geometry = new TextGeometry(WebsocketJSLive.wsUrl, textParameters).translate(0.01, -0.02, 0)
-      val basicMarerial = new typings.three.meshBasicMaterialMod.MeshBasicMaterial()
-      basicMarerial.color = new typings.three.colorMod.Color(0x444444)
-      val mesh = new typings.three.mod.Mesh(geometry, basicMarerial)
+      val basicMarerial = new fmgp.typings.three.meshBasicMaterialMod.MeshBasicMaterial()
+      basicMarerial.color = new fmgp.typings.three.colorMod.Color(0x444444)
+      val mesh = new fmgp.typings.three.mod.Mesh(geometry, basicMarerial)
       webGLGlobal.addUiElement(InteractiveMesh(mesh))
     }
 
@@ -143,19 +145,19 @@ class WebGLHelper(topPadding: Int, modelToAnimate: Group = new Group) {
     { //Examples //TODO REMOVE
       val bottonGeometry = new PlaneBufferGeometry(0.05, 0.05).translate(0.025, -0.025, 0)
       val materialParameters = typings.three.meshBasicMaterialMod.MeshBasicMaterialParameters()
-      materialParameters.color_=(new typings.three.colorMod.Color(0x666666))
+      materialParameters.color_=(new fmgp.typings.three.colorMod.Color(0x666666))
       val aux = (0 to 4)
         .map { i =>
           val material = new MeshBasicMaterial(materialParameters)
-          val mesh = new typings.three.mod.Mesh(bottonGeometry, material)
+          val mesh = new fmgp.typings.three.mod.Mesh(bottonGeometry, material)
             .translateZ(-1.1)
             .translateY(-0.07 - i * 0.05)
           (mesh, material, i)
         }
       def update(meshId: Int, scenario: Int)() = {
         aux.foreach { e =>
-          if (meshId == e._1.id.toInt) e._2.color = new typings.three.colorMod.Color("blue")
-          else e._2.color = new typings.three.colorMod.Color(0x666666)
+          if (meshId == e._1.id.toInt) e._2.color = new fmgp.typings.three.colorMod.Color("blue")
+          else e._2.color = new fmgp.typings.three.colorMod.Color(0x666666)
         }
         scenario match {
           case 0 => webGLGlobal.masterWorld.update(World.w3DEmpty)
@@ -187,7 +189,7 @@ class WebGLHelper(topPadding: Int, modelToAnimate: Group = new Group) {
       val arrowHelper = new ArrowHelper(dir, ray.origin, 10, 0x550055, headLength = 0.5, headWidth = 0.05);
       webGLGlobal.scene.add(arrowHelper);
 
-      val intersects: js.Array[Intersection[typings.three.object3DMod.Object3D[Event]]] =
+      val intersects: js.Array[Intersection[fmgp.typings.three.object3DMod.Object3D[Event]]] =
         webGLGlobal.raycaster
           // update the picking ray with the camera and mouse position
           .tap(_.setFromCamera(mouseEvent, KeyboardUtils.hack.camera))

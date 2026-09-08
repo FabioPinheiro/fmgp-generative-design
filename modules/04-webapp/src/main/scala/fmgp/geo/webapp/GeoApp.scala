@@ -7,10 +7,10 @@ import org.scalajs.dom
 
 import com.raquo.laminar.api.L.{_, given}
 
-import typings.three.loaderMod.Loader
-import typings.three.mod.{Shape => _, _}
-import typings.three.anon.{X => AnonX}
-import typings.three.webGLRendererMod.WebGLRendererParameters
+import fmgp.typings.three.loaderMod.Loader
+import fmgp.typings.three.mod.{Shape => _, _}
+import fmgp.typings.three.anon.{X => AnonX}
+import fmgp.typings.three.webGLRendererMod.WebGLRendererParameters
 
 import fmgp._
 import fmgp.geo._

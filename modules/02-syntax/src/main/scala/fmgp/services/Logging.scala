@@ -21,6 +21,10 @@ case class LoggingLive(console: Console, clock: Clock) extends Logging {
 }
 
 object LoggingLive {
-  val layer: URLayer[Console with Clock, Logging] =
-    (LoggingLive(_, _)).toLayer[Logging]
+  val layer: URLayer[Console & Clock, Logging] = ZLayer.fromZIO(
+    for {
+      co <- ZIO.service[Console]
+      cl <- ZIO.service[Clock]
+    } yield LoggingLive(co, cl): Logging
+  )
 }

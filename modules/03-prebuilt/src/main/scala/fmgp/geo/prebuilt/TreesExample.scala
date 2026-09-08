@@ -202,8 +202,13 @@ object TreesExample {
   }
 
   object TreeLive {
-    val layer: URLayer[Random with Dsl, Tree] =
-      (TreeLive(_, _)).toLayer[Tree]
+    val layer: URLayer[Random & Dsl, Tree] =
+      ZLayer.fromZIO(
+        for {
+          r <- ZIO.service[Random]
+          dsl <- ZIO.service[Dsl]
+        } yield TreeLive(r, dsl): Tree
+      )
   }
 
   // Accessor Methods
@@ -269,7 +274,7 @@ object TreesExample {
     )
   )
 
-  val program: zio.ZIO[Tree with Dsl, Throwable, fmgp.geo.Shape] = {
+  val program: zio.ZIO[Tree & Dsl, Throwable, fmgp.geo.Shape] = {
     for {
       a1 <- tree2d(xyz(-10, 0), 5, Pi / 2, Pi / 8, 0.6, iterations = 7)
       a2 <- tree2d(xyz(0, 0), 5, Pi / 2, Pi / 8, 0.8, iterations = 7)

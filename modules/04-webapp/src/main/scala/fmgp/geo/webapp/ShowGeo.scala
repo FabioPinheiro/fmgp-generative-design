@@ -2,7 +2,6 @@ package fmgp.geo.webapp
 
 import org.scalajs.dom
 import com.raquo.laminar.api.L._
-import typings.std.stdStrings.text
 
 import io.circe._, io.circe.syntax._
 import fmgp.geo.*

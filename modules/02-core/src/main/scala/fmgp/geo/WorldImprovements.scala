@@ -1,13 +1,13 @@
 package fmgp.geo
 
-import typings.three.loaderMod.Loader
-import typings.three.mod._
-import typings.three.object3DMod.Object3D
-import typings.three.webGLRendererMod.WebGLRendererParameters
-import typings.three.lineBasicMaterialMod.LineBasicMaterialParameters
-import typings.three.eventDispatcherMod.Event
-import typings.three.constantsMod.BuiltinShaderAttributeName
-import typings.three.textGeometryMod.TextGeometry
+import fmgp.typings.three.loaderMod.Loader
+import fmgp.typings.three.mod._
+import fmgp.typings.three.object3DMod.Object3D
+import fmgp.typings.three.webGLRendererMod.WebGLRendererParameters
+import fmgp.typings.three.lineBasicMaterialMod.LineBasicMaterialParameters
+import fmgp.typings.three.eventDispatcherMod.Event
+import fmgp.typings.three.constantsMod.BuiltinShaderAttributeName
+import fmgp.typings.three.textGeometryMod.TextGeometry
 
 import scala.scalajs.js
 import js.{undefined => ^}
@@ -51,12 +51,12 @@ object WorldImprovements {
 
   case class GenerateOP(
       wireframe: Boolean = false,
-      fMaterial: () => typings.three.materialMod.Material = () => geo.SceneGraph.surfaceMat()
+      fMaterial: () => fmgp.typings.three.materialMod.Material = () => geo.SceneGraph.surfaceMat()
   ) {
     def withWireframe: GenerateOP = copy(wireframe = true)
-    def withMaterial(material: () => typings.three.materialMod.Material): GenerateOP = copy(fMaterial = material)
+    def withMaterial(material: () => fmgp.typings.three.materialMod.Material): GenerateOP = copy(fMaterial = material)
     def toObj3D(
-        geometry: typings.three.bufferGeometryMod.BufferGeometry
+        geometry: fmgp.typings.three.bufferGeometryMod.BufferGeometry
     ): Object3D[Event] = {
       if (wireframe) {
         val wireframe = new WireframeGeometry(geometry)
@@ -65,7 +65,7 @@ object WorldImprovements {
     }
     // REMOVE No longer needed
     // def toObj3D(
-    //     geometry: typings.three.geometryMod.Geometry
+    //     geometry: fmgp.typings.three.geometryMod.Geometry
     // ): Object3D[Event] = {
     //   if (wireframe) {
     //     val wireframe = new WireframeGeometry(geometry)
@@ -74,8 +74,8 @@ object WorldImprovements {
     // }
   }
 
-  def multiPath2ShapePath(multiPath: geo.MultiPath): typings.three.shapeMod.Shape = {
-    val sss = new typings.three.shapeMod.Shape
+  def multiPath2ShapePath(multiPath: geo.MultiPath): fmgp.typings.three.shapeMod.Shape = {
+    val sss = new fmgp.typings.three.shapeMod.Shape
     var location: Option[XYZ] = None
     multiPath.paths.map {
       case LinePath(vertices) =>
@@ -106,8 +106,8 @@ object WorldImprovements {
     sss
   }
 
-  def multiPath2Path(multiPath: geo.MultiPath): typings.three.pathMod.Path = {
-    val sss = new typings.three.pathMod.Path
+  def multiPath2Path(multiPath: geo.MultiPath): fmgp.typings.three.pathMod.Path = {
+    val sss = new fmgp.typings.three.pathMod.Path
     var location: Option[XYZ] = None
     multiPath.paths.map {
       case LinePath(vertices) =>
@@ -140,8 +140,8 @@ object WorldImprovements {
 
   def multiPath2Curve(
       multiPath: geo.MultiPath
-  ): typings.three.curvePathMod.CurvePath[typings.three.vector3Mod.Vector3] = {
-    val curves = new CurvePath[typings.three.vector3Mod.Vector3]
+  ): fmgp.typings.three.curvePathMod.CurvePath[fmgp.typings.three.vector3Mod.Vector3] = {
+    val curves = new CurvePath[fmgp.typings.three.vector3Mod.Vector3]
     multiPath.paths.map {
       case LinePath(vertices) =>
         vertices match {
@@ -167,7 +167,7 @@ object WorldImprovements {
     curves
   }
 
-  // FIXME change Object3D to typings.three.object3DMod.Object3D and remove the asInstanceOf
+  // FIXME change Object3D to fmgp.typings.three.object3DMod.Object3D and remove the asInstanceOf
   def generateObj3D(shapes: Seq[geo.Shape]): Object3D[Event] = {
     def generateShape(shape: geo.Shape, state: GenerateOP): Object3D[Event] = shape match {
       case geo.Wireframe(shape) =>
@@ -228,7 +228,7 @@ object WorldImprovements {
       case geo.Extrude(multiPath: MultiPath, holes: Seq[MultiPath], options: Option[geo.Extrude.Options]) =>
         val ooo = options
           .map { o =>
-            val aux = js.Dynamic.literal().asInstanceOf[typings.three.extrudeGeometryMod.ExtrudeGeometryOptions]
+            val aux = js.Dynamic.literal().asInstanceOf[fmgp.typings.three.extrudeGeometryMod.ExtrudeGeometryOptions]
             if (o.bevelEnabled.isDefined) aux.bevelEnabled = o.bevelEnabled.get
             if (o.bevelOffset.isDefined) aux.bevelOffset = o.bevelOffset.get
             if (o.bevelSegments.isDefined) aux.bevelSegments = o.bevelSegments.get
@@ -240,7 +240,7 @@ object WorldImprovements {
             if (o.steps.isDefined) aux.steps = o.steps.get
             aux
           }
-          .getOrElse(typings.three.extrudeGeometryMod.ExtrudeGeometryOptions())
+          .getOrElse(fmgp.typings.three.extrudeGeometryMod.ExtrudeGeometryOptions())
 
         val jsPath = multiPath2ShapePath(multiPath)
         jsPath.holes = holes.map(e => multiPath2Path(e)).toJSArray
@@ -304,7 +304,7 @@ object WorldImprovements {
         } else {
           val positionHack = geometry
             .getAttribute(BuiltinShaderAttributeName.position)
-            .asInstanceOf[typings.three.bufferAttributeMod.BufferAttribute]
+            .asInstanceOf[fmgp.typings.three.bufferAttributeMod.BufferAttribute]
           val ccc: Seq[Float] = arrayLike2Float(positionHack.array).toIndexedSeq.drop(3) // drop one point (group of 3)
           val geometryAux = new BufferGeometry()
             .tap(_.setAttribute(BuiltinShaderAttributeName.position, float2BufferAttribute(ccc)))
@@ -360,15 +360,16 @@ object WorldImprovements {
         obj
 
       case geo.TextShape(text: String, size: Double) =>
-        val textParameters = js.Dynamic.literal().asInstanceOf[typings.three.textGeometryMod.TextGeometryParameters]
+        val textParameters =
+          js.Dynamic.literal().asInstanceOf[fmgp.typings.three.textGeometryMod.TextGeometryParameters]
         textParameters.font = WebGLTextGlobal.textFont
         textParameters.size = size
         textParameters.height = 0
         textParameters.curveSegments = 12
         val geometry = new TextGeometry(text, textParameters)
-        val basicMarerial = new typings.three.meshBasicMaterialMod.MeshBasicMaterial()
-        basicMarerial.color = new typings.three.colorMod.Color(0x444444)
-        val mesh = new typings.three.mod.Mesh(geometry, basicMarerial)
+        val basicMarerial = new fmgp.typings.three.meshBasicMaterialMod.MeshBasicMaterial()
+        basicMarerial.color = new fmgp.typings.three.colorMod.Color(0x444444)
+        val mesh = new fmgp.typings.three.mod.Mesh(geometry, basicMarerial)
         mesh.asInstanceOf[Object3D[Event]]
 
       case geo.TestShape() =>
@@ -494,7 +495,7 @@ object WorldImprovements {
 
 // def multiPath2Curves(
 //     multiPath: geo.MultiPath
-// ): Seq[typings.three.curveMod.Curve[typings.three.vector3Mod.Vector3]] = {
+// ): Seq[fmgp.typings.three.curveMod.Curve[fmgp.typings.three.vector3Mod.Vector3]] = {
 //   multiPath.paths.flatMap {
 //     case LinePath(vertices) =>
 //       vertices.zip(vertices.drop(1)).map {
@@ -518,13 +519,13 @@ object WorldImprovements {
 // }
 
 // case geo.Extrude(multiPath: MultiPath, holes: Seq[MultiPath], options: Option[geo.Extrude.Options]) =>
-//   val optionsSeq: Seq[typings.three.extrudeGeometryMod.ExtrudeGeometryOptions] =
+//   val optionsSeq: Seq[fmgp.typings.three.extrudeGeometryMod.ExtrudeGeometryOptions] =
 //     options
 //       .map { o =>
 //         o.extrudePath
 //           .map(extrudeMultiPath =>
 //             multiPath2Curves(extrudeMultiPath).map(curve =>
-//               typings.three.extrudeGeometryMod.ExtrudeGeometryOptions(
+//               fmgp.typings.three.extrudeGeometryMod.ExtrudeGeometryOptions(
 //                 bevelEnabled = if (o.bevelEnabled.isDefined) o.bevelEnabled.get else null,
 //                 bevelOffset = if (o.bevelOffset.isDefined) o.bevelOffset.get else null,
 //                 bevelSegments = if (o.bevelSegments.isDefined) o.bevelSegments.get else null,
@@ -539,7 +540,7 @@ object WorldImprovements {
 //           )
 //           .getOrElse(
 //             Seq(
-//               typings.three.extrudeGeometryMod.ExtrudeGeometryOptions(
+//               fmgp.typings.three.extrudeGeometryMod.ExtrudeGeometryOptions(
 //                 bevelEnabled = if (o.bevelEnabled.isDefined) o.bevelEnabled.get else null,
 //                 bevelOffset = if (o.bevelOffset.isDefined) o.bevelOffset.get else null,
 //                 bevelSegments = if (o.bevelSegments.isDefined) o.bevelSegments.get else null,

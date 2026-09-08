@@ -2,7 +2,6 @@ package fmgp.geo.webapp
 
 import com.raquo.laminar.api.L._
 import com.raquo.domtypes.generic.codecs._
-import typings.std.stdStrings.style
 
 object Home {
 
