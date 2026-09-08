@@ -1,13 +1,13 @@
-val scalaJSVersion = sys.env.getOrElse("SCALAJS_VERSION", "1.20.1")
+val scalaJSVersion = sys.env.getOrElse("SCALAJS_VERSION", "1.22.0")
 // crossproject - https://github.com/portable-scala/sbt-crossproject/tags
-addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.3.1")
+addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.4.0")
 
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % scalaJSVersion)
 addSbtPlugin("org.scala-js" % "sbt-jsdependencies" % "1.0.2")
 
 libraryDependencies += "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.1.1"
 
-addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.6")
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.6.2")
 
 // addSbtPlugin("com.vmunier" % "sbt-web-scalajs" % "1.1.0") //we can now update 1.2.0!
 // [error] (update) found version conflict(s) in library dependencies; some are suspected to be binary incompatible:
@@ -25,27 +25,29 @@ addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.21.1")
 
 //https://scalablytyped.org/docs/plugin
 //https://github.com/ScalablyTyped/Converter/releases
-resolvers += Resolver.bintrayRepo("oyvindberg", "converter")
+// Converter releases are published to Maven Central (Bintray is retired).
+// beta45 uses parser-combinators 2.x; PGP and ssl-config only use its retained RegexParsers API.
+libraryDependencySchemes += "org.scala-lang.modules" %% "scala-parser-combinators" % VersionScheme.Always
 //resolvers += MavenRepository("sonatype-s01-snapshots", "https://s01.oss.sonatype.org/content/repositories/snapshots")
-addSbtPlugin("org.scalablytyped.converter" % "sbt-converter" % "1.0.0-beta44")
+addSbtPlugin("org.scalablytyped.converter" % "sbt-converter" % "1.0.0-beta45")
 
 // Utils Buildinfo
-addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.10.0")
+addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.13.1")
 
 // CI
-addSbtPlugin("com.geirsson" % "sbt-ci-release" % "1.5.7")
-addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.6.1") // sbt> dependencyUpdates
+addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.12.1")
+addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.7.0") // sbt> dependencyUpdates
 
 // PUBLISH
-addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.10")
-addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.1.2") //https://github.com/sbt/sbt-pgp#sbt-pgp
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.12.2")
+addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.3.2") //https://github.com/sbt/sbt-pgp#sbt-pgp
 
 // Revolver use for command 'reStart' (like the command 'run' but run on the backgroun by forking the app from sbt)
-addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.1")
+addSbtPlugin("io.spray" % "sbt-revolver" % "0.10.0")
 
 // https://zio.dev/howto/migrate/zio-2.x-migration-guide%20v0.9.31
 //sbt "scalafixEnable; scalafixAll github:zio/zio/Zio2Upgrade?sha=series/2.x"
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.34")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.8")
 
 // GRPC ScalaPB
 addSbtPlugin("com.thesamet" % "sbt-protoc" % "1.0.8")

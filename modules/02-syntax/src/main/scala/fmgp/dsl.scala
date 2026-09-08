@@ -56,7 +56,7 @@ object dsl extends CoordinatesDsl {
     ZIO.serviceWithZIO(_.emptyShape)
 
   def zShapes(shapesSeq: URIO[Dsl, Shape]*): URIO[Dsl, Shape] =
-    ZIO.serviceWithZIO(_.zShapes(shapesSeq: _*))
+    ZIO.serviceWithZIO(_.zShapes(shapesSeq*))
 
   def box(width: => Double, height: => Double, depth: => Double): URIO[Dsl, Box] =
     ZIO.serviceWithZIO(_.box(width, height, depth))
@@ -65,7 +65,7 @@ object dsl extends CoordinatesDsl {
     ZIO.serviceWithZIO(_.sphere(center, radius))
 
   def shapes(shapes: Shape*): URIO[Dsl, Shape] =
-    ZIO.serviceWithZIO(_.shapes(shapes: _*))
+    ZIO.serviceWithZIO(_.shapes(shapes*))
 
   def cylinder(radius: Double, height: Double): URIO[Dsl, Cylinder] =
     ZIO.serviceWithZIO(_.cylinder(radius, height))

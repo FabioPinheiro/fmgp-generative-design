@@ -114,7 +114,7 @@ object MacroUtils {
       MetaValue(
         start = ${ Expr(pos.start) },
         end = ${ Expr(pos.end) },
-        sourceFile = ${ Expr(pos.sourceFile.getJPath.toString) },
+        sourceFile = ${ Expr(pos.sourceFile.path) },
         startLine = ${ Expr(pos.startLine) },
         endLine = ${ Expr(pos.endLine) },
         startColumn = ${ Expr(pos.startColumn) },
@@ -135,7 +135,7 @@ object MacroUtils {
       Meta(
         start = ${ Expr(pos.start) },
         end = ${ Expr(pos.end) },
-        sourceFile = ${ Expr(pos.sourceFile.getJPath.toString) },
+        sourceFile = ${ Expr(pos.sourceFile.path) },
         startLine = ${ Expr(pos.startLine) },
         endLine = ${ Expr(pos.endLine) },
         startColumn = ${ Expr(pos.startColumn) },

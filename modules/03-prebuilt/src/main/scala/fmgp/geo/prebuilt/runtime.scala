@@ -21,7 +21,7 @@ object runtime {
   )
 
   private val allZServiceBuilder =
-    ZLayer.make[TreesExample.Tree with Dsl](
+    ZLayer.make[TreesExample.Tree & Dsl](
       DslLive.layer,
       TreesExample.TreeLive.layer,
       ZLayer.succeed(Random.RandomLive),
@@ -29,7 +29,7 @@ object runtime {
     )
 
   def runToFuture(
-      in: zio.ZIO[TreesExample.Tree with Dsl, Throwable, fmgp.geo.Shape]
+      in: zio.ZIO[TreesExample.Tree & Dsl, Throwable, fmgp.geo.Shape]
   ): Future[fmgp.geo.Shape] =
     Unsafe.unsafe { implicit unsafe => // Run side effect
       Runtime.default.unsafe.runToFuture(
@@ -38,7 +38,7 @@ object runtime {
     }
 
   def run(
-      in: zio.ZIO[TreesExample.Tree with Dsl, Throwable, fmgp.geo.Shape]
+      in: zio.ZIO[TreesExample.Tree & Dsl, Throwable, fmgp.geo.Shape]
   ): fmgp.geo.Shape =
     Unsafe.unsafe { implicit unsafe => // Run side effect
       Runtime.default.unsafe.run(

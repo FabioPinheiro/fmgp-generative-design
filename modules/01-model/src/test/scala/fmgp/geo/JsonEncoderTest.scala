@@ -77,6 +77,24 @@ class JsonEncoderDecodeTest extends munit.FunSuite {
     assertDecode(str, obj: Shape)
   }
 
+  test("recursive MultiPath codec") {
+    val path = MultiPath(Seq(LinePath(Seq(XYZ.origin, XYZ(1, 2, 3))), MultiPath(Seq.empty)))
+    val json = io.circe.Encoder[MultiPath].apply(path)
+    assertEquals(json.as[MultiPath], Right(path))
+  }
+
+  test("derived Extrude options and Triangle codecs") {
+    val extrude = Extrude(MultiPath(Seq.empty), options = Some(Extrude.Options(bevelEnabled = Some(true))))
+    val triangle = TriangleShape(
+      Triangle(XYZ.origin, XYZ(1, 0, 0), XYZ(0, 1, 0)),
+      Triangle(Vec(0, 0, 1), Vec(0, 0, 1), Vec(0, 0, 1))
+    )
+    Seq[Shape](extrude, triangle).foreach { shape =>
+      val json = io.circe.Encoder[Shape].apply(shape)
+      assertEquals(json.as[Shape], Right(shape))
+    }
+  }
+
   // World
   test("Generic-Shape") {
     val obj = WorldAddition(Seq(Box(1, 2, 3)))

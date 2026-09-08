@@ -242,7 +242,7 @@ final case class Matrix(
     val sinPitch = -r.m20
     val cosPitch = math.sqrt(1 - sinPitch * sinPitch);
 
-    val (sinRoll, cosRoll, sinYaw, cosYaw): (Double, Double, Double, Double) =
+    val (sinRoll, cosRoll, sinYaw, cosYaw) =
       if (math.abs(cosPitch) > 0 /*EPSILON*/ ) (r.m21 / cosPitch, r.m22 / cosPitch, r.m10 / cosPitch, r.m00 / cosPitch)
       else (-r.m12, r.m11, 0.0, 1.0)
 

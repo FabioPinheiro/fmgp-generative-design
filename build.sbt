@@ -4,7 +4,7 @@ import scala.sys.process._
 inThisBuild(
   Seq(
     organization := "app.fmgp",
-    scalaVersion := "3.3.7", // Also update docs/publishWebsite.sh and any ref to scala-3.1.0
+    scalaVersion := "3.9.0", // Also update docs/publishWebsite.sh and any ref to scala-3.9.0
     updateOptions := updateOptions.value.withLatestSnapshots(false),
   )
 )
@@ -12,28 +12,30 @@ inThisBuild(
 /** Versions */
 lazy val V = new {
 
-  val munit = "1.2.1"
+  val munit = "1.3.6"
 
   // https://mvnrepository.com/artifact/io.circe/circe-core
-  val circe = "0.15.0-M1"
+  val circe = "0.14.16"
 
   // https://mvnrepository.com/artifact/org.scala-js/scalajs-dom
   val scalajsDom = "2.8.1"
   // val scalajsLogging = "1.1.2-SNAPSHOT" //"1.1.2"
 
   // https://mvnrepository.com/artifact/dev.zio/zio
-  val zio = "2.1.22"
+  val zio = "2.1.26"
 
   // https://mvnrepository.com/artifact/io.github.cquiroz/scala-java-time
-  val scalaJavaTime = "2.3.0"
+  val scalaJavaTime = "2.7.0"
 
-  val akka = "2.6.18"
-  val akkaHttp = "10.2.7"
-  val akkaSlf4j = "2.6.18"
-  val logbackClassic = "1.2.10"
-  val scalaLogging = "3.9.4"
+  val grpc = "1.84.0"
 
-  val sttpClient = "3.3.14"
+  val akka = "2.6.21"
+  val akkaHttp = "10.2.10"
+  val akkaSlf4j = "2.6.21"
+  val logbackClassic = "1.6.3"
+  val scalaLogging = "3.9.6"
+
+  val sttpClient = "3.11.0"
 
   val laminar = "0.14.2"
   val waypoint = "0.5.0"
@@ -47,7 +49,7 @@ lazy val D = new {
   val dom = Def.setting("org.scala-js" %%% "scalajs-dom" % V.scalajsDom)
 
   val circeCore = Def.setting("io.circe" %%% "circe-core" % V.circe)
-  val circeGeneric = Def.setting("io.circe" %%% "circe-generic" % V.circe) // 0.14.1 does not work with scala 3
+  val circeGeneric = Def.setting("io.circe" %%% "circe-generic" % V.circe)
   val circeParser = Def.setting("io.circe" %%% "circe-parser" % V.circe)
 
   val zio = Def.setting("dev.zio" %%% "zio" % V.zio)
@@ -82,15 +84,15 @@ lazy val NPM = new {
   val three = Seq("three", "@types/three").map(_ -> "0.134.0")
 
   // https://www.npmjs.com/package/stats and https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/stats.js
-  val stats = Seq("stats.js", "@types/stats.js").map(_ -> "0.17.0")
+  val stats = Seq("stats.js" -> "0.17.0", "@types/stats.js" -> "0.17.4")
 
   // https://www.npmjs.com/package/@types/d3
   // val d3NpmDependencies = Seq("d3", "@types/d3").map(_ -> "7.1.0")
 
-  val mermaid = Seq("mermaid" -> "8.13.3", "@types/mermaid" -> "8.2.7")
+  val mermaid = Seq("mermaid" -> "8.14.0", "@types/mermaid" -> "8.2.9")
 
   val grpcWeb = Seq(
-    "grpc-web" -> "1.2.1"
+    "grpc-web" -> "2.1.1"
   ) // "1.3.0", // https://github.com/scalapb/scalapb-grpcweb/blob/master/build.sbt#L93
 
   val materialDesign = Seq(
@@ -131,7 +133,7 @@ lazy val settingsFlags: Seq[sbt.Def.SettingsDefinition] = Seq(
     "-deprecation", // warn about use of deprecated APIs
     "-unchecked", // warn about unchecked type parameters
     "-feature", // warn about misused language features
-    "-Xfatal-warnings",
+    "-Werror",
     // "-Yexplicit-nulls",
     // TODO "-Ysafe-init",
     "-language:implicitConversions",
@@ -331,8 +333,8 @@ lazy val controller = project //or crossProject(JVMPlatform).crossType(CrossType
   )
   .settings(
     libraryDependencies ++= Seq(
-      "io.grpc" % "grpc-netty" % scalapb.compiler.Version.grpcJavaVersion, // GRPC
-      "io.grpc" % "grpc-services" % scalapb.compiler.Version.grpcJavaVersion // GRPC reflection api
+      "io.grpc" % "grpc-netty" % V.grpc, // GRPC
+      "io.grpc" % "grpc-services" % V.grpc // GRPC reflection api
     ),
     javaOptions += "-Dio.netty.tryReflectionSetAccessible=true", // For netty
     javaOptions += "--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED", // For netty
@@ -401,9 +403,9 @@ lazy val protos =
     )
     .jvmSettings(
       // ZIO https://scalapb.github.io/zio-grpc/docs/installation
-      libraryDependencies += "io.grpc" % "grpc-netty" % "1.76.0", // https://mvnrepository.com/artifact/io.grpc/grpc-netty
+      libraryDependencies += "io.grpc" % "grpc-netty" % V.grpc, // https://mvnrepository.com/artifact/io.grpc/grpc-netty
       libraryDependencies += "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion,
-      libraryDependencies += "io.netty" % "netty-handler" % "4.2.7.Final", // This is to forces a update in from "io.grpc" % "grpc-netty" % "1.73.0" -> https://mvnrepository.com/artifact/io.netty/netty-handler/4.1.110.Final
+      libraryDependencies += "io.netty" % "netty-handler" % "4.2.17.Final", // This is to forces a update in from "io.grpc" % "grpc-netty" % "1.73.0" -> https://mvnrepository.com/artifact/io.netty/netty-handler/4.1.110.Final
       // Compile / PB.targets := Seq(scalapb.gen() -> (Compile / sourceManaged).value),
       Compile / PB.targets := Seq(
         scalapb.gen(grpc = true) -> (Compile / sourceManaged).value / "scalapb",

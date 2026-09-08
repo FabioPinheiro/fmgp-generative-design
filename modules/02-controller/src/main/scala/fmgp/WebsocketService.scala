@@ -62,7 +62,7 @@ case class WebsocketLive(console: Console) extends Websocket {
       case false =>
         (for {
           _ <- ZIO.fromFuture { ex => server.stop }
-          _ <- ZIO.fromFuture { ex => actorSystem.terminate }
+          _ <- ZIO.fromFuture { ex => actorSystem.terminate() }
         } yield ()).orDie
     }
 

@@ -68,8 +68,6 @@ flowchart TD;
 
 If you want to try I recommend to clone this repository and run it yourself with SBT.
 
-In the future I will publish the Scala3 version!
-
 The old version in publish on:
 https://repo1.maven.org/maven2/app/fmgp/scala-threejs_sjs1.0-RC2_2.13/
 

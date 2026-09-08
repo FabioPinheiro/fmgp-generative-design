@@ -159,6 +159,8 @@ object EncoderDecoder {
   given Decoder[Cylinder] = deriveDecoder[Cylinder]
   given Encoder[Torus] = deriveEncoder[Torus]
   given Decoder[Torus] = deriveDecoder[Torus]
+  given Encoder[Extrude.Options] = deriveEncoder[Extrude.Options]
+  given Decoder[Extrude.Options] = deriveDecoder[Extrude.Options]
   given Encoder[Extrude] = deriveEncoder[Extrude]
   given Decoder[Extrude] = deriveDecoder[Extrude]
   given Encoder[PlaneShape] = deriveEncoder[PlaneShape]
@@ -172,6 +174,12 @@ object EncoderDecoder {
   // given Encoder[MultiPath] = deriveEncoder[MultiPath]
   // given Decoder[MultiPath] = deriveDecoder[MultiPath]
 
+  given Encoder[MultiPath] = new Encoder[MultiPath]:
+    override def apply(a: MultiPath): io.circe.Json = summon[Encoder[Seq[MyPath]]](a.paths)
+  given Decoder[MultiPath] = new Decoder[MultiPath]:
+    override def apply(c: io.circe.HCursor): io.circe.Decoder.Result[MultiPath] =
+      summon[Decoder[Seq[MyPath]]].map(e => MultiPath(e)).apply(c)
+
   given Encoder[MyPath] = Encoder.instance {
     case e: LinePath        => e.asJson
     case e: CubicBezierPath => e.asJson
@@ -183,18 +191,12 @@ object EncoderDecoder {
     Decoder[MultiPath].widen
   ).reduceLeft(_ or _)
 
-  given Encoder[MultiPath] = new Encoder[MultiPath]:
-    override def apply(a: MultiPath): io.circe.Json = summon[Encoder[Seq[MyPath]]](a.paths)
-  given Decoder[MultiPath] = new Decoder[MultiPath]:
-    override def apply(c: io.circe.HCursor): io.circe.Decoder.Result[MultiPath] =
-      summon[Decoder[Seq[MyPath]]].map(e => MultiPath(e)).apply(c)
-
   given Encoder[Circle] = deriveEncoder[Circle]
   given Decoder[Circle] = deriveDecoder[Circle]
+  given [T <: Coordinate: Encoder]: Encoder[Triangle[T]] = deriveEncoder[Triangle[T]]
+  given [T <: Coordinate: Decoder]: Decoder[Triangle[T]] = deriveDecoder[Triangle[T]]
   given Encoder[TriangleShape] = deriveEncoder[TriangleShape]
   given Decoder[TriangleShape] = deriveDecoder[TriangleShape]
-  // given Encoder[Triangle[T]] = deriveEncoder[Triangle[T]]
-  // given Decoder[Triangle[T]] = deriveDecoder[Triangle[T]]
 
   given Encoder[Arrow] = deriveEncoder[Arrow]
   given Decoder[Arrow] = deriveDecoder[Arrow]

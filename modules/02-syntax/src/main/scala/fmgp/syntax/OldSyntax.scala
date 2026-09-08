@@ -44,7 +44,7 @@ trait KhepriSolidPrimitives extends BaseSyntax {
   def coneFrustum(bottom: XYZ, bottomRadius: Double, top: XYZ, topRadius: Double) =
     addShape(Cylinder.fromVerticesRadius(bottom, top, bottomRadius = bottomRadius, topRadius = Some(topRadius)))
   def sphere(center: XYZ, radius: Double): Sphere = sphere(radius, center)
-  def cylinder = cone _
+  def cylinder = cone
   def regularPyramid(radialSegments: Int, bottom: XYZ, size: Double, height: Double, top: XYZ) = addShape(
     Cylinder.fromVerticesRadius(
       bottom = bottom,

@@ -16,7 +16,7 @@ object Dsl {
   ) extends ContestSpecificDslImp {
     def add(s: Shape) = v = v :+ s
     def push = { history.push(v); v = Seq.empty }
-    def pop = v = history.pop
+    def pop = v = history.pop()
   }
 
   final case class Dummy() extends ContestSpecificDslImp
