@@ -38,7 +38,7 @@ lazy val V = new {
 
   val sttpClient = "3.11.0"
 
-  val laminar = "0.14.2"
+  val laminar = "0.14.5"
   val waypoint = "0.5.0"
   val upickle = "1.5.0"
   // https://www.npmjs.com/package/material-components-web
