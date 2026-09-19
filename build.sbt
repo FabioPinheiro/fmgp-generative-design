@@ -307,7 +307,7 @@ lazy val prebuilt = crossProject(JSPlatform, JVMPlatform)
   .settings(noPublishSettings)
 
 // ### controller ###
-lazy val controller = project //or crossProject(JVMPlatform).crossType(CrossType.Pure)
+lazy val controller = project // or crossProject(JVMPlatform).crossType(CrossType.Pure)
   .in(file("modules/02-controller"))
   .configure(buildInfoConfigure)
   .settings(commonSettings: _*)
@@ -343,7 +343,7 @@ lazy val controller = project //or crossProject(JVMPlatform).crossType(CrossType
   .dependsOn(model.jvm, syntax.jvm, protos.jvm)
   .settings(publishSettings)
 
-lazy val repl = project //or crossProject(JVMPlatform).crossType(CrossType.Pure)
+lazy val repl = project // or crossProject(JVMPlatform).crossType(CrossType.Pure)
   .in(file("modules/04-repl"))
   .settings(commonSettings: _*)
   .settings(libraryDependencies += D.sttpClient.value)

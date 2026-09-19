@@ -103,8 +103,8 @@ object IsenbergSchoolOfManagementHubExample {
         .transformWith(
           Matrix
             .translate(z = h / 2)
-          // .postTranslate(x = re - 3 * slabThickness)
-          // .preRotate(0.1 * math.Pi, Vec(z = 1))
+            // .postTranslate(x = re - 3 * slabThickness)
+            // .preRotate(0.1 * math.Pi, Vec(z = 1))
         )
         .transformWith(Matrix.translate(re - 3 * slabThickness, 0, 0))
         .transformWith(Matrix.rotate(0.1 * math.Pi, Vec(z = 1)))
